@@ -1,0 +1,1204 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Voice Manager</title>
+<link rel="stylesheet" href="shell.css">
+<style>
+/* App-only styles. Window, rails, panels, sheets, toast: shell.css (same in every Gomin Apps prototype). */
+:root { --free: #0a7c3f; --free-bg: #e3f6ea; --tier: #1d4ed8; --tier-bg: #e0e9ff; --paid: #b42318; --paid-bg: #fde7e4;
+  --warn-bg: #fff4d6; --chipbg: #eef2ff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --free: #45d483; --free-bg: #12301f; --tier: #8db4ff; --tier-bg: #1a2742; --paid: #ff7d6b; --paid-bg: #3a1a17; --warn-bg: #352a0f; --chipbg: #242f47; } }
+:root[data-theme="dark"] { --free: #45d483; --free-bg: #12301f; --tier: #8db4ff; --tier-bg: #1a2742; --paid: #ff7d6b; --paid-bg: #3a1a17; --warn-bg: #352a0f; --chipbg: #242f47; }
+.main select, .main input:not([type]), .main input[type=text], .panel select, .sheet select { border: 1px solid var(--line); border-radius: 6px; padding: 3px 7px; background: var(--bg); max-width: 100%; }
+.pill { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 1px 6px; border-radius: 5px; white-space: nowrap; vertical-align: middle; }
+.b-free { color: var(--free); background: var(--free-bg); } .b-tier { color: var(--tier); background: var(--tier-bg); }
+.b-paid { color: var(--paid); background: var(--paid-bg); }
+.btn.fav { padding: 1px 6px; color: var(--text2); } .btn.fav.on { color: #e5306b; }
+.b-f { color: #b3223a; background: #fde4e1; } .b-m { color: #2b3fd6; background: #e0e9ff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .b-f { color: #ff9a8a; background: #3a1d1a; } :root:not([data-theme="light"]) .b-m { color: #8db4ff; background: #1a2742; } }
+:root[data-theme="dark"] .b-f { color: #ff9a8a; background: #3a1d1a; } :root[data-theme="dark"] .b-m { color: #8db4ff; background: #1a2742; } .b-mock { color: var(--text2); background: var(--chipbg); }
+.project-title { font-size: 18px; font-weight: 700; border: 0 !important; background: transparent !important; padding: 2px 0 !important; width: 100%; margin-bottom: 2px; }
+.title-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.title-row .project-title { field-sizing: content; width: auto; min-width: 4ch; max-width: 60%; margin: 0; }
+.project-title[readonly] { cursor: default; } .title-row .push { margin-left: auto; }
+.project-title[aria-invalid="true"] { border-bottom: 1px solid var(--bad) !important; }
+.btn .ico { width: 15px; height: 15px; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.title-err { font-size: 11.5px; color: var(--bad); margin: -2px 0 4px; }
+.title-row { margin-bottom: 2px; }
+.model-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12.5px; margin-bottom: 8px; color: var(--text2); }
+.model-row b { color: var(--text); }
+.project-title:focus { outline: none; border-bottom: 1px dashed var(--line) !important; }
+/* Internet alerts, MUI "standard" Alert: tinted background, coloured icon, dark text, optional ✕ */
+.alert { display: flex; gap: 9px; align-items: center; font-size: 12.5px; border-radius: 7px; padding: 6px 8px 6px 10px; margin: 6px 0; }
+.alert .a-ico { flex: none; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.alert .a-msg { flex: 1; } .alert .a-x { border: 0; background: none; color: inherit; cursor: pointer; opacity: .7; font-size: 13px; padding: 2px 4px; }
+.alert.error { color: #5f2120; background: #fdeded; } .alert.error .a-ico { color: #d32f2f; }
+.alert.warning { color: #663c00; background: #fff4e5; } .alert.warning .a-ico { color: #ed6c02; }
+.alert.info { color: #014361; background: #e5f6fd; } .alert.info .a-ico { color: #0288d1; }
+.alert.success { color: #1e4620; background: #edf7ed; } .alert.success .a-ico { color: #2e7d32; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .alert.error { color: #f4c7c7; background: #160b0b; }
+  :root:not([data-theme="light"]) .alert.warning { color: #ffe2b7; background: #191207; } :root:not([data-theme="light"]) .alert.info { color: #b8e7fb; background: #071318; }
+  :root:not([data-theme="light"]) .alert.success { color: #cce8cd; background: #0c130d; } }
+:root[data-theme="dark"] .alert.error { color: #f4c7c7; background: #160b0b; } :root[data-theme="dark"] .alert.warning { color: #ffe2b7; background: #191207; }
+:root[data-theme="dark"] .alert.info { color: #b8e7fb; background: #071318; } :root[data-theme="dark"] .alert.success { color: #cce8cd; background: #0c130d; }
+.warnline { font-size: 12px; color: var(--warn); background: var(--warn-bg); border-radius: 7px; padding: 5px 9px; margin: 6px 0; }
+.sdot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+kbd { font: 11px var(--mono); opacity: .8; }
+/* Studio: Script Timeline (left) + Current Scene (right) */
+.studio { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(240px, 38%) 1fr; gap: 12px; padding-bottom: 10px; }
+.timeline, .scene { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); display: flex; flex-direction: column; min-height: 0; }
+.col-h { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-bottom: 1px solid var(--line); font-weight: 600; flex-wrap: wrap; }
+.col-h .spacer { flex: 1; }
+.tl-list { flex: 1; overflow: auto; padding: 6px; }
+.tl-item { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+.tl-item:hover { background: var(--bg2); }
+.tl-item.sel { background: color-mix(in srgb, var(--accent) 14%, transparent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.tl-item.expr { padding-left: 24px; color: var(--text2); }
+.tl-item.muted .lbl { text-decoration: line-through; opacity: .5; }
+.tl-item.drop { box-shadow: 0 -2px 0 var(--accent); }
+.tl-item .grip { cursor: grab; color: var(--text3); user-select: none; }
+.tl-item .lbl { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tl-item .icon-btn { opacity: .55; } .tl-item:hover .icon-btn, .tl-item.sel .icon-btn, .tl-item.muted .mute { opacity: 1; }
+.tl-foot { padding: 6px 10px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--text2); }
+.scene-b { flex: 1; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+/* Buttons that open a side panel: the arrow points to where it opens (no "…", nothing modal) */
+.to-right::after, .to-left::before { content: ''; display: inline-block; width: .62em; height: .62em; background: currentColor;
+  -webkit-mask: var(--chev) center / contain no-repeat; mask: var(--chev) center / contain no-repeat; }
+.to-right::after { margin-left: .4em; --chev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 3l9 9-9 9' fill='none' stroke='black' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.to-left::before { margin-right: .4em; --chev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M16 3l-9 9 9 9' fill='none' stroke='black' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.times { font-size: 11px; font-weight: 700; color: var(--accent); }
+.ta-box { position: relative; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); overflow: hidden; }
+.ta-corner { position: absolute; top: 8px; right: 14px; z-index: 1; }   /* top-right, clear of the scrollbar */
+.ta-box:focus-within { border-color: var(--accent); }
+.scene-b textarea { display: block; width: 100%; min-height: 170px; border: 0; outline: 0; padding: 10px 130px 10px 12px; line-height: 1.6; background: transparent; resize: vertical; }   /* right padding: text stays clear of the corner button */
+.pop { position: fixed; z-index: 50; width: 280px; display: grid; gap: 8px; padding: 12px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: 0 8px 28px #0005; font-size: 12.5px; }
+.pop select, .pop input[type=range] { width: 100%; }
+.ta-foot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 6px 8px 6px 12px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--text2); }
+.vrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.vrow label { color: var(--text2); font-size: 12px; }
+.dropzone { border: 1.5px dashed var(--line); border-radius: 10px; padding: 8px 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dropzone.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.expr-big { font-size: 22px; font-weight: 700; }
+.exgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.exgrid button { text-align: left; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; background: var(--bg); cursor: pointer; }
+.exgrid button.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.exgrid .mono, .muted.mono { font-size: 11px; }
+@media (max-width: 900px) { .studio { grid-template-columns: 1fr; } }
+/* Generate panel */
+.player { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 8px; background: var(--bg); }
+.wave { flex: 1; height: 30px; display: flex; align-items: center; gap: 2px; min-width: 0; }
+.wave i { flex: 1; background: var(--line); border-radius: 2px; }
+.wave i.on { background: var(--accent); }
+.player.idle .wave i { opacity: .35; }
+.time { font-variant-numeric: tabular-nums; color: var(--text2); font-size: 11.5px; white-space: nowrap; }
+.prow-ctl { display: flex; gap: 6px; align-items: center; margin: 6px 0; }
+.prow-ctl select, .prow-ctl input[type=range] { flex: 1; min-width: 0; }
+.cost { font-size: 12px; margin: 6px 0; }
+.wide { width: 100%; justify-content: center; }
+/* Voice Library */
+.pcard { border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin: 10px 0; background: var(--bg); display: flex; flex-direction: column; gap: 6px; }
+.pcard-h { display: flex; gap: 6px; align-items: center; font-weight: 600; flex-wrap: wrap; }
+.pcard input { border: 1px solid var(--line); border-radius: 6px; padding: 3px 7px; background: var(--bg); }
+.xi { flex: none; border-radius: 8px; vertical-align: middle; }
+/* Transparent sketches: in dark mode graphite lines turn light, and hue-rotate brings coral back to (about) coral */
+.avwrap { position: relative; display: inline-block; flex: none; }
+.avwrap .av { display: block; }
+.avbadge { position: absolute; right: -5px; bottom: -5px; line-height: 0; border-radius: 50%; background: var(--bg); box-shadow: 0 0 0 1.5px var(--bg); }
+.avbadge .xi { padding: 1px; }
+.av { border-radius: 50%; object-fit: cover; flex: none; background: var(--bg3); }
+.vitem .grow b { font-weight: 600; }
+.vitem .sel { color: var(--accent); font-weight: 700; }
+.vitem[draggable=true] { cursor: grab; }
+</style>
+</head>
+<body>
+<!-- Static UI prototype (Phase 1). Plan: ../.claude/specs/plan.md · How to run: README.md -->
+<div class="window">
+  <div class="titlebar"><span class="lights" aria-hidden="true"><i></i><i></i><i></i></span><span id="title"></span></div>
+  <div class="app">
+    <main class="main">
+      <div class="title-row">
+        <input class="project-title" id="projectTitle" readonly maxlength="200" data-i18n-ph="untitled" aria-label="Project name" aria-describedby="titleErr" ondblclick="editTitle()">
+        <button class="icon-btn" onclick="editTitle()" data-i18n-title="rename"><span aria-hidden="true">✎</span></button>
+        <button class="btn push" onclick="exportProject()" data-i18n-title="exportTip">⤒ <span data-i18n="exportProject"></span></button>
+        <button class="btn primary to-right" onclick="openPanel('generate')"><svg class="ico" id="genIco" viewBox="0 0 24 24" aria-hidden="true"></svg> <span data-i18n="generateDots"></span></button>
+      </div>
+      <div class="title-err" id="titleErr" role="alert" hidden></div>
+      <div class="model-row" id="modelRow"></div>
+      <div id="netAlert" role="status" aria-live="polite"></div>
+      <div id="notices"></div>
+      <div class="studio">
+        <section class="timeline" aria-label="Script Timeline">
+          <div class="col-h"><span data-i18n="timeline"></span><span class="spacer"></span>
+            <button class="btn small" onclick="addItem('script')">＋ <span data-i18n="script"></span></button>
+            <button class="btn small" onclick="addItem('expr')">＋ <span data-i18n="expression"></span></button></div>
+          <div class="tl-list" id="tlList"></div>
+          <div class="tl-foot" id="tlFoot"></div>
+        </section>
+        <section class="scene" id="scene" aria-label="Current Scene"></section>
+      </div>
+      <datalist id="styles"></datalist>
+    </main>
+  </div>
+</div>
+<input type="file" id="projFile" accept=".json,application/json" hidden onchange="openProjectFile(this)">
+<script src="shell.js"></script>
+<script>
+// ── Static data (Phase 3: ModelCatalog.swift) ── checked 2026-10-22, ai.google.dev pricing
+// Phase 1 = Gemini TTS models with a free tier only (2.5 Pro TTS, paid-only, taken out 2026-10-23).
+// Generate = save the finished voice-over: a floppy disk (not a mic — nothing is recorded live).
+const GEN_ICON = '<path d="M4 5a2 2 0 0 1 2-2h10.2L20 6.8V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 3v5h7V3M12.5 4.5v2M7 21v-6a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v6"/>';
+const MODELS = [
+  { id: 'gemini-3.8-flash-tts',         name: 'Gemini 3.8 Flash TTS',      freeTier: true,  thai: true,  inUSD: 0.5, outUSD: 9 },
+  { id: 'gemini-3.8-flash-lite-tts',    name: 'Gemini 3.8 Flash-Lite TTS', freeTier: true,  thai: false, inUSD: 0.5, outUSD: 6 },
+  { id: 'gemini-3.1-flash-tts-preview', name: 'Gemini 3.1 Flash TTS (Preview)', freeTier: true, thai: null, inUSD: 1, outUSD: 20 },
+];
+const VOICES = 'Zephyr Bright|Puck Upbeat|Charon Informative|Kore Firm|Fenrir Excitable|Leda Youthful|Orus Firm|Aoede Breezy|Callirrhoe Easy-going|Autonoe Bright|Enceladus Breathy|Iapetus Clear|Umbriel Easy-going|Algieba Smooth|Despina Smooth|Erinome Clear|Algenib Gravelly|Rasalgethi Informative|Laomedeia Upbeat|Achernar Soft|Alnilam Firm|Schedar Even|Gacrux Mature|Pulcherrima Forward|Achird Friendly|Zubenelgenubi Casual|Vindemiatrix Gentle|Sadachbia Lively|Sadaltager Knowledgeable|Sulafat Warm'
+  .split('|').map(s => s.split(' '));
+// Gender per voice: Google Cloud TTS "Chirp 3: HD" voice list (same 30 names), checked 2026-10-23 — 14 female, 16 male.
+const FEMALE = new Set('Achernar Aoede Autonoe Callirrhoe Despina Erinome Gacrux Kore Laomedeia Leda Pulcherrima Sulafat Vindemiatrix Zephyr'.split(' '));
+const genderOf = v => FEMALE.has(v) ? 'f' : 'm';
+// Portraits: one image of all 30 (.claude/docs/design/voice-avatars.md) cut into img/voices/<name>.png. Catalog names only.
+const avatar = (v, size = 32) => VOICES.some(([n]) => n === v)
+  ? `<img class="av" src="img/voices/${v.toLowerCase()}.png" alt="" width="${size}" height="${size}">` : '';
+const genderPill = v => `<span class="pill b-${genderOf(v)}">${genderOf(v) === 'f' ? '♀' : '♂'} ${esc(t(genderOf(v) === 'f' ? 'female' : 'male'))}</span>`;
+// Voice styles: the `style` annotation Gemini reads before a line. English on purpose (that's what the model gets);
+// the description is what the user reads. Any other text still works: the scene's Style box accepts free text.
+const STYLE_DESC = {
+  en: ['Warm and approachable', 'Bright, smiling', 'Gentle and reassuring', 'Slow and easy', 'High energy, thrilled', 'Punchy, made for promos',
+    'Measured, documentary voice-over', 'Crisp and neutral', 'Expressive, draws you in', 'Very soft, close to the mic', 'Grave, no smile', 'Low and heavy'],
+  th: ['อบอุ่น เป็นกันเอง', 'สดใส ยิ้มอยู่ในเสียง', 'นุ่มนวล ชวนสบายใจ', 'ช้า สบาย ๆ', 'ตื่นเต้น พลังเต็ม', 'กระชับ สำหรับโฆษณา',
+    'นิ่ง ชัด แบบสารคดี', 'ชัดเจน เป็นกลาง', 'มีอารมณ์ ชวนติดตาม', 'กระซิบ ใกล้ไมค์', 'จริงจัง ไม่ยิ้ม', 'เศร้า เสียงต่ำ'],
+};
+const STYLES = [['Friendly', '😊'], ['Cheerful and friendly', '😄'], ['Calm and warm', '☕'], ['Calm and relaxed', '🌿'],
+  ['Excited', '🤩'], ['Energetic, upbeat ad', '📣'], ['Narrator, documentary', '🎬'], ['News anchor', '📰'],
+  ['Storyteller', '📖'], ['Whisper', '🤫'], ['Serious', '🧐'], ['Sad', '😢']];
+// Paper-collage icons cut from one ChatGPT sheet (.claude/docs/design/art-style.md): img/styles/<slug>.png.
+// A style the user typed (not in STYLES) keeps the 🎭 placeholder. Only catalog names reach the path.
+const styleSlug = name => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const styleIcon = (name, size = 28) => STYLES.some(([n]) => n === name)
+  ? `<img class="xi" src="img/styles/${styleSlug(name)}.png" alt="" width="${size}" height="${size}">`
+  : `<span style="font-size:${Math.round(size * 0.7)}px;width:${size}px;text-align:center;flex:none">🎭</span>`;
+/** The scene at a glance: who speaks (voice portrait) and how (style icon badged on its bottom-right corner). */
+const voiceWithStyle = (voice, style, size) => `<span class="avwrap" style="width:${size}px;height:${size}px" title="${esc(voice)} · ${esc(style)}">${avatar(voice, size)}
+  <span class="avbadge">${styleIcon(style, Math.round(size * 0.5))}</span></span>`;
+/** Gemini TTS tags. In the timeline each one is its own Expression item. */
+const EXPRS = ['<breath>', '<short pause>', '<long pause>', '<laugh>', '<sigh>', '<gasp>', '<cough>'];
+const exKey = tag => tag.slice(1, -1).replace(' ', '-');
+// Paper-collage icons cut from one ChatGPT sheet (.claude/docs/design/art-style.md). Only catalog tags reach here,
+// so the path is safe.
+const exIcon = (tag, size = 28) => EXPRS.includes(tag)
+  ? `<img class="xi" src="img/expressions/${exKey(tag)}.png" alt="" width="${size}" height="${size}">` : '';
+const AUDIO_TOKENS_PER_SEC = 25;   // ponytail: rough estimate, verify against real usageMetadata in Phase 3
+const costUSD = () => (estimateSeconds(plainText()) * AUDIO_TOKENS_PER_SEC * model().outUSD + plainText().length / 4 * model().inUSD) / 1e6;
+
+// Google bills in US dollars; the local amount is a hint only. One currency per family language.
+// ponytail: fixed rates set by hand (a live rate = a network call for a hint); refresh them with RATES_DATE.
+const RATES_DATE = '2026-10-23';
+const CURRENCIES = { USD: ['en', '🇺🇸', 1], THB: ['th', '🇹🇭', 33], JPY: ['ja', '🇯🇵', 150], KRW: ['ko', '🇰🇷', 1380],
+  VND: ['vi', '🇻🇳', 25400], IDR: ['id', '🇮🇩', 16000], MYR: ['ms', '🇲🇾', 4.4], PHP: ['tl', '🇵🇭', 58],
+  CNY: ['zh-Hans', '🇨🇳', 7.2], TWD: ['zh-Hant', '🇹🇼', 32], EUR: ['es', '🇪🇸', 0.92], RUB: ['ru', '🇷🇺', 95] };
+const currency = () => { const c = load('currency', 'auto');   // 'auto' = follow the app language
+  return CURRENCIES[c] ? c : Object.keys(CURRENCIES).find(k => CURRENCIES[k][0] === Shell.lang) ?? 'USD'; };
+// Short symbol (฿ not THB) unless another listed currency shares it ($ = USD / TWD, ¥ = JPY / CNY) → NT$, CN¥.
+const sym = (code, display) => new Intl.NumberFormat(Shell.lang, { style: 'currency', currency: code, currencyDisplay: display })
+  .formatToParts(1).find(x => x.type === 'currency').value;
+const fmtMoney = (v, code) => {
+  const clash = Object.keys(CURRENCIES).some(c => c !== code && sym(c, 'narrowSymbol') === sym(code, 'narrowSymbol'));
+  return new Intl.NumberFormat(Shell.lang, { style: 'currency', currency: code, currencyDisplay: clash ? 'symbol' : 'narrowSymbol',
+    maximumSignificantDigits: 3 }).format(v);
+};
+const money = usd => currency() === 'USD' ? fmtMoney(usd, 'USD')
+  : `${fmtMoney(usd, 'USD')} (${fmtMoney(usd * CURRENCIES[currency()][2], currency())})`;   // costPaid already says ≈
+const SPEAKER_COLORS = { S1: '#2563eb', S2: '#db2777' };
+
+const STRINGS = {
+  en: { newProject: 'New Project', openProject: 'Open Project…', exportProject: 'Export Project',
+    exportTip: 'Projects save automatically. Export to open this project on another Mac.', openTip: 'Open a project exported from another Mac',
+    untitled: 'Untitled project', rename: 'Rename project (or double-click the name)', titleEmpty: 'Project name can’t be empty.',
+    thaiWarn: '⚠ This model does not support Thai. Switch to Gemini 3.8 Flash TTS.', bTier: 'FREE TIER', bPaid: 'PAID', bMock: 'MOCK',
+    oTags: 'Add pauses', oPolish: 'Polish', oTranslate: 'TH↔EN', chars: '{0} characters · ≈ {1} s',
+    aiHelp: 'Ollama on this Mac rewrites this scene only. Undo in History.',
+    preview: 'Preview', stop: 'Stop', generate: 'Generate', generateDots: 'Generate', generating: 'Generating… (mock — no real API call)',
+    tierFree: 'Free tier', tierPaid: 'Billing on',
+    keyNote: 'The real app stores the key in the macOS Keychain. Free tier = no charge, limited quota, and Google may use your text and audio to improve its products.',
+    getKey: 'Get API key ↗', pricing: 'Pricing ↗', done: 'Done', cancel: 'Cancel', undo: 'Undo',
+    paidTitle: 'This take costs money', needKey: 'Connect Google (Gemini API key) in AI Providers first.',
+    getStarted: 'Getting started', stepGoogle: 'Connect Google · Gemini TTS (needed to make voices)', stepOllama: 'Ollama on this Mac (optional, AI Agent)',
+    stepProject: 'Create your first project', connected: 'Connected', notConnected: 'Not connected', notRunning: 'Not running',
+    onThisMac: 'on this Mac', save: 'Save', testConn: 'Test connection', removeKey: 'Remove key', testing: 'Testing…', testOk: 'Google accepted the key.',
+    testFail: 'Google refused the key', testOffline: 'Couldn’t reach Google (offline?).', keySaved: 'Key saved for every project', keyRemoved: 'Key removed',
+    checkAgain: 'Check again', googleUse: 'Makes the voices: scene previews and whole-project takes. One key for every project.',
+    ollamaUse: 'Runs the AI Agent on this Mac, no login. It has no voices.', ollamaHow: 'Install from ollama.com, then run `ollama serve`.',
+    appleUse: 'On-device voices for Quick preview under each scene: free, instant, not the final voice. Apple Intelligence later.',
+    applePrev: 'Apple · Quick preview', quickPreview: 'Quick preview', aVoice: 'Voice', aRate: 'Speed', aPlay: '▶ Play', aStop: '■ Stop',
+    appleNote: 'Free, on this Mac, instant: hear the words while you write. Not the final voice; Gemini makes that.',
+    appleNone: 'No voice for this language on this Mac. Add one in System Settings → Accessibility → Spoken Content.',
+    costFree: '$0 (quota applies)', summary: '{0} scenes · ≈ {1}', costPaid: '≈ {usd} per take', 'panel.language': 'Language & Currency', tabLang: 'Language', tabCurrency: 'Currency', curAuto: 'Match language',
+    curNote: 'Google bills in US dollars. The local amount is only a hint, at a fixed rate set on {0}.',
+    thaiOk: 'Thai ✓ · 30 voices · up to 2 speakers', thaiNo: 'No Thai · 30 voices · up to 2 speakers', thaiUnknown: 'Thai support not documented',
+    saved: 'Saved to Results', deleted: 'Take deleted', ollamaOff: 'Ollama is not running — “Add pauses” uses the offline rule, the others do nothing.',
+    nothing: 'Every scene is muted — nothing to generate.',
+    rawTitle: 'Preview Raw · the request the app sends', rawNote: 'The timeline merged into speech segments, tags inline, muted scenes left out. Same body the Swift GeminiTTS service builds (Interactions API).',
+    copyCurl: 'Copy curl',
+    // Timeline + Current Scene
+    timeline: 'Script Timeline', script: 'Script', expression: 'Expression', currentScene: 'Current Scene', style: 'Style', voiceHint: 'Drag a voice here from Voice Library, or press Apply there. This scene speaks with it; a project can use up to 2 voices.',
+    pvGen: 'Generate preview', pvBusy: 'Generating…', pvReady: 'Ready', pvRegen: 'Generate again', play: 'Play',
+    mute: 'Mute', unmute: 'Unmute', remove: 'Remove', empty: '(empty)', tlFoot: '{0} scenes · {1} muted · ≈ {2}', tlHint: 'Drag ⋮⋮ to reorder · 🔇 mutes a scene',
+    curExpr: 'Current expression', exprHint: 'Gemini reads it as a sound or a silence between lines.',
+    repeat: 'Repeat', repeatTip: 'How many times in a row Gemini makes this sound (up to 10)',
+    netOffline: 'No internet connection. Generate and scene previews need it — your edits are still saved on this Mac.',
+    netRestored: 'Internet connection restored.', netSlow: 'Internet connection is slow ({0} to Google) — a take may take longer.',
+    netFast: 'Internet connection is fast again.', netNeeds: 'Needs an internet connection', close: 'Close',
+    exprDrop: 'Drag an expression here from Expression Library, or press Apply there.',
+    exprLibHint: 'Drag onto the timeline to insert, or onto the Current Scene to change it. Apply changes the selected expression; with a script selected it inserts one after it.',
+    dragExpr: 'Drag onto the timeline or the Current Scene', insert: 'Insert', applyExprTip: 'Change the selected expression', insertExprTip: 'Insert after the selected scene', modelChange: 'Change', modelTitleNew: 'Choose a model for this project', modelTitleChange: 'Change the project’s model',
+    modelPhase: 'For now the app supports Gemini TTS only. Every model has the same 30 voices and a free tier.',
+    modelEffects: 'What changes: each scene’s preview has to be generated again, Thai support and price follow the new model. What stays: your scenes, speakers and their voices. Takes you already generated keep the model they were made with.',
+    thaiWarnPick: 'This project has Thai text and this model can’t read Thai.', createProject: 'Create project', useModel: 'Use this model',
+    previewScene: 'Preview this scene with Gemini TTS', sceneOnly: 'Only this scene · {0} · {1}',
+    'ex.breath': 'Breath', 'ex.short-pause': 'Short pause', 'ex.long-pause': 'Long pause', 'ex.laugh': 'Laugh', 'ex.sigh': 'Sigh', 'ex.gasp': 'Gasp', 'ex.cough': 'Cough',
+    'exd.breath': 'An audible breath before the next line', 'exd.short-pause': 'About half a second of silence', 'exd.long-pause': 'About a second and a half of silence',
+    'exd.laugh': 'A short laugh', 'exd.sigh': 'A sigh', 'exd.gasp': 'A surprised gasp', 'exd.cough': 'A small cough',
+    // Recent Projects
+    projSearch: 'Search projects…', opened: 'Opened {0}', noMatch: 'No match.',
+    removeProject: 'Remove from Recent Projects (the files stay)', removed: 'Removed “{0}” from Recent Projects',
+    exportDone: 'Exported {0}. On the other Mac: Recent Projects → Open Project…', openFail: 'That file isn’t an AI Voice Manager project.',
+    // Generate panel
+    results: 'Results', noTakes: 'No takes yet. Generate one and it stays here.', download: 'Download', restoreTake: 'Use this take’s timeline again',
+    dlMock: 'MOCK take, no audio yet: downloaded take.json (timeline + settings). Real takes download the WAV.',
+    // Voice Library
+    voice: 'Voice', inProject: 'in this project', applyScene: 'Use for the selected scene', pickScript: 'Select a script scene in the timeline first.',
+    twoVoices: 'This project already uses 2 voices ({0} and {1}) — Gemini allows 2 per take. Use one of them, or change one of them everywhere first.',
+    tabVoices: 'Voices', tabStyles: 'Styles', styleLib: 'Style Library', styleHint: 'Drag a style here from Style Library, press Apply there, or type your own.',
+    styleLibHint: 'How the line is spoken. Drag onto the scene’s Style box or press Apply. Gemini gets the English name.', dragStyle: 'Drag onto the scene’s Style box',
+    gender: 'Gender', female: 'Female', male: 'Male', all: 'All', fav: 'Favorite', favAdd: 'Add to Favorites', favRemove: 'Remove from Favorites',
+    favEmpty: 'No favorites yet — press ♡ on a voice to keep it here.',
+    vSearch: 'Search voices…', gVoices: 'Gemini TTS · voices', apply: 'Apply', dragVoice: 'Drag onto Current Scene, or press Apply', inUse: 'in use',
+    'panel.providers': 'AI Providers', 'panel.projects': 'Recent Projects', 'panel.generate': 'Generate', 'panel.voices': 'Voice Library', 'panel.expressions': 'Expression Library',
+    'hist.edit': 'Edited scene {0}', 'hist.style': 'Scene {0} style: {1}', 'hist.addScript': 'Added script',
+    'hist.addExpr': 'Added {0}', 'hist.remove': 'Deleted scene {0}', 'hist.move': 'Moved scene', 'hist.mute': 'Muted scene {0}', 'hist.unmute': 'Unmuted scene {0}',
+    'hist.expr': 'Expression: {0}', 'hist.times': '{0} ×{1}', 'hist.title': 'Renamed project', 'hist.model': 'Model: {0}', 'hist.voice': 'Voice: {0}', 'hist.ai': '✦ {0}', 'hist.take': 'Timeline from take {0}',
+    'about.desc': 'Write a voice-over project scene by scene, preview any scene, then generate the whole project with Gemini TTS. Every take is kept.',
+    'ai.intro': 'Ask Ollama about your project. It runs on this Mac, no login. Ollama has no voices: it only helps with the words.',
+    'q.hook': 'Write a stronger opening line', 'q.short': 'Make it fit 15 seconds', 'q.pauses': 'Where should I add pauses?',
+    'q.en': 'Translate the project to English', 'q.style': 'Suggest a style for each scene',
+    'h.providers.t': 'AI Providers', 'h.providers.d': 'Left side, bottom of the rail (like Appearance on the right). Connect Google (Gemini API key, tested and kept for every project), check Ollama, Apple voices give each scene a free Quick preview. Opens by itself until Google is connected.',
+    'h.projects.t': 'Recent Projects', 'h.projects.d': 'Left side: projects you opened before. Search by name, click to open. Open Project… brings in a project exported from another Mac. Projects save automatically; Export Project (toolbar) makes the file to take with you.',
+    'h.model.t': 'Model', 'h.model.d': 'Every project uses one Gemini TTS model, chosen when you create it and shown under the name. Change says what changes: scene previews need generating again, Thai support and price follow; scenes, voices and old takes stay.',
+    'h.timeline.t': 'Script Timeline', 'h.timeline.d': 'Every line (Script) and every breath or pause (Expression) is a scene. Drag ⋮⋮ to reorder, 🔇 to leave a scene out of the take, click to edit it on the right.',
+    'h.scene.t': 'Current Scene', 'h.scene.d': 'Script: the voice (drag from Voice Library), the style (drag from its Styles tab or type), the text, and the preview of this scene only (Generate preview → Ready → Play). Expression: the current one; change it from Expression Library.',
+    'h.exprs.t': 'Expression Library', 'h.exprs.d': 'Right side. Breath, pauses, laugh, sigh, gasp, cough. Drag onto the timeline to insert, onto the Current Scene to change, or press Apply.',
+    'h.history.t': 'History', 'h.history.d': 'Right side, top. The last 30 edits of the open project, newest first. Double-click a step or press ↩ to go back — going back is a new step too, so nothing is lost. 📌 pins a version; the project as opened is pinned for you. Each project keeps its own History.',
+    'h.gen.t': 'Generate', 'h.gen.d': 'Right side. Preview of the whole project (every scene that isn’t muted), model, Generate with Gemini (⌘↵), then play, download or delete each result.',
+    'h.voices.t': 'Voice Library', 'h.voices.d': 'The 30 Gemini TTS voices. Search, drag a voice onto the scene or press Apply.',
+    'h.ai.t': 'AI Agent', 'h.ai.d': 'Ask Ollama about the project: a better opening line, where to pause, a translation. It answers; you change the scenes yourself.',
+  },
+  th: { newProject: 'โปรเจกต์ใหม่', openProject: 'เปิดโปรเจกต์…', exportProject: 'ส่งออกโปรเจกต์',
+    exportTip: 'โปรเจกต์บันทึกอัตโนมัติ ส่งออกเพื่อไปเปิดที่เครื่องอื่น', openTip: 'เปิดโปรเจกต์ที่ส่งออกมาจากเครื่องอื่น',
+    untitled: 'โปรเจกต์ไม่มีชื่อ', rename: 'เปลี่ยนชื่อโปรเจกต์ (หรือดับเบิลคลิกที่ชื่อ)', titleEmpty: 'ชื่อโปรเจกต์ต้องไม่ว่าง',
+    thaiWarn: '⚠ model นี้ไม่รองรับภาษาไทย ให้เปลี่ยนเป็น Gemini 3.8 Flash TTS', bTier: 'FREE TIER', bPaid: 'เสียเงิน', bMock: 'MOCK',
+    oTags: 'ใส่จังหวะหายใจ', oPolish: 'เกลาคำ', oTranslate: 'แปล ไทย↔อังกฤษ', chars: '{0} ตัวอักษร · ≈ {1} วิ',
+    aiHelp: 'Ollama ในเครื่องเขียนใหม่เฉพาะฉากนี้ · ย้อนได้ใน History',
+    preview: 'ลองฟัง', stop: 'หยุด', generate: 'สร้างเสียง', generateDots: 'สร้างเสียง', generating: 'กำลังสร้าง… (mock ไม่ได้เรียก API จริง)',
+    tierFree: 'Free tier', tierPaid: 'เปิด billing',
+    keyNote: 'แอปจริงเก็บ key ใน Keychain ของ macOS · Free tier ไม่เสียเงิน แต่มี quota และ Google อาจนำข้อความและเสียงไปพัฒนาผลิตภัณฑ์',
+    getKey: 'ขอ API key ↗', pricing: 'ราคา ↗', done: 'เสร็จ', cancel: 'ยกเลิก', undo: 'เลิกทำ',
+    paidTitle: 'take นี้เสียเงิน', needKey: 'เชื่อม Google (Gemini API key) ใน ผู้ให้บริการ AI ก่อน',
+    getStarted: 'เริ่มต้นใช้งาน', stepGoogle: 'เชื่อม Google · Gemini TTS (จำเป็นสำหรับสร้างเสียง)', stepOllama: 'Ollama ในเครื่องนี้ (ไม่บังคับ, ใช้กับ AI Agent)',
+    stepProject: 'สร้างโปรเจกต์แรก', connected: 'เชื่อมแล้ว', notConnected: 'ยังไม่เชื่อม', notRunning: 'ไม่ได้เปิด',
+    onThisMac: 'ในเครื่องนี้', save: 'บันทึก', testConn: 'ทดสอบการเชื่อมต่อ', removeKey: 'ลบ key', testing: 'กำลังทดสอบ…', testOk: 'Google รับ key นี้แล้ว',
+    testFail: 'Google ไม่รับ key นี้', testOffline: 'ติดต่อ Google ไม่ได้ (ไม่ได้ต่อเน็ต?)', keySaved: 'บันทึก key แล้ว ใช้ได้ทุกโปรเจกต์', keyRemoved: 'ลบ key แล้ว',
+    checkAgain: 'ตรวจอีกครั้ง', googleUse: 'ใช้สร้างเสียง: ลองฟังทีละฉากและ take ทั้งโปรเจกต์ · key เดียวใช้ได้ทุกโปรเจกต์',
+    ollamaUse: 'ใช้กับ AI Agent ทำงานในเครื่อง ไม่ต้อง login · ไม่มีเสียง', ollamaHow: 'ติดตั้งจาก ollama.com แล้วรัน `ollama serve`',
+    appleUse: 'เสียงในเครื่อง ใช้ฟังด่วนใต้แต่ละฉาก: ฟรี ทันที ไม่ใช่เสียงจริง · Apple Intelligence ไว้ทีหลัง',
+    applePrev: 'Apple · ฟังด่วน', quickPreview: 'ฟังด่วน', aVoice: 'เสียง', aRate: 'ความเร็ว', aPlay: '▶ เล่น', aStop: '■ หยุด',
+    appleNote: 'ฟรี ในเครื่อง ทันที ไว้ฟังถ้อยคำระหว่างเขียน · ไม่ใช่เสียงจริง เสียงจริงสร้างด้วย Gemini',
+    appleNone: 'เครื่องนี้ไม่มีเสียงภาษานี้ เพิ่มได้ที่ System Settings → Accessibility → Spoken Content',
+    costFree: '$0 (มี quota)', summary: '{0} ฉาก · ≈ {1}', costPaid: '≈ {usd} ต่อ take', 'panel.language': 'ภาษาและสกุลเงิน', tabLang: 'ภาษา', tabCurrency: 'สกุลเงิน', curAuto: 'ตามภาษาของแอป',
+    curNote: 'Google เก็บเงินเป็นดอลลาร์สหรัฐ ยอดสกุลเงินท้องถิ่นเป็นค่าประมาณ ใช้อัตราคงที่ที่ตั้งไว้เมื่อ {0}',
+    thaiOk: 'ไทย ✓ · 30 เสียง · สูงสุด 2 ผู้พูด', thaiNo: 'ไม่รองรับไทย · 30 เสียง · สูงสุด 2 ผู้พูด', thaiUnknown: 'เอกสารไม่ได้ระบุว่ารองรับไทย',
+    saved: 'เก็บไว้ในผลลัพธ์แล้ว', deleted: 'ลบ take แล้ว', ollamaOff: 'Ollama ไม่ได้เปิด: “ใส่จังหวะหายใจ” ใช้กฎในเครื่องแทน ปุ่มอื่นไม่ทำอะไร',
+    nothing: 'ทุกฉากถูกปิดเสียง ไม่มีอะไรให้สร้าง',
+    rawTitle: 'ดู request ที่แอปจะส่ง', rawNote: 'รวมไทม์ไลน์เป็นช่วงเสียงพูด ใส่ tag ในบรรทัด ข้ามฉากที่ปิดเสียง · body เดียวกับที่ GeminiTTS ใน Swift สร้าง (Interactions API)',
+    copyCurl: 'คัดลอก curl',
+    timeline: 'ไทม์ไลน์บท', script: 'บท', expression: 'Expression', currentScene: 'ฉากปัจจุบัน', style: 'Style', voiceHint: 'ลากเสียงจากคลังเสียงมาวาง หรือกด Apply ในคลังเสียง · ฉากนี้จะพูดด้วยเสียงนั้น · หนึ่งโปรเจกต์ใช้ได้สูงสุด 2 เสียง',
+    pvGen: 'สร้างเสียงลองฟัง', pvBusy: 'กำลังสร้าง…', pvReady: 'พร้อม', pvRegen: 'สร้างใหม่', play: 'เล่น',
+    mute: 'ปิดเสียง', unmute: 'เปิดเสียง', remove: 'ลบ', empty: '(ว่าง)', tlFoot: '{0} ฉาก · ปิดเสียง {1} · ≈ {2}', tlHint: 'ลาก ⋮⋮ เพื่อเปลี่ยนลำดับ · 🔇 ปิดเสียงฉากนั้น',
+    curExpr: 'Expression ปัจจุบัน', exprHint: 'Gemini อ่านเป็นเสียงหรือช่วงเงียบระหว่างประโยค',
+    repeat: 'ซ้ำ', repeatTip: 'ให้ Gemini ทำเสียงนี้ติดกันกี่ครั้ง (สูงสุด 10)',
+    netOffline: 'ไม่มีการเชื่อมต่ออินเทอร์เน็ต สร้างเสียงและลองฟังฉากต้องใช้เน็ต — งานที่แก้ยังบันทึกอยู่ในเครื่องนี้',
+    netRestored: 'เชื่อมต่ออินเทอร์เน็ตได้อีกครั้งแล้ว', netSlow: 'อินเทอร์เน็ตช้า ({0} ไปถึง Google) — สร้างเสียงอาจใช้เวลานานขึ้น',
+    netFast: 'อินเทอร์เน็ตกลับมาเร็วแล้ว', netNeeds: 'ต้องเชื่อมต่ออินเทอร์เน็ต', close: 'ปิด',
+    exprDrop: 'ลาก Expression จากคลัง Expression มาวางที่นี่ หรือกด Apply ในคลัง',
+    exprLibHint: 'ลากไปวางในไทม์ไลน์เพื่อแทรก หรือวางที่ฉากปัจจุบันเพื่อเปลี่ยน · Apply เปลี่ยน Expression ที่เลือกอยู่ ถ้าเลือกบทอยู่จะแทรกต่อจากบทนั้น',
+    dragExpr: 'ลากไปวางในไทม์ไลน์หรือฉากปัจจุบัน', insert: 'แทรก', applyExprTip: 'เปลี่ยน Expression ที่เลือกอยู่', insertExprTip: 'แทรกต่อจากฉากที่เลือก', modelChange: 'เปลี่ยน', modelTitleNew: 'เลือก model ให้โปรเจกต์นี้', modelTitleChange: 'เปลี่ยน model ของโปรเจกต์',
+    modelPhase: 'ตอนนี้แอปรองรับ Gemini TTS อย่างเดียว ทุก model มี 30 เสียงเหมือนกันและมี free tier',
+    modelEffects: 'สิ่งที่เปลี่ยน: ต้องสร้างเสียงลองฟังของแต่ละฉากใหม่, การรองรับภาษาไทยและราคาเป็นไปตาม model ใหม่ · สิ่งที่ไม่เปลี่ยน: ฉาก ผู้พูด และเสียงของผู้พูด · take ที่สร้างไปแล้วยังเป็น model เดิม',
+    thaiWarnPick: 'โปรเจกต์นี้มีข้อความภาษาไทย แต่ model นี้อ่านภาษาไทยไม่ได้', createProject: 'สร้างโปรเจกต์', useModel: 'ใช้ model นี้',
+    previewScene: 'ลองฟังฉากนี้ด้วย Gemini TTS', sceneOnly: 'เฉพาะฉากนี้ · {0} · {1}',
+    'ex.breath': 'หายใจ', 'ex.short-pause': 'เว้นสั้น', 'ex.long-pause': 'เว้นยาว', 'ex.laugh': 'หัวเราะ', 'ex.sigh': 'ถอนหายใจ', 'ex.gasp': 'ตกใจ', 'ex.cough': 'ไอ',
+    'exd.breath': 'เสียงหายใจก่อนประโยคถัดไป', 'exd.short-pause': 'เงียบประมาณครึ่งวินาที', 'exd.long-pause': 'เงียบประมาณวินาทีครึ่ง',
+    'exd.laugh': 'หัวเราะสั้น ๆ', 'exd.sigh': 'ถอนหายใจ', 'exd.gasp': 'สูดลมเพราะตกใจ', 'exd.cough': 'ไอเบา ๆ',
+    projSearch: 'ค้นหาโปรเจกต์…', opened: 'เปิดเมื่อ {0}', noMatch: 'ไม่พบ',
+    removeProject: 'เอาออกจากโปรเจกต์ล่าสุด (ไฟล์ยังอยู่)', removed: 'เอา “{0}” ออกจากโปรเจกต์ล่าสุดแล้ว',
+    exportDone: 'ส่งออก {0} แล้ว · ที่เครื่องอื่น: โปรเจกต์ล่าสุด → เปิดโปรเจกต์…', openFail: 'ไฟล์นี้ไม่ใช่โปรเจกต์ของ AI Voice Manager',
+    results: 'ผลลัพธ์', noTakes: 'ยังไม่มี take สร้างเสียงแล้วจะเก็บไว้ที่นี่', download: 'ดาวน์โหลด', restoreTake: 'ใช้ไทม์ไลน์ของ take นี้อีกครั้ง',
+    dlMock: 'take นี้เป็น MOCK ยังไม่มีเสียง: ดาวน์โหลด take.json (ไทม์ไลน์ + ตั้งค่า) แทน · take จริงจะได้ไฟล์ WAV',
+    voice: 'เสียง', inProject: 'ใช้ในโปรเจกต์นี้', applyScene: 'ใช้กับฉากที่เลือก', pickScript: 'เลือกฉากบทในไทม์ไลน์ก่อน',
+    twoVoices: 'โปรเจกต์นี้ใช้ 2 เสียงแล้ว ({0} และ {1}) Gemini ใช้ได้ 2 เสียงต่อ take · เลือกหนึ่งในสองเสียงนี้ หรือเปลี่ยนเสียงนั้นทุกฉากก่อน',
+    tabVoices: 'เสียง', tabStyles: 'Style', styleLib: 'คลัง Style', styleHint: 'ลาก style จากคลัง Style มาวาง กด Apply ในคลัง หรือพิมพ์เอง',
+    styleLibHint: 'น้ำเสียงในการพูดบรรทัดนั้น ลากไปวางที่ช่อง Style ของฉากหรือกด Apply · Gemini จะได้ชื่อภาษาอังกฤษ', dragStyle: 'ลากไปวางที่ช่อง Style ของฉาก',
+    gender: 'เพศ', female: 'หญิง', male: 'ชาย', all: 'ทั้งหมด', fav: 'รายการโปรด', favAdd: 'เพิ่มในรายการโปรด', favRemove: 'นำออกจากรายการโปรด',
+    favEmpty: 'ยังไม่มีรายการโปรด — กด ♡ ที่เสียงที่ชอบเพื่อเก็บไว้ที่นี่',
+    vSearch: 'ค้นหาเสียง…', gVoices: 'Gemini TTS · เสียง', apply: 'Apply', dragVoice: 'ลากไปวางที่ฉากปัจจุบัน หรือกด Apply', inUse: 'ใช้อยู่',
+    'panel.providers': 'ผู้ให้บริการ AI', 'panel.projects': 'โปรเจกต์ล่าสุด', 'panel.generate': 'สร้างเสียง', 'panel.voices': 'คลังเสียง', 'panel.expressions': 'คลัง Expression',
+    'hist.edit': 'แก้ฉาก {0}', 'hist.style': 'ฉาก {0} style: {1}', 'hist.addScript': 'เพิ่มบท',
+    'hist.addExpr': 'เพิ่ม {0}', 'hist.remove': 'ลบฉาก {0}', 'hist.move': 'ย้ายฉาก', 'hist.mute': 'ปิดเสียงฉาก {0}', 'hist.unmute': 'เปิดเสียงฉาก {0}',
+    'hist.expr': 'Expression: {0}', 'hist.times': '{0} ×{1}', 'hist.title': 'เปลี่ยนชื่อ', 'hist.model': 'Model: {0}', 'hist.voice': 'เสียง: {0}', 'hist.ai': '✦ {0}', 'hist.take': 'ไทม์ไลน์จาก take {0}',
+    'about.desc': 'เขียนบทพากย์ทีละฉาก ลองฟังทีละฉาก แล้วสร้างเสียงทั้งโปรเจกต์ด้วย Gemini TTS ทุก take เก็บไว้ให้',
+    'ai.intro': 'ถาม Ollama เรื่องโปรเจกต์ของคุณ ทำงานในเครื่อง ไม่ต้อง login · Ollama ไม่มีเสียง ช่วยได้แค่เรื่องถ้อยคำ',
+    'q.hook': 'เขียนประโยคเปิดให้ดึงดูดกว่านี้', 'q.short': 'ย่อให้พอดี 15 วินาที', 'q.pauses': 'ควรเว้นจังหวะตรงไหน',
+    'q.en': 'แปลโปรเจกต์เป็นภาษาอังกฤษ', 'q.style': 'แนะนำ style ของแต่ละฉาก',
+    'h.providers.t': 'ผู้ให้บริการ AI', 'h.providers.d': 'ด้านซ้าย ล่างสุดของแถบ (เหมือน Appearance ด้านขวา) เชื่อม Google (Gemini API key ทดสอบได้ และใช้ได้ทุกโปรเจกต์), ตรวจ Ollama, เสียง Apple ใช้ฟังด่วนในแต่ละฉาก (ฟรี) · เปิดเองจนกว่าจะเชื่อม Google',
+    'h.projects.t': 'โปรเจกต์ล่าสุด', 'h.projects.d': 'ด้านซ้าย: โปรเจกต์ที่เคยเปิด ค้นหาด้วยชื่อ คลิกเพื่อเปิด · เปิดโปรเจกต์… ใช้นำเข้าโปรเจกต์ที่ส่งออกจากเครื่องอื่น · โปรเจกต์บันทึกอัตโนมัติ ส่งออกโปรเจกต์ (toolbar) ใช้ทำไฟล์ไปเปิดที่อื่น',
+    'h.model.t': 'Model', 'h.model.d': 'ทุกโปรเจกต์ใช้ Gemini TTS หนึ่ง model เลือกตอนสร้างและแสดงใต้ชื่อ · เปลี่ยนได้ โดยบอกว่าอะไรเปลี่ยน: ต้องสร้างเสียงลองฟังใหม่ การรองรับไทยและราคาตาม model ใหม่ · ฉาก เสียง และ take เดิมไม่เปลี่ยน',
+    'h.timeline.t': 'ไทม์ไลน์บท', 'h.timeline.d': 'ทุกประโยค (บท) และทุกเสียงหายใจหรือช่วงเว้น (Expression) คือหนึ่งฉาก ลาก ⋮⋮ เพื่อเปลี่ยนลำดับ 🔇 เพื่อไม่ใส่ฉากนั้นใน take คลิกเพื่อแก้ทางขวา',
+    'h.scene.t': 'ฉากปัจจุบัน', 'h.scene.d': 'บท: เสียง (ลากจากคลังเสียง), style (ลากจากแท็บ Style หรือพิมพ์), ข้อความ และลองฟังเฉพาะฉากนี้ (สร้างเสียงลองฟัง → พร้อม → เล่น) · Expression: อันปัจจุบัน เปลี่ยนได้จากคลัง Expression',
+    'h.exprs.t': 'คลัง Expression', 'h.exprs.d': 'ด้านขวา หายใจ, เว้นจังหวะ, หัวเราะ, ถอนหายใจ, ตกใจ, ไอ ลากไปวางในไทม์ไลน์เพื่อแทรก วางที่ฉากปัจจุบันเพื่อเปลี่ยน หรือกด Apply',
+    'h.history.t': 'ประวัติ', 'h.history.d': 'ด้านขวาบนสุด แก้ 30 ครั้งล่าสุดของโปรเจกต์ที่เปิดอยู่ ใหม่สุดอยู่บน ดับเบิลคลิกหรือกด ↩ เพื่อย้อน (การย้อนเป็นขั้นใหม่ ไม่มีอะไรหาย) 📌 ปักหมุดเวอร์ชันที่อยากเก็บ โปรเจกต์ตอนเปิดปักหมุดให้แล้ว แต่ละโปรเจกต์มีประวัติของตัวเอง',
+    'h.gen.t': 'สร้างเสียง', 'h.gen.d': 'ด้านขวา ลองฟังทั้งโปรเจกต์ (ทุกฉากที่ไม่ได้ปิดเสียง), เลือก model, สร้างเสียงด้วย Gemini (⌘↵) แล้วเล่น ดาวน์โหลด หรือลบผลลัพธ์แต่ละอัน',
+    'h.voices.t': 'คลังเสียง', 'h.voices.d': '30 เสียงของ Gemini TTS ค้นหา ลากเสียงไปวางที่ฉาก หรือกด Apply',
+    'h.ai.t': 'AI Agent', 'h.ai.d': 'ถาม Ollama เรื่องโปรเจกต์ เช่น ประโยคเปิด, ควรเว้นจังหวะตรงไหน, แปล · AI ตอบเท่านั้น คุณแก้ฉากเอง',
+  },
+};
+
+// ── Timeline model ──
+// A project's draft = { title, model, speakers: {S1, S2}, items: [scene…] }. A scene is
+//   { id, type: 'script', speaker: 'S1'|'S2', style, text, muted, preview? } or { id, type: 'expr', tag, muted }.
+// Older drafts and takes stored `blocks` (text with inline <tags>); itemsOf() splits them into scenes once.
+let iid = 0;
+const newIid = () => 'i' + Date.now().toString(36) + (iid++);
+const scriptItem = (speaker = 'S1', style = 'Friendly', text = '') => ({ id: newIid(), type: 'script', speaker, style, text, muted: false });
+const exprItem = tag => ({ id: newIid(), type: 'expr', tag, muted: false });
+/** An Expression scene as Gemini reads it: its tag `times` times (1–10; `times` is only stored when > 1). */
+const exprText = it => Array(it.times || 1).fill(it.tag).join(' ');
+function blocksToItems(blocks) {
+  const out = [];
+  for (const b of blocks) for (const part of String(b.text || '').split(/(<[^>]+>)/)) {
+    if (EXPRS.includes(part)) out.push(exprItem(part));
+    else if (part.trim()) out.push(scriptItem(b.speaker === 'S2' ? 'S2' : 'S1', b.style || 'Friendly', part.trim()));
+  }
+  return out;
+}
+function itemsOf(d) {
+  if (!d.items) { d.items = blocksToItems(d.blocks || []); delete d.blocks; }
+  return d.items;
+}
+/** Timeline → what Gemini gets: one segment per Script scene, Expressions inline as tags, muted scenes left out. */
+function segmentsOf(d) {
+  const out = []; let lead = '';
+  for (const it of itemsOf(d)) {
+    if (it.muted) continue;
+    if (it.type === 'expr') { if (out.length) out.at(-1).text += ' ' + exprText(it); else lead += exprText(it) + ' '; continue; }
+    out.push({ speaker: it.speaker, style: it.style, text: lead + it.text }); lead = '';
+  }
+  return out;
+}
+
+// ── State (Shell's load/store = localStorage, standing in for ~/Library/Application Support/AI Voice Manager) ──
+const $ = id => document.getElementById(id);
+// S.draft / S.takes / S.activeTake / S.sel always mean the open project's.
+const S = {
+  apiKey: load('key', ''), tier: load('tier', 'free'),
+  projects: load('projects', null) || seedProjects(),
+  current: load('current', null), generating: false, pvBusy: null, drag: null, vg: 'all', vtab: 'voices', ltab: 'lang',
+  waveSeed: 7, pq: '', vq: '', favs: load('favVoices', []),   // favorites: app-wide, not per project, not in History
+  hists: {},   // project id → its History (30 states + pinned), kept while the app runs
+  get project() { return this.projects.find(p => p.id === this.current) || this.projects[0]; },
+  get draft() { return this.project.draft; }, set draft(v) { this.project.draft = v; },
+  get takes() { return this.project.takes; },
+  get activeTake() { return this.project.activeTake ?? null; }, set activeTake(v) { this.project.activeTake = v; },
+  get sel() { return this.project.sel ?? null; }, set sel(v) { this.project.sel = v; },
+};
+S.projects.forEach(p => { itemsOf(p.draft); p.takes.forEach(itemsOf); if (!MODELS.some(m => m.id === p.draft.model)) p.draft.model = MODELS[0].id; });
+S.current = S.project.id;
+const saveProjects = () => store('projects', S.projects);
+
+function sampleScript() {
+  return {
+    title: 'SwiftUI Mac Skills Pro', model: MODELS[0].id,
+    speakers: { S1: { name: 'Rami', voice: 'Sulafat' }, S2: { name: 'Mali', voice: 'Kore' } },
+    blocks: [
+      { speaker: 'S1', style: 'Friendly', text: 'อยากใส่ AI ในแอป Mac แต่ละเจ้าต่างกันหมด ทั้งการ stream ความคิดของโมเดล และการเก็บ key\n<breath>' },
+      { speaker: 'S1', style: 'Friendly', text: 'SwiftUI Mac Skills Pro รวมส่วนที่ยากที่สุดจากแอปจริง ทำเป็น skill สำหรับผู้สนับสนุน\n<breath>' },
+    ],
+  };
+}
+function seedTakes() {
+  const now = Date.now(), day = 864e5, s = sampleScript();
+  return [
+    { id: 't3', created: now - 36e5, duration: 52, mock: true, ...s },
+    { id: 't2', created: now - day - 5e6, duration: 31, mock: true, ...s, title: 'Hosts Manager v1.1.4 intro',
+      blocks: [{ speaker: 'S1', style: 'Excited', text: 'Still editing /etc/hosts in vim? <short pause> Hosts Manager does it in one click.' }] },
+    { id: 't1', created: now - 4 * day, duration: 44, mock: true, ...s, title: 'Git Exclude Manager — two voices',
+      speakers: { S1: { name: 'Joe', voice: 'Puck' }, S2: { name: 'Jane', voice: 'Kore' } },
+      blocks: [{ speaker: 'S1', style: 'Cheerful and friendly', text: "How's it going today Jane?" },
+               { speaker: 'S2', style: 'Calm and relaxed', text: 'Not too bad. Ready to hide some files from git?' }] },
+  ];
+}
+function seedProjects() {   // one project per demo, each owning its take
+  return seedTakes().map(tk => ({ id: 'p' + tk.id, opened: tk.created, activeTake: null, takes: [tk],
+    draft: clone({ title: tk.title, model: tk.model, speakers: tk.speakers, blocks: tk.blocks }) }));
+}
+
+const model = () => MODELS.find(m => m.id === S.draft.model) || MODELS[0];
+const segments = () => segmentsOf(S.draft);
+const plainText = () => segments().map(b => b.text).join('\n');
+const hasThai = s => /[฀-๿]/.test(s);
+const fmt = sec => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, '0')}`;
+const usedSpeakers = () => { const s = [...new Set(segments().map(b => b.speaker))]; return s.length ? s : ['S1']; };
+const when = ts => new Date(ts).toLocaleString(Shell.lang, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+const isPaid = (m = model()) => !m.freeTier || S.tier === 'paid';
+const items = () => itemsOf(S.draft);
+const findItem = id => items().find(it => it.id === id);
+const selItem = () => findItem(S.sel) || items()[0];
+const sceneNo = it => items().indexOf(it) + 1;
+const exLabel = tag => t('ex.' + exKey(tag));
+function persistDraft() { saveProjects(); renderStatus(); }
+function openPanel(p) { if (Shell.panel !== p) Shell.toggle(p); else Shell.renderPanel(); }
+
+// Thai has no sentence punctuation, so estimate by characters. ponytail: ~13 chars/s TH, ~15 EN; replace with real WAV length.
+const estimateSeconds = s => Math.max(1, s.replace(/<[^>]+>/g, '').length / (hasThai(s) ? 13 : 15));
+const charInfo = s => t('chars', s.length, Math.round(estimateSeconds(s)));
+
+// ── TODO (you): Ollama-off fallback for "Add pauses" ──────────────────────────────
+// Where should <breath> / <short pause> go when Ollama is not running?
+// Thai text has no "." or "?" — sentences are separated by spaces, so a naive split breaks every phrase.
+// Return the new text; the button already calls this and re-renders.
+function autoTag(text) {
+  return text;
+}
+
+// ── Main area: Script Timeline (left) ──
+function renderTimeline() {
+  if ($('projectTitle').readOnly) $('projectTitle').value = S.draft.title;
+  const list = items(), sel = selItem();
+  $('tlList').innerHTML = list.map(it => {
+    const label = it.type === 'expr' ? `${exIcon(it.tag, 22)} <span title="${esc(exprText(it))}">&lt;${esc(exLabel(it.tag))}&gt;</span>${
+        it.times > 1 ? ` <span class="times">×${it.times}</span>` : ''}`
+      : `<b>${esc(S.draft.speakers[it.speaker].voice)}</b> — <span id="lbl-${it.id}">${esc(it.text.replace(/\s+/g, ' ').slice(0, 80) || t('empty'))}</span>`;
+    return `<div class="tl-item ${it.type} ${it === sel ? 'sel' : ''} ${it.muted ? 'muted' : ''}" draggable="true" onclick="selectItem('${it.id}')"
+      ondragstart="S.drag='${it.id}'" ondragover="event.preventDefault();this.classList.add('drop')" ondragleave="this.classList.remove('drop')" ondrop="dropItem(event,'${it.id}')">
+      <span class="grip" aria-hidden="true">⋮⋮</span>${it.type === 'script' ? voiceWithStyle(S.draft.speakers[it.speaker].voice, it.style, 28) : ''}
+      <span class="lbl">${label}</span>
+      <button class="icon-btn mute" title="${esc(t(it.muted ? 'unmute' : 'mute'))}" aria-label="${esc(t(it.muted ? 'unmute' : 'mute'))}" aria-pressed="${it.muted}"
+        onclick="event.stopPropagation();toggleMute('${it.id}')">${it.muted ? '🔇' : '🔊'}</button>
+      <button class="icon-btn" title="${esc(t('remove'))}" aria-label="${esc(t('remove'))}" onclick="event.stopPropagation();removeItem('${it.id}')" ${list.length < 2 ? 'disabled' : ''}>✕</button></div>`;
+  }).join('');
+  $('tlFoot').textContent = t('tlFoot', list.length, list.filter(it => it.muted).length, fmt(estimateSeconds(plainText()))) + ' · ' + t('tlHint');
+}
+function selectItem(id) { S.sel = id; renderTimeline(); renderScene(); if (['expressions', 'voices'].includes(Shell.panel)) Shell.renderPanel(); }
+/** A scene dropped on a scene moves above it; an expression dragged from Expression Library is inserted there. */
+function dropItem(e, targetId) {
+  document.querySelectorAll('.tl-item.drop').forEach(el => el.classList.remove('drop'));
+  const list = items(), tag = e.dataTransfer?.getData('text/x-expr');
+  if (EXPRS.includes(tag)) {
+    const it = exprItem(tag); list.splice(list.findIndex(x => x.id === targetId), 0, it); S.sel = it.id;
+    persistDraft(); Shell.record(t('hist.addExpr', exLabel(tag))); renderTimeline(); renderScene(); return;
+  }
+  const from = list.findIndex(it => it.id === S.drag);
+  if (from < 0 || S.drag === targetId) return;
+  const [it] = list.splice(from, 1);
+  list.splice(list.findIndex(x => x.id === targetId), 0, it);
+  persistDraft(); Shell.record(t('hist.move')); renderTimeline();
+}
+function toggleMute(id) {
+  const it = findItem(id); it.muted = !it.muted;
+  persistDraft(); Shell.record(t(it.muted ? 'hist.mute' : 'hist.unmute', sceneNo(it))); renderTimeline();
+}
+function removeItem(id) {
+  const list = items(); if (list.length < 2) return;
+  const i = list.findIndex(it => it.id === id), [it] = list.splice(i, 1);
+  if (S.sel === id) S.sel = (list[i] || list[i - 1]).id;
+  persistDraft(); Shell.record(t('hist.remove', i + 1)); renderTimeline(); renderScene();
+}
+/** New scenes go right after the selected one; a new Script takes over its speaker and style. */
+function addItem(type) {
+  const list = items(), sel = selItem(), at = list.indexOf(sel) + 1;
+  const last = [...list.slice(0, at)].reverse().find(x => x.type === 'script');
+  const it = type === 'expr' ? exprItem('<breath>') : scriptItem(last?.speaker || 'S1', last?.style || 'Friendly');
+  list.splice(at, 0, it); S.sel = it.id;
+  persistDraft(); Shell.record(type === 'expr' ? t('hist.addExpr', exLabel(it.tag)) : t('hist.addScript'));
+  renderTimeline(); renderScene();
+  if (type === 'script') $('sceneText')?.focus();
+}
+
+// ── Main area: Current Scene (right) ──
+function renderScene() {
+  const it = selItem(), box = $('scene');
+  if (!it) { box.innerHTML = ''; return; }
+  if (it.type === 'expr') {
+    box.innerHTML = `<div class="col-h">🎭 ${esc(t('currentScene'))} · ${esc(t('expression'))} #${sceneNo(it)}</div><div class="scene-b">
+      <div class="dropzone" id="exprDrop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropExpr(event)">
+        ${exIcon(it.tag, 64)}<div style="flex:1"><div class="muted">${esc(t('curExpr'))}</div><div class="expr-big" title="${esc(it.tag)}">&lt;${esc(exLabel(it.tag))}&gt;</div>
+          <div class="muted">${esc(t('exd.' + exKey(it.tag)))} · ${esc(t('exprHint'))}</div>
+          <label class="muted" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px" title="${esc(t('repeatTip'))}">${esc(t('repeat'))}
+            <select onchange="setTimes('${it.id}', +this.value)" aria-label="${esc(t('repeat'))}">${Array.from({ length: 10 }, (_, i) => i + 1).map(n =>
+              `<option value="${n}" ${(it.times || 1) === n ? 'selected' : ''}>×${n}</option>`).join('')}</select></label></div>
+        <button class="btn small to-right" onclick="openPanel('expressions')">${esc(t('panel.expressions'))}</button>
+        <div class="muted" style="flex-basis:100%;font-size:11.5px">${esc(t('exprDrop'))}</div></div></div>`;
+    return;
+  }
+  const sp = S.draft.speakers[it.speaker], vd = VOICES.find(([v]) => v === sp.voice)?.[1] || '';
+  box.innerHTML = `<div class="col-h">🎬 ${esc(t('currentScene'))} · ${esc(t('script'))} #${sceneNo(it)}</div><div class="scene-b">
+    <div class="dropzone" id="voiceDrop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropVoice(event)">
+      ${voiceWithStyle(sp.voice, it.style, 48)} ${esc(t('voice'))}: <b>${esc(sp.voice)}</b> ${genderPill(sp.voice)} <span class="muted">${esc(vd)}</span>
+      <span class="spacer" style="flex:1"></span><button class="btn small to-right" onclick="S.vtab='voices';openPanel('voices')">${esc(t('panel.voices'))}</button>
+      <div class="muted" style="flex-basis:100%;font-size:11.5px">${esc(t('voiceHint'))}</div></div>
+    <div class="dropzone" id="styleDrop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropStyle(event)">
+      ${styleIcon(it.style, 44)} <label for="sceneStyle">${esc(t('style'))}</label>
+      <input id="sceneStyle" list="styles" style="flex:1;min-width:140px" value="${esc(it.style)}"
+        oninput="findItem('${it.id}').style=this.value;persistDraft();renderPreview()" onchange="Shell.record(t('hist.style', sceneNo(findItem('${it.id}')), this.value));renderScene()">
+      <button class="btn small to-right" onclick="S.vtab='styles';openPanel('voices')">${esc(t('styleLib'))}</button>
+      <div class="muted" style="flex-basis:100%;font-size:11.5px">${esc(t('styleHint'))}</div></div>
+    <div class="ta-box"><button class="btn small ta-corner" onclick="applePreview(this)" aria-haspopup="dialog" title="${esc(t('applePrev'))}"> ${esc(t('quickPreview'))}</button>
+      <textarea id="sceneText" aria-label="${esc(t('script'))}">${esc(it.text)}</textarea>
+      <div class="ta-foot"><span id="charCount">${esc(charInfo(it.text))}</span><span class="spacer" style="flex:1"></span>
+        <span title="${esc(t('aiHelp'))}">✦ ${esc((Shell.model || 'qwen3.8').replace(/:latest$/, ''))}</span>${['polish', 'tags'].map(k =>
+          `<button class="btn small" onclick="ollamaRun('${k}', this)">${esc(t({ tags: 'oTags', polish: 'oPolish', translate: 'oTranslate' }[k]))}</button>`).join('')}</div></div>
+    <h3 style="margin:4px 0 0;font-size:12px;color:var(--text2);text-transform:uppercase">✦ ${esc(t('previewScene'))} ${tierPill()}</h3>
+    <div id="pv">${scenePreviewHtml(it)}</div></div>`;
+  const ta = $('sceneText');
+  ta.oninput = () => {
+    it.text = ta.value; persistDraft(); renderPreview(); $('charCount').textContent = charInfo(ta.value);
+    const lbl = $('lbl-' + it.id); if (lbl) lbl.textContent = ta.value.replace(/\s+/g, ' ').slice(0, 80) || t('empty');
+  };
+  ta.onchange = () => { Shell.record(t('hist.edit', sceneNo(it))); renderTimeline(); };
+}
+/**
+ * The voice belongs to the scene now. Gemini allows two voices per request, kept as speakers S1/S2: the scene joins the
+ * speaker that already has this voice, or takes over a speaker nobody else uses; with two other voices in use it refuses.
+ */
+function setSceneVoice(it, v) {
+  const sp = S.draft.speakers, other = it.speaker === 'S1' ? 'S2' : 'S1';
+  const usedByOthers = s => items().some(x => x !== it && x.type === 'script' && x.speaker === s);
+  if (sp[it.speaker].voice === v) return;
+  if (sp[other].voice === v && usedByOthers(other)) it.speaker = other;
+  else if (!usedByOthers(it.speaker)) sp[it.speaker].voice = v;
+  else if (!usedByOthers(other)) { sp[other].voice = v; it.speaker = other; }
+  else { Shell.toast(t('twoVoices', sp.S1.voice, sp.S2.voice)); return; }
+  persistDraft(); Shell.record(t('hist.voice', v)); renderTimeline(); renderScene(); Shell.renderPanel();
+}
+/** Apply in Voice Library: the selected Script scene gets this voice. */
+function useVoice(v) {
+  const it = selItem();
+  if (it?.type !== 'script') { Shell.toast(t('pickScript')); return; }
+  setSceneVoice(it, v);
+}
+function setSceneStyle(it, style) { it.style = style; persistDraft(); Shell.record(t('hist.style', sceneNo(it), style)); renderTimeline(); renderScene(); Shell.renderPanel(); }
+function useStyle(i) { const it = selItem(); if (it?.type !== 'script') { Shell.toast(t('pickScript')); return; } setSceneStyle(it, STYLES[i][0]); }
+function dropStyle(e) {
+  e.preventDefault(); $('styleDrop')?.classList.remove('over');
+  const i = +e.dataTransfer.getData('text/x-style'), it = selItem();
+  if (STYLES[i] && it?.type === 'script') setSceneStyle(it, STYLES[i][0]);
+}
+function setTimes(id, n) {
+  const it = findItem(id), times = Math.min(10, Math.max(1, Math.round(n) || 1));
+  if ((it.times || 1) === times) return;
+  if (times > 1) it.times = times; else delete it.times;
+  persistDraft(); Shell.record(t('hist.times', exLabel(it.tag), times)); renderTimeline(); renderScene();
+}
+function setExpr(id, tag) { const it = findItem(id); it.tag = tag; persistDraft(); Shell.record(t('hist.expr', exLabel(tag))); renderTimeline(); renderScene(); Shell.renderPanel(); }
+function dropExpr(e) {
+  e.preventDefault(); $('exprDrop')?.classList.remove('over');
+  const tag = e.dataTransfer.getData('text/x-expr'), it = selItem();
+  if (EXPRS.includes(tag) && it?.type === 'expr') setExpr(it.id, tag);
+}
+function dropVoice(e) {
+  e.preventDefault(); $('voiceDrop')?.classList.remove('over');
+  const v = e.dataTransfer.getData('text/x-gemini-voice'), it = selItem();
+  if (VOICES.some(([n]) => n === v) && it?.type === 'script') setSceneVoice(it, v);
+}
+
+// Scene preview: this one scene through Gemini TTS (same model and voice as the take): Generate preview → Ready → Play.
+// Any change to the text, speaker, style, that speaker's voice or the model makes it stale.
+const pvSig = it => JSON.stringify([it.text, it.speaker, it.style, S.draft.speakers[it.speaker].voice, S.draft.model]);
+const tierPill = () => `<span class="pill ${isPaid() ? 'b-paid' : 'b-tier'}">${esc(isPaid() ? t('bPaid') : t('bTier'))}</span>`;
+/** The scene's own player (never the Generate one): greyed out until this scene's preview is generated. */
+function scenePreviewHtml(it) {
+  const ready = it.preview?.sig === pvSig(it), busy = S.pvBusy === it.id, playing = players.scene.on === it.id;
+  const dur = ready ? it.preview.dur : Math.round(estimateSeconds(it.text));
+  const action = busy ? `<button class="btn" disabled>⏳ ${esc(t('pvBusy'))}</button>`
+    : ready ? `<span class="pill b-tier">✓ ${esc(t('pvReady'))}</span>
+        <button class="btn small" onclick="genScenePreview('${it.id}')">↻ ${esc(t('pvRegen'))}</button>`
+    : `<button class="btn primary" onclick="genScenePreview('${it.id}')" ${it.text.trim() ? netOff() : 'disabled'}>⚙︎ ${esc(t('pvGen'))}</button>`;
+  return `<div class="player ${ready ? '' : 'idle'}"><button class="icon-btn" title="${esc(t('play'))}" aria-label="${esc(t('play'))}" ${ready ? '' : 'disabled'}
+      onclick="playScene('${it.id}')">${playing ? '■' : '▶︎'}</button>
+    <div class="wave" id="sWave">${waveBars(seedOf(it.id))}</div><span class="time" id="sTime">0:00 / ${fmt(dur)}</span>
+    <span class="pill b-mock">${esc(t('bMock'))}</span></div>
+  <div class="vrow" style="margin-top:8px">${action}
+    <span class="muted">${esc(t('sceneOnly', model().name.replace('Gemini ', ''), S.draft.speakers[it.speaker].voice))}</span></div>`;
+}
+function renderPreview() { const el = $('pv'), it = selItem(); if (el && it?.type === 'script') el.innerHTML = scenePreviewHtml(it); }
+function genScenePreview(id) {
+  if (!Net.online) { Shell.toast(t('netOffline')); return; }
+  if (!S.apiKey) { Shell.toast(t('needKey')); openProviders(); return; }
+  S.pvBusy = id; renderPreview();
+  setTimeout(() => {   // ponytail: mock — the app sends this one scene to Gemini TTS and keeps the WAV until the scene changes
+    const it = findItem(id);
+    if (it) it.preview = { sig: pvSig(it), dur: Math.round(estimateSeconds(it.text)) };
+    S.pvBusy = null; saveProjects(); renderPreview();
+  }, 900);
+}
+function playScene(id) { const it = findItem(id); play('scene', id, it.preview?.dur || estimateSeconds(it.text)); }
+
+function renderStatus() {
+  $('title').textContent = `AI Voice Manager – ${S.draft.title || t('untitled')}`;
+  const m = model();
+  $('modelRow').innerHTML = `✦ <b>${esc(m.name)}</b> ${tierPill()} <button class="btn small" onclick="pickModel('change')">${esc(t('modelChange'))}</button>`;
+  // Every warning lives here, under the project name (next to the model), nowhere else.
+  $('notices').innerHTML = (S.apiKey ? '' : `<div class="warnline">🔑 ${esc(t('needKey'))} <button class="btn small to-left" onclick="openProviders()">${esc(t('panel.providers'))}</button></div>`) +
+    (m.thai === false && hasThai(plainText()) ? `<div class="warnline">${esc(t('thaiWarn'))} <button class="btn small" onclick="pickModel('change')">${esc(t('modelChange'))}</button></div>` : '');
+  if (Shell.panel === 'generate' && !players.take.on) Shell.renderPanel();   // cost and length follow the timeline
+}
+
+// ── Left tool window: Recent Projects — just the projects you opened, searchable ──
+function projectRows() {
+  const q = S.pq.trim().toLowerCase();
+  const list = [...S.projects].sort((a, b) => b.opened - a.opened).filter(p => !q || (p.draft.title || t('untitled')).toLowerCase().includes(q));
+  return list.map(p => `<div class="prow ${p.id === S.current ? 'cur' : ''}" onclick="switchProject('${p.id}')"><span>${p.id === S.current ? '◉' : '○'}</span>
+    <div class="grow">${esc(p.draft.title || t('untitled'))}<div class="sub">${esc(t('opened', when(p.opened)))}</div></div>
+    <button class="icon-btn" title="${esc(t('removeProject'))}" aria-label="${esc(t('removeProject'))}" onclick="event.stopPropagation();removeProject('${p.id}')">✕</button></div>`).join('')
+    || `<p class="muted">${esc(t('noMatch'))}</p>`;
+}
+const projectsPanel = () => `<div class="toolbar" style="margin:0"><button class="btn small primary" onclick="newProject()">＋ ${esc(t('newProject'))}</button>
+  <button class="btn small" title="${esc(t('openTip'))}" onclick="$('projFile').click()">⤓ ${esc(t('openProject'))}</button></div>
+  <div class="search" style="margin:8px 0"><input placeholder="${esc(t('projSearch'))}" aria-label="${esc(t('projSearch'))}" value="${esc(S.pq)}"
+    oninput="S.pq=this.value;$('plist').innerHTML=projectRows()"></div><div id="plist">${projectRows()}</div>`;
+
+/** Each project keeps its own 30-step History while the app runs; switching swaps it in and out of the Shell. */
+function useHistoryOf(id) {
+  const h = S.hists[id];
+  if (h) { Shell.hist = h.hist; Shell.pinned = h.pinned; return; }
+  Shell.resetHistory();
+}
+function switchProject(id) {
+  if (id === S.current) return;
+  stopPlayback();
+  S.hists[S.current] = { hist: Shell.hist, pinned: Shell.pinned };
+  S.current = id; store('current', id);
+  S.project.opened = Date.now(); saveProjects();
+  useHistoryOf(id);
+  S.waveSeed = S.project.opened % 1000; Shell.render();
+}
+function addProject(draft, takes = []) {
+  const p = { id: 'p' + Date.now(), opened: Date.now(), activeTake: null, takes, draft };
+  S.projects.push(p); switchProject(p.id);
+}
+/** Every project starts by choosing its model; Change uses the same sheet and says what changes. */
+function newProject() { pickModel('new'); }
+function pickModel(mode) {
+  const cur = mode === 'new' ? MODELS[0].id : S.draft.model, thaiText = mode === 'change' && hasThai(plainText());
+  Shell.sheet(`<h2>${esc(t(mode === 'new' ? 'modelTitleNew' : 'modelTitleChange'))}</h2><p class="muted">${esc(t('modelPhase'))}</p>
+    <form onsubmit="event.preventDefault();confirmModel('${mode}', this.model.value)">${MODELS.map(m => `<label class="prow" style="align-items:flex-start">
+      <input type="radio" name="model" value="${m.id}" ${m.id === cur ? 'checked' : ''}><div class="grow"><b>${esc(m.name)}</b> <span class="pill b-tier">${esc(t('bTier'))}</span>
+      <div class="sub">${esc(m.thai === true ? t('thaiOk') : m.thai === false ? t('thaiNo') : t('thaiUnknown'))}</div>
+      ${thaiText && m.thai === false ? `<div class="sub" style="color:var(--warn)">⚠ ${esc(t('thaiWarnPick'))}</div>` : ''}</div></label>`).join('')}
+    ${mode === 'change' ? `<p class="muted" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px">${esc(t('modelEffects'))}</p>` : ''}
+    <div class="sheet-acts"><span class="spacer"></span><button type="button" class="btn" onclick="Shell.closeSheet()">${esc(t('cancel'))}</button>
+      <button class="btn primary">${esc(t(mode === 'new' ? 'createProject' : 'useModel'))}</button></div></form>`);
+}
+function confirmModel(mode, id) {
+  Shell.closeSheet();
+  if (mode === 'change') { if (id !== S.draft.model) setModel(id); return; }
+  addProject({ title: t('untitled'), model: id, speakers: clone(S.draft.speakers), items: [scriptItem()] });
+  editTitle();
+}
+function removeProject(id) {   // forgets the entry only; the real app leaves the project folder in Finder
+  if (S.projects.length < 2) return;
+  const i = S.projects.findIndex(p => p.id === id), [p] = S.projects.splice(i, 1);
+  if (id === S.current) {
+    S.current = [...S.projects].sort((a, b) => b.opened - a.opened)[0].id; store('current', S.current);
+    useHistoryOf(S.current);
+  }
+  saveProjects(); Shell.render();
+  Shell.toast(t('removed', p.draft.title || t('untitled')), [t('undo'), () => { S.projects.splice(i, 0, p); saveProjects(); Shell.render(); }]);
+}
+// Projects save themselves; Export is for opening the project on another Mac (Open Project… in Recent Projects).
+// ponytail: one JSON file stands in for the exported project folder (project.json + Takes/*.wav)
+function exportProject() {
+  const name = (S.draft.title || 'project').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') + '.avmproject.json';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify({ app: 'AI Voice Manager', version: 2, ...S.draft, takes: S.takes }, null, 2)], { type: 'application/json' }));
+  a.download = name; a.click();
+  Shell.toast(t('exportDone', name));
+}
+/**
+ * Trust boundary: a project file comes from outside. Rebuild it from known shapes only — scene types, speakers S1/S2,
+ * expressions, model and voice from the catalogs, strings capped, fresh ids — so nothing in the file reaches an
+ * inline handler or the HTML unchecked. Reads both the timeline (`items`) and the older `blocks` format.
+ */
+function cleanScript(d, fallbackTitle) {
+  const str = (v, max) => typeof v === 'string' ? v.slice(0, max) : '';
+  const spk = v => v === 'S2' ? 'S2' : 'S1';
+  const voice = v => VOICES.some(([n]) => n === v) ? v : VOICES[0][0];
+  const speakers = Object.fromEntries(['S1', 'S2'].map((s, i) => [s, {
+    name: str(d?.speakers?.[s]?.name, 40) || ['Rami', 'Mali'][i], voice: voice(d?.speakers?.[s]?.voice) }]));
+  const items = Array.isArray(d?.items)
+    ? d.items.slice(0, 1000).map(it => it?.type === 'expr'
+      ? { ...exprItem(EXPRS.includes(it.tag) ? it.tag : EXPRS[0]), muted: it.muted === true,
+          ...(Number.isInteger(it.times) && it.times > 1 ? { times: Math.min(it.times, 10) } : {}) }
+      : { ...scriptItem(spk(it?.speaker), str(it?.style, 200), str(it?.text, 10000)), muted: it?.muted === true })
+    : blocksToItems((Array.isArray(d?.blocks) ? d.blocks : []).slice(0, 500)
+      .map(b => ({ speaker: spk(b?.speaker), style: str(b?.style, 200), text: str(b?.text, 10000) })));
+  return { title: str(d?.title, 200) || fallbackTitle, model: MODELS.some(m => m.id === d?.model) ? d.model : MODELS[0].id, speakers,
+    items: items.length ? items : [scriptItem()] };
+}
+function openProjectFile(input) {
+  const f = input.files[0]; input.value = '';
+  if (!f) return;
+  f.text().then(text => {
+    let d; try { d = JSON.parse(text); } catch { d = null; }
+    if (!d || !(Array.isArray(d.items) || Array.isArray(d.blocks))) { Shell.toast(t('openFail')); return; }
+    const takes = (Array.isArray(d.takes) ? d.takes : []).slice(0, 200).map((tk, i) => ({ ...cleanScript(tk, ''),
+      id: `t${Date.now()}-${i}`, created: Number(tk?.created) || Date.now(), duration: Math.max(0, Number(tk?.duration) || 0), mock: true }));
+    addProject(cleanScript(d, f.name), takes);
+  });
+}
+
+// ── Right panel: Generate — the whole project only: model, cost, Generate, results (the player lives here) ──
+function waveBars(seed) {
+  let x = seed; const bars = [];
+  for (let i = 0; i < 60; i++) { x = (x * 9301 + 49297) % 233280; bars.push(`<i style="height:${20 + (x / 233280) * 80}%"></i>`); }
+  return bars.join('');
+}
+// Same tabs as Voice Library (Voices | Styles): Language | Currency in one bottom-rail panel.
+const languagePanel = () => `<div class="seg" role="tablist" style="margin-bottom:8px">${[['lang', t('tabLang')], ['currency', t('tabCurrency')]].map(([k, label]) =>
+    `<button type="button" role="tab" class="${S.ltab === k ? 'on' : ''}" aria-selected="${S.ltab === k}" onclick="S.ltab='${k}';Shell.renderPanel()">${esc(label)}</button>`).join('')}</div>
+  ${S.ltab === 'currency' ? currencyPanel() : Shell.panel_language()}`;
+function currencyPanel() {
+  const saved = load('currency', 'auto'), names = new Intl.DisplayNames(Shell.lang, { type: 'currency' });
+  const row = (code, label, flag, sub) => `<div class="prow" onclick="store('currency','${code}');Shell.render()"><span>${flag}</span>
+    <div class="grow">${esc(label)}<div class="sub">${esc(sub)}</div></div>${code === saved ? '✓' : ''}</div>`;
+  const rate = c => c === 'USD' ? 'USD' : `${c} · 1 US$ ≈ ${fmtMoney(CURRENCIES[c][2], c)}`;
+  const auto = Object.keys(CURRENCIES).find(k => CURRENCIES[k][0] === Shell.lang) ?? 'USD';
+  return row('auto', t('curAuto'), '🌐', rate(auto)) +
+    Object.entries(CURRENCIES).map(([c, [, flag]]) => row(c, names.of(c), flag, rate(c))).join('') +
+    `<p class="muted">${esc(t('curNote', RATES_DATE))}</p>`;
+}
+function generatePanel() {
+  const m = model(), sec = estimateSeconds(plainText()), tk = S.takes.find(x => x.id === S.activeTake);
+  const live = items().filter(it => !it.muted).length;
+  const cost = isPaid() ? esc(t('costPaid').replace('{usd}', money(costUSD()))) : esc(t('costFree'));
+  // Kept short on purpose: the model lives under the project name, the free-tier note in AI Providers.
+  return `<div class="player"><div class="wave" id="wave">${waveBars(S.waveSeed)}</div><span class="time" id="time">0:00 / ${fmt(tk?.duration ?? sec)}</span>
+      <span class="pill b-mock">${esc(t('bMock'))}</span></div>
+    <div class="cost">${esc(t('summary', live, fmt(sec)))} · ${tierPill()} ${cost}</div>
+    <button class="btn primary wide" onclick="generate()" ${S.generating ? 'disabled' : netOff()}>${esc(S.generating ? t('generating') : t('generate'))} <kbd>⌘↵</kbd></button>
+    <h3>${esc(t('results'))} · ${S.takes.length}</h3>` +
+    (S.takes.map(tk => {
+      const tmName = (MODELS.find(x => x.id === tk.model)?.name ?? tk.model).replace('Gemini ', '');
+      return `<div class="prow ${tk.id === S.activeTake ? 'cur' : ''}" onclick="selectTake('${tk.id}')">
+        <button class="icon-btn" title="${esc(t('play'))}" aria-label="${esc(t('play'))}" onclick="event.stopPropagation();playTake('${tk.id}')">${players.take.on === tk.id ? '■' : '▶︎'}</button>
+        <div class="grow">${fmt(tk.duration)} · ${esc(tmName)}${tk.mock ? ` <span class="pill b-mock">${esc(t('bMock'))}</span>` : ''}
+          <div class="sub">${esc(when(tk.created))}</div></div>
+        <button class="icon-btn" title="${esc(t('restoreTake'))}" aria-label="${esc(t('restoreTake'))}" onclick="event.stopPropagation();restoreTake('${tk.id}')">↺</button>
+        <button class="icon-btn" title="${esc(t('download'))}" aria-label="${esc(t('download'))}" onclick="event.stopPropagation();downloadTake('${tk.id}')">⤓</button>
+        <button class="icon-btn" aria-label="Delete take" onclick="event.stopPropagation();deleteTake('${tk.id}')">✕</button></div>`;
+    }).join('') || `<p class="muted">${esc(t('noTakes'))}</p>`);
+}
+// Two separate players: `scene` lives in Current Scene, `take` in Generate. Each has its own state, clock and display;
+// starting one stops the other so two sounds never overlap.
+// ponytail: mock playback — runs the clock, no sound (generation is mocked too). The app plays the Gemini WAV with AVAudioPlayer.
+const players = { scene: { on: null, timer: 0, wave: 'sWave', time: 'sTime' }, take: { on: null, timer: 0, wave: 'wave', time: 'time' } };
+const seedOf = id => [...String(id)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 100000, 7);
+function redrawPlayer(which) { if (which === 'scene') renderPreview(); else Shell.renderPanel(); }
+function setProgress(which, cur, total) {
+  const p = players[which], time = $(p.time), wave = $(p.wave);
+  if (!time || !wave) return;   // its panel is closed: keep the clock, nothing to draw
+  time.textContent = `${fmt(cur)} / ${fmt(total)}`;
+  const on = Math.round(wave.children.length * (total ? cur / total : 0));
+  [...wave.children].forEach((b, i) => b.classList.toggle('on', i < on));
+}
+function stop(which) {
+  const p = players[which]; clearInterval(p.timer);
+  if (p.on) { p.on = null; redrawPlayer(which); }
+}
+function stopPlayback() { stop('scene'); stop('take'); }
+function play(which, id, total) {
+  const p = players[which], again = p.on === id;
+  stopPlayback();
+  if (again) return;   // ■ pressed
+  const started = Date.now();
+  p.on = id; redrawPlayer(which);
+  p.timer = setInterval(() => {
+    const cur = Math.min(total, (Date.now() - started) / 1000);
+    setProgress(which, cur, total);
+    if (cur >= total) stop(which);
+  }, 200);
+}
+
+// ── Gemini (mock) ──
+function generate() {
+  openPanel('generate');
+  if (!Net.online) { Shell.toast(t('netOffline')); return; }
+  if (!segments().length) { Shell.toast(t('nothing')); return; }
+  if (!S.apiKey) { Shell.toast(t('needKey')); openProviders(); return; }
+  if (isPaid()) {
+    Shell.sheet(`<h2><span class="pill b-paid">${esc(t('bPaid'))}</span> ${esc(t('paidTitle'))}</h2><p>${esc(model().name)} · ${esc(t('costPaid').replace('{usd}', money(costUSD())))}</p>
+      <div class="sheet-acts"><span class="spacer"></span><button class="btn" onclick="Shell.closeSheet()">${esc(t('cancel'))}</button>
+      <button class="btn primary" onclick="Shell.closeSheet();runGenerate()">${esc(t('generate'))}</button></div>`);
+    return;
+  }
+  runGenerate();
+}
+function runGenerate() {
+  const project = S.project;
+  S.generating = true; Shell.renderPanel();
+  setTimeout(() => {
+    const take = { id: 't' + Date.now(), created: Date.now(), duration: Math.round(estimateSeconds(plainText())), mock: true, ...clone(project.draft) };
+    project.takes.unshift(take); project.activeTake = take.id; saveProjects();
+    S.generating = false; S.waveSeed = take.created % 1000; Shell.renderPanel(); Shell.toast(t('saved'));
+  }, 1400);
+}
+function selectTake(id) { stop('take'); S.activeTake = id; S.waveSeed = S.takes.find(x => x.id === id).created % 1000; saveProjects(); Shell.renderPanel(); }
+function playTake(id) {   // mock take: no WAV yet, so the player only runs the clock
+  const tk = S.takes.find(x => x.id === id);
+  if (S.activeTake !== id) { S.activeTake = id; S.waveSeed = tk.created % 1000; }
+  play('take', id, tk.duration);
+}
+function restoreTake(id) {
+  const tk = S.takes.find(x => x.id === id);
+  S.draft = { title: S.draft.title, model: tk.model, speakers: clone(tk.speakers), items: itemsOf(tk).map(it => ({ ...clone(it), id: newIid() })) };
+  S.sel = null; persistDraft();
+  Shell.record(t('hist.take', fmt(tk.duration))); Shell.render();
+}
+function downloadTake(id) {
+  const tk = S.takes.find(x => x.id === id), a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(tk, null, 2)], { type: 'application/json' }));
+  a.download = 'take.json'; a.click();
+  if (tk.mock) Shell.toast(t('dlMock'));
+}
+function deleteTake(id) {
+  const list = S.takes, i = list.findIndex(x => x.id === id), [take] = list.splice(i, 1);   // list: undo after a project switch
+  saveProjects();
+  if (S.activeTake === id) S.activeTake = null;
+  Shell.renderPanel();
+  Shell.toast(t('deleted'), [t('undo'), () => { list.splice(i, 0, take); saveProjects(); Shell.renderPanel(); }]);
+}
+
+// ── Right panel: Voice Library — every voice / model, by provider, searchable; Gemini voices drag onto the scene ──
+function voiceRow(name, sub, actions, inUse, drag = '', tag = '') {
+  return `<div class="prow vitem" ${drag}>${avatar(name, 36)}<div class="grow"><b>${esc(name)}</b> ${tag}${inUse ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}
+    <div class="sub">${esc(sub)}</div></div>${actions}</div>`;
+}
+/** Voice Library = the 30 Gemini TTS voices only (Phase 1). Drag one onto the Current Scene or press Apply. */
+function voiceList() {
+  const q = S.vq.trim().toLowerCase();
+  const rows = VOICES.filter(([v, d]) => (S.vg === 'all' || (S.vg === 'fav' ? S.favs.includes(v) : genderOf(v) === S.vg))
+    && (!q || `${v} ${d} ${t(genderOf(v) === 'f' ? 'female' : 'male')}`.toLowerCase().includes(q))).map(([v, d]) => {
+    const here = selItem()?.type === 'script' && S.draft.speakers[selItem().speaker].voice === v;
+    const inProject = items().some(x => x.type === 'script' && S.draft.speakers[x.speaker].voice === v);
+    return voiceRow(v, d + (inProject && !here ? ' · ' + t('inProject') : ''),
+      favBtn(v) + `<button class="btn small" title="${esc(t('applyScene'))}" onclick="useVoice('${v}')">${esc(t('apply'))}</button>`, here,
+      `draggable="true" title="${esc(t('dragVoice'))}" ondragstart="event.dataTransfer.setData('text/x-gemini-voice','${v}')"`, genderPill(v));
+  });
+  return rows.length ? `<p class="muted">${esc(t('gVoices'))} · ${rows.length} <span class="pill b-tier">${esc(t('bTier'))}</span></p>${rows.join('')}`
+    : `<p class="muted">${esc(t(S.vg === 'fav' && !S.favs.length ? 'favEmpty' : 'noMatch'))}</p>`;
+}
+function favBtn(v) {
+  const on = S.favs.includes(v), tip = esc(t(on ? 'favRemove' : 'favAdd'));
+  return `<button class="btn small fav${on ? ' on' : ''}" title="${tip}" aria-label="${tip}" aria-pressed="${on}" onclick="toggleFav('${v}')">${on ? '♥' : '♡'}</button>`;
+}
+function toggleFav(v) {
+  S.favs = S.favs.includes(v) ? S.favs.filter(x => x !== v) : [...S.favs, v];
+  store('favVoices', S.favs); Shell.renderPanel();
+}
+// ── Right panel: Expression Library — drag onto the timeline (inserts) or the Current Scene (changes), or press Apply ──
+function expressionsPanel() {
+  const sel = selItem(), onExpr = sel?.type === 'expr';
+  return `<p class="muted">${esc(t('exprLibHint'))}</p>` + EXPRS.map(tag => `<div class="prow vitem" draggable="true" title="${esc(t('dragExpr'))} · ${esc(tag)}"
+      ondragstart="event.dataTransfer.setData('text/x-expr','${tag}')"><span class="grip muted" aria-hidden="true">⋮⋮</span>${exIcon(tag, 40)}
+    <div class="grow"><b>&lt;${esc(exLabel(tag))}&gt;</b>${onExpr && sel.tag === tag ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}
+      <div class="sub">${esc(t('exd.' + exKey(tag)))}</div></div>
+    <button class="btn small" title="${esc(t(onExpr ? 'applyExprTip' : 'insertExprTip'))}" onclick="applyExpr('${tag}')">${esc(t(onExpr ? 'apply' : 'insert'))}</button></div>`).join('');
+}
+/** Apply: changes the selected Expression scene; with a Script selected, inserts the expression right after it. */
+function applyExpr(tag) {
+  const it = selItem();
+  if (it?.type === 'expr') { setExpr(it.id, tag); return; }
+  const list = items(), e = exprItem(tag); list.splice(list.indexOf(it) + 1, 0, e); S.sel = e.id;
+  persistDraft(); Shell.record(t('hist.addExpr', exLabel(tag))); renderTimeline(); renderScene(); Shell.renderPanel();
+}
+
+function stylesList() {
+  const cur = selItem()?.type === 'script' ? selItem().style : null, d = STYLE_DESC[Shell.lang] || STYLE_DESC.en;
+  return `<p class="muted">${esc(t('styleLibHint'))}</p>` + STYLES.map(([name], i) => `<div class="prow vitem" draggable="true" title="${esc(t('dragStyle'))}"
+      ondragstart="event.dataTransfer.setData('text/x-style','${i}')">${styleIcon(name, 40)}
+    <div class="grow"><b>${esc(name)}</b>${name === cur ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}<div class="sub">${esc(d[i])}</div></div>
+    <button class="btn small" title="${esc(t('applyScene'))}" onclick="useStyle(${i})">${esc(t('apply'))}</button></div>`).join('');
+}
+const voicesPanel = () => `<div class="seg" role="tablist" style="margin-bottom:8px">${[['voices', t('tabVoices')], ['styles', t('tabStyles')]].map(([k, label]) =>
+    `<button type="button" role="tab" class="${S.vtab === k ? 'on' : ''}" aria-selected="${S.vtab === k}" onclick="S.vtab='${k}';Shell.renderPanel()">${esc(label)}</button>`).join('')}</div>
+  ${S.vtab === 'styles' ? stylesList() : `<div class="search" style="margin:0 0 6px"><input placeholder="${esc(t('vSearch'))}" aria-label="${esc(t('vSearch'))}"
+  value="${esc(S.vq)}" oninput="S.vq=this.value;$('vlist').innerHTML=voiceList()"></div>
+  <div class="seg" role="group" aria-label="${esc(t('gender'))}" style="margin-bottom:6px">${[['all', t('all'), VOICES.length], ['m', t('male'), VOICES.length - FEMALE.size],
+    ['f', t('female'), FEMALE.size], ['fav', '♥', S.favs.length]].map(([g, label, n]) =>   // ♥ only: a worded 4th tab wraps in the narrow panel
+    `<button type="button" class="${S.vg === g ? 'on' : ''}" aria-pressed="${S.vg === g}" onclick="S.vg='${g}';Shell.renderPanel()"${g === 'fav'
+      ? ` title="${esc(t('fav'))}" aria-label="${esc(t('fav'))} ${n}"` : ''}>${esc(label)} ${n}</button>`).join('')}</div>
+  <div id="vlist">${voiceList()}</div>`}`;
+function setModel(id) { S.draft.model = id; persistDraft(); Shell.record(t('hist.model', model().name.replace('Gemini ', ''))); renderScene(); Shell.renderPanel(); }
+// Mirrors the Interactions API request the Swift GeminiTTS service will build.
+function curl() {
+  const m = model(), segs = segments(), sp = usedSpeakers(), multi = sp.length > 1;
+  const body = {
+    model: m.id,
+    input: [{ type: 'user_input', content: segs.map(b => ({ type: 'text', text: b.text,
+      annotations: [{ type: 'speech_metadata', style: b.style, ...(multi ? { speaker: S.draft.speakers[b.speaker].name } : {}) }] })) }],
+    response_format: { type: 'audio' },
+    generation_config: { speech_config: multi
+      ? { mode: 'conversational', speakers: sp.map(s => ({ speaker: S.draft.speakers[s].name, voice: S.draft.speakers[s].voice })) }
+      : [{ voice: S.draft.speakers[sp[0]].voice }] },
+  };
+  return `curl -X POST "https://generativelanguage.googleapis.com/v1beta/interactions" \\\n` +
+    `  -H "x-goog-api-key: $GEMINI_API_KEY" -H "Content-Type: application/json" \\\n` +
+    `  -d '${JSON.stringify(body, null, 2).replace(/'/g, "'\\''")}'`;
+}
+// ponytail: not wired — the Preview Raw / AI Studio links were taken out of Generate on 2026-10-23.
+// curl() is still the request the app will send; call previewRaw() from a button to show it again.
+function previewRaw() {
+  const text = curl();
+  Shell.sheet(`<h2>${esc(t('rawTitle'))}</h2><p class="muted">${esc(t('rawNote'))}</p><pre class="raw">${esc(text)}</pre>
+    <div class="sheet-acts"><button class="btn" onclick="Shell.copy(${esc(JSON.stringify(text))})">⧉ ${esc(t('copyCurl'))}</button>
+    <span class="spacer"></span><button class="btn primary" onclick="Shell.closeSheet()">${esc(t('done'))}</button></div>`);
+}
+
+// ── Ollama helper (Shell.ai = real /api/chat when localhost:11434 answers) ──
+const OLLAMA_PROMPTS = {
+  tags: 'Insert Gemini TTS tags <breath> and <short pause> where a voice actor would naturally pause. Change nothing else.',
+  polish: 'Polish this voice-over script so it sounds natural when spoken. Keep the language and any <tags>.',
+  translate: 'Translate this voice-over script: Thai to English, or English to Thai. Keep any <tags>.',
+};
+/**
+ * ✦ buttons under the scene text: rewrites this Script scene only (one undo step in History).
+ * Tags in the answer become Expression scenes right where they were. autoTag() is the offline fallback for 'tags'.
+ */
+async function ollamaRun(kind, btn) {
+  const it = selItem();
+  if (it?.type !== 'script' || !it.text.trim()) return;
+  if (!Shell.online) { Shell.toast(t('ollamaOff'), [t('panel.providers'), openProviders]); if (kind !== 'tags') return; }
+  btn.disabled = true; btn.textContent = '…';
+  const text = Shell.online
+    ? (await Shell.ai([{ role: 'system', content: OLLAMA_PROMPTS[kind] + ' Reply with the script only.' }, { role: 'user', content: it.text }]))?.trim() || it.text
+    : autoTag(it.text);
+  const at = items().indexOf(it);   // the user may have deleted the scene while Ollama was thinking
+  if (text === it.text || at < 0) { renderScene(); return; }
+  const parts = blocksToItems([{ speaker: it.speaker, style: it.style, text }]);
+  parts.forEach(p => { p.muted = it.muted; }); parts[0].id = it.id;
+  S.draft.items.splice(at, 1, ...parts); persistDraft(); renderTimeline(); renderScene();
+  Shell.record(t('hist.ai', t({ tags: 'oTags', polish: 'oPolish', translate: 'oTranslate' }[kind])));
+}
+
+// ── Apple · Quick preview: a popover, not a modal — listen while you keep writing. Free, on this Mac, instant.
+// Web Speech here (it uses the Mac's own voices); AVSpeechSynthesizer in the app. Not the final voice: Gemini makes that.
+const appleVoices = () => speechSynthesis.getVoices().filter(v => v.lang.startsWith(hasThai(selItem()?.text || '') ? 'th' : 'en'));
+function applePreview(btn) {
+  if ($('applePop')) { closeApplePop(); return; }
+  const r = btn.getBoundingClientRect();
+  document.body.insertAdjacentHTML('beforeend', `<div class="pop" id="applePop" role="dialog" aria-label="${esc(t('applePrev'))}"
+    style="left:${Math.max(8, r.right - 280)}px;top:${Math.min(r.bottom + 6, innerHeight - 230)}px"></div>`);
+  paintApplePop();
+  speechSynthesis.onvoiceschanged = () => $('applePop') && paintApplePop();   // voices load late on first use
+  setTimeout(() => document.addEventListener('mousedown', applePopOutside));
+}
+function paintApplePop() {
+  const vs = appleVoices(), cur = load('appleVoice', '');
+  $('applePop').innerHTML = `<b> ${esc(t('applePrev'))}</b>` + (vs.length
+    ? `<label>${esc(t('aVoice'))}<select id="appleVoice" onchange="store('appleVoice',this.value)">${vs.map(v =>
+        `<option ${v.name === cur ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select></label>
+      <label>${esc(t('aRate'))}<input id="appleRate" type="range" min="0.5" max="1.5" step="0.1" value="${esc(load('appleRate', '1'))}"
+        onchange="store('appleRate',this.value)"></label>
+      <div class="toolbar" style="margin:0"><button class="btn small primary" onclick="appleSpeak()">${esc(t('aPlay'))}</button>
+        <button class="btn small" onclick="speechSynthesis.cancel()">${esc(t('aStop'))}</button></div>`
+    : `<div>${esc(t('appleNone'))}</div>`) + `<div class="muted">${esc(t('appleNote'))}</div>`;
+}
+function appleSpeak() {
+  const it = selItem(); if (it?.type !== 'script') return;
+  stopPlayback(); speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(it.text.replace(/<[^>]+>/g, ' '));   // tags are for Gemini, not for Apple
+  u.voice = appleVoices().find(v => v.name === $('appleVoice').value) ?? null; u.rate = +$('appleRate').value;
+  speechSynthesis.speak(u);
+}
+function applePopOutside(e) { if (!e.target.closest('#applePop, [aria-haspopup]')) closeApplePop(); }
+function closeApplePop() { $('applePop')?.remove(); speechSynthesis.cancel(); document.removeEventListener('mousedown', applePopOutside); }
+
+// ── Left tool window: AI Providers — connect each provider once, for every project (shown first until Google is set up) ──
+function providersPanel() {
+  const steps = [[!!S.apiKey, t('stepGoogle')], [Shell.online, t('stepOllama')], [S.projects.length > 0 && !!S.apiKey, t('stepProject')]];
+  const status = (ok, on, off) => `<span class="pill ${ok ? 'b-free' : 'b-mock'}">${esc(ok ? on : off)}</span>`;
+  return `<h3 style="margin-top:0">${esc(t('getStarted'))}</h3>${steps.map(([ok, label], i) =>
+      `<div class="prow" style="cursor:default"><span>${ok ? '✅' : i + 1 + '.'}</span><div class="grow">${esc(label)}</div></div>`).join('')}
+    <div class="pcard"><div class="pcard-h">✦ Google · Gemini TTS ${status(!!S.apiKey, t('connected'), t('notConnected'))}</div>
+      <div class="muted">${esc(t('googleUse'))}</div>
+      <form class="prow-ctl" onsubmit="event.preventDefault();saveKey(this.key.value)"><input name="key" type="password" placeholder="AIza…" value="${esc(S.apiKey)}"
+        aria-label="Gemini API key" autocomplete="off" style="flex:1;min-width:0"><button class="btn small primary">${esc(t('save'))}</button></form>
+      <div class="seg">${['free', 'paid'].map(v => `<button type="button" class="${S.tier === v ? 'on' : ''}"
+        onclick="S.tier='${v}';store('tier','${v}');Shell.renderPanel();renderStatus()">${esc(t(v === 'free' ? 'tierFree' : 'tierPaid'))}</button>`).join('')}</div>
+      <div class="toolbar" style="margin:6px 0 0"><button class="btn small" onclick="testGoogle()" ${S.apiKey ? netOff() : 'disabled'}>${esc(t('testConn'))}</button>
+        ${S.apiKey ? `<button class="btn small" onclick="removeKey()">${esc(t('removeKey'))}</button>` : ''}
+        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">${esc(t('getKey'))}</a>
+        <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">${esc(t('pricing'))}</a></div>
+      <div id="gTest" class="muted"></div><p class="muted">${esc(t('keyNote'))}</p></div>
+    <div class="pcard"><div class="pcard-h">🦙 Ollama · ${esc(t('onThisMac'))} ${status(Shell.online, t('connected'), t('notRunning'))}</div>
+      <div class="muted">${esc(t('ollamaUse'))}</div>
+      ${Shell.online ? `<div class="prow-ctl"><select aria-label="Ollama model" onchange="Shell.model=this.value;store('model',this.value)">${Shell.models.map(m =>
+        `<option ${m === Shell.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>`
+        : `<p class="muted">${esc(t('ollamaHow'))}</p>`}
+      <div class="toolbar" style="margin:6px 0 0"><span class="muted mono">localhost:11434</span><span class="spacer" style="flex:1"></span>
+        <button class="btn small" onclick="Shell.probeOllama().then(() => Shell.renderPanel())">${esc(t('checkAgain'))}</button></div></div>
+    <div class="pcard"><div class="pcard-h"> Apple · ${esc(t('onThisMac'))} ${status(true, t('quickPreview'), '')}</div>
+      <div class="muted">${esc(t('appleUse'))}</div></div>`;
+}
+/** Anything that needs Gemini without a key brings the user here. */
+function openProviders() { if (Shell.leftPanel !== 'providers') Shell.toggle('providers'); else Shell.renderPanel(); }
+function saveKey(key) { S.apiKey = key.trim(); store('key', S.apiKey); Shell.renderPanel(); renderStatus(); renderPreview(); Shell.toast(t(S.apiKey ? 'keySaved' : 'keyRemoved')); }
+function removeKey() { const old = S.apiKey; saveKey(''); Shell.toast(t('keyRemoved'), [t('undo'), () => saveKey(old)]); }
+// Real check: lists one model with the key (the key goes to Google only). The app does the same before saving to the Keychain.
+async function testGoogle() {
+  const el = $('gTest');
+  if (!Net.online) { el.textContent = '✗ ' + t('netOffline'); return; }
+  el.textContent = t('testing');
+  try {
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1', { headers: { 'x-goog-api-key': S.apiKey } });
+    el.textContent = r.ok ? '✓ ' + t('testOk') : `✗ ${t('testFail')} (HTTP ${r.status})`;
+  } catch { el.textContent = '✗ ' + t('testOffline'); }
+}
+
+// ── Shell contract ──
+const App = {
+  name: 'AI Voice Manager', icon: '🎙️', version: '0.1.0', intro: 'ai.intro', strings: STRINGS,
+  quick: ['q.hook', 'q.short', 'q.pauses', 'q.en', 'q.style'],
+  help: [['h.projects.t', 'h.projects.d'], ['h.providers.t', 'h.providers.d'], ['h.model.t', 'h.model.d'], ['h.timeline.t', 'h.timeline.d'], ['h.scene.t', 'h.scene.d'], ['h.history.t', 'h.history.d'],
+    ['h.voices.t', 'h.voices.d'], ['h.exprs.t', 'h.exprs.d'], ['h.gen.t', 'h.gen.d'], ['h.ai.t', 'h.ai.d']],
+  left: ['projects'], leftBottom: ['providers'], leftDefault: load('key', '') ? 'projects' : 'providers',   // left edge: Recent Projects · AI Providers (opens first until Google is connected)
+  rail: ['history', 'voices', 'expressions', 'generate', 'agent', 'help'],   // right edge, History on top like every family app
+  icons: {
+    providers: '<path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/>',
+    voices: '<path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/>',
+    expressions: '<circle cx="12" cy="12" r="9"/><path d="M8 14.5s1.5 2 4 2 4-2 4-2M9 9.5h.01M15 9.5h.01"/>',
+    generate: GEN_ICON,
+  },
+  panels: { providers: providersPanel, projects: projectsPanel, voices: voicesPanel, expressions: expressionsPanel, generate: generatePanel,
+    language: languagePanel },   // shell's language list + a Currency tab (prices are USD + ≈ this currency)
+  snapshot: () => S.draft, restore: d => { S.draft = d; saveProjects(); },
+  render() { renderTimeline(); renderScene(); renderStatus(); Net.render(); },   // Net: its alert follows the language
+  aiContext: () => `You help write voice-over scripts for Gemini TTS. Answer briefly, in the script's language. Keep <tags> like <breath>.
+You never change the project yourself: the user copies what they like. Current project "${S.draft.title}", scene by scene:\n` +
+    items().map((it, i) => `${i + 1}. ${it.muted ? '(muted) ' : ''}${it.type === 'expr' ? exprText(it) : `[${S.draft.speakers[it.speaker].name} · ${it.style}] ${it.text}`}`).join('\n'),
+  mockReply: () => segments().map(b => `**${S.draft.speakers[b.speaker].name}**: ${b.text.replace(/<[^>]+>/g, '').trim()}`).join('\n'),
+};
+
+// ── Wire up ──
+$('genIco').innerHTML = GEN_ICON;
+// Rename like Finder: double-click or ✎ → edit · Enter saves · Esc cancels · empty never saves (blur reverts).
+function editTitle() {
+  const el = $('projectTitle');
+  if (!el.readOnly) return;
+  el.readOnly = false; el.focus(); el.select();
+}
+function titleError(msg) {
+  $('titleErr').textContent = msg; $('titleErr').hidden = !msg;
+  $('projectTitle').setAttribute('aria-invalid', !!msg);
+}
+function endTitle(save) {
+  const el = $('projectTitle'), v = el.value.trim();
+  if (el.readOnly) return;
+  if (save && !v) { titleError(t('titleEmpty')); el.focus(); return; }
+  el.readOnly = true; titleError('');
+  if (save && v !== S.draft.title) { S.draft.title = v; persistDraft(); Shell.record(t('hist.title')); Shell.render(); }
+  el.value = S.draft.title;
+}
+$('projectTitle').oninput = e => { if (e.target.value.trim()) titleError(''); };
+$('projectTitle').onkeydown = e => {
+  if (e.key === 'Enter') { e.preventDefault(); endTitle(true); }
+  if (e.key === 'Escape') { e.stopPropagation(); endTitle(false); }
+};
+$('projectTitle').onblur = () => endTitle(!!$('projectTitle').value.trim());   // leaving an empty field = cancel
+document.addEventListener('keydown', e => {
+  if (e.metaKey && e.key === 'Enter') { e.preventDefault(); generate(); }
+  if (e.key === 'Escape') closeApplePop();
+});
+
+$('styles').innerHTML = STYLES.map(([n]) => `<option value="${esc(n)}">`).join('');
+// ── Internet connection: this app needs the net for Gemini, so it says when it's gone, back, slow or fast again ──
+// Offline / online = the system's signal; speed = how long a tiny request to Google takes (on every change + each 60 s).
+const NET_SLOW = 1500, NET_FAST = 800, NET_TIMEOUT = 8000;
+/** Pure: (state, event) → { state, alert } — alert undefined = keep what's shown, null = clear it. The Swift
+ *  ConnectionMonitor mirrors this table. Events: { path: true|false } or { ms: number | null (no answer) }. */
+function netNext(st, ev) {
+  if ('path' in ev) {
+    if (!ev.path) return st.online ? { state: { online: false, speed: 'unknown' }, alert: 'offline' } : { state: st };
+    return st.online ? { state: st } : { state: { online: true, speed: 'unknown' }, alert: 'restored' };
+  }
+  if (!st.online) return { state: st };
+  const slow = ev.ms === null || ev.ms > NET_SLOW, fast = ev.ms !== null && ev.ms < NET_FAST;
+  if (slow && st.speed !== 'slow') return { state: { ...st, speed: 'slow' }, alert: 'slow' };
+  if (fast && st.speed === 'slow') return { state: { ...st, speed: 'fast' }, alert: 'fast' };
+  return { state: fast ? { ...st, speed: 'fast' } : st };
+}
+const NET_ALERTS = { offline: ['error', 'netOffline', 0, false], restored: ['success', 'netRestored', 5000, true],
+  slow: ['warning', 'netSlow', 0, true], fast: ['info', 'netFast', 5000, true] };   // severity, text, auto-hide ms, ✕
+const NET_ICONS = { error: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/>',
+  warning: '<path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.5h.01"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.5h.01"/>', success: '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.7 2.7L16.5 9.5"/>' };
+const Net = {
+  online: navigator.onLine, speed: 'unknown', alert: null, ms: 0, hide: null,
+  apply(ev) {
+    const r = netNext({ online: this.online, speed: this.speed }, ev);
+    ({ online: this.online, speed: this.speed } = r.state);
+    if ('ms' in ev && ev.ms !== null) this.ms = ev.ms;
+    if (r.alert !== undefined) this.show(r.alert);
+    if ('path' in ev) { renderScene(); Shell.renderPanel(); if (this.online) this.measure(); }
+  },
+  show(kind) {
+    clearTimeout(this.hide); this.alert = kind; this.render();
+    const after = kind && NET_ALERTS[kind][2];
+    if (after) this.hide = setTimeout(() => { this.alert = null; this.render(); }, after);
+  },
+  render() {
+    const box = $('netAlert'); if (!this.alert) { box.innerHTML = ''; return; }
+    const [sev, key, , closable] = NET_ALERTS[this.alert];
+    box.innerHTML = `<div class="alert ${sev}"><svg class="a-ico" viewBox="0 0 24 24" aria-hidden="true">${NET_ICONS[sev]}</svg>
+      <span class="a-msg">${esc(t(key, (this.ms / 1000).toFixed(1) + ' s'))}</span>${closable
+        ? `<button class="a-x" onclick="Net.show(null)" title="${esc(t('close'))}" aria-label="${esc(t('close'))}">✕</button>` : ''}</div>`;
+  },
+  async measure() {
+    if (!this.online) return;
+    const start = performance.now();
+    try {
+      await fetch('https://generativelanguage.googleapis.com/', { mode: 'no-cors', cache: 'no-store', signal: AbortSignal.timeout(NET_TIMEOUT) });
+      this.apply({ ms: Math.round(performance.now() - start) });
+    } catch { this.apply({ ms: navigator.onLine ? null : 0 }); }
+  },
+  /** Prototype only: Net.simulate('offline' | 'online' | 'slow' | 'fast') to see each alert without unplugging. */
+  simulate(what) {
+    if (what === 'offline' || what === 'online') this.apply({ path: what === 'online' });
+    else this.apply({ ms: what === 'slow' ? 2300 : 300 });
+  },
+};
+/** Buttons that call Google are greyed out offline, with the reason as their tooltip. */
+const netOff = () => Net.online ? '' : `disabled title="${esc(t('netNeeds'))}"`;
+addEventListener('online', () => Net.apply({ path: true }));
+addEventListener('offline', () => Net.apply({ path: false }));
+setInterval(() => Net.measure(), 60000);
+
+Shell.init(App);
+if (!Net.online) Net.show('offline'); else Net.measure();
+</script>
+</body>
+</html>
