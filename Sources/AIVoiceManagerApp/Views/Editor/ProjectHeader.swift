@@ -97,7 +97,7 @@ struct ProjectHeader: View {
     private var notices: some View {
         NetAlertBanner().animation(.easeInOut(duration: 0.2), value: net.alert)
         if !vm.hasGeminiKey {
-            notice("🔑 " + localized("needKey"), button: localized("panel.providers"), back: true) {
+            notice(localized("needKey"), symbol: "key", button: localized("panel.providers"), back: true) {
                 leftPanel = LeftPanel.providers.rawValue
             }
         }
@@ -106,9 +106,10 @@ struct ProjectHeader: View {
         }
     }
 
-    private func notice(_ text: String, button: String, back: Bool = false,
+    private func notice(_ text: String, symbol: String? = nil, button: String, back: Bool = false,
                         action: @escaping () -> Void) -> some View {
         HStack(spacing: 8) {
+            if let symbol { Image(systemName: symbol).font(.app(12)).accessibilityHidden(true) }
             Text(text).font(.app(12))
             Button(action: action) {
                 if back { ChevronLabel(button, back: true) } else { Text(button) }

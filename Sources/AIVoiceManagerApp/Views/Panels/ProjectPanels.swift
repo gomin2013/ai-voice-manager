@@ -78,7 +78,11 @@ struct AIProvidersPanel: View {
                 let done = [vm.hasGeminiKey, ollama.isRunning, vm.hasGeminiKey]   // the prototype's three checks
                 ForEach(Array(["stepGoogle", "stepOllama", "stepProject"].enumerated()), id: \.offset) { index, key in
                     HStack(alignment: .top, spacing: 8) {
-                        Text(done[index] ? "✅" : "\(index + 1).").monospacedDigit()
+                        if done[index] {
+                            Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                        } else {
+                            Text(verbatim: "\(index + 1).").monospacedDigit()
+                        }
                         Text(localized(key))
                     }
                 }
@@ -128,7 +132,7 @@ struct AIProvidersPanel: View {
                     }
                     Text(localized("keyNote")).foregroundStyle(.secondary)
                 }
-                card(title: "🦙 Ollama · " + localized("onThisMac"),
+                card(title: "Ollama · " + localized("onThisMac"), symbol: "desktopcomputer",
                      status: localized(ollama.isRunning ? "connected" : "notRunning"), ok: ollama.isRunning) {
                     Text(localized("ollamaUse"))
                     if ollama.isRunning {
@@ -164,10 +168,11 @@ struct AIProvidersPanel: View {
         }
     }
 
-    private func card(title: String, status: String, ok: Bool,
+    private func card(title: String, symbol: String? = nil, status: String, ok: Bool,
                       @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
+                if let symbol { Image(systemName: symbol).font(.app(12.5, .semibold)).accessibilityHidden(true) }
                 Text(title).font(.app(12.5, .semibold))
                 Pill(text: status, color: ok ? .green : .secondary)
             }

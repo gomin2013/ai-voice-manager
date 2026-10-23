@@ -161,3 +161,7 @@ pre.raw .chg { background: color-mix(in srgb, var(--accent) 22%, transparent); d
   .panel-left { right: auto; left: 52px; }
   .form { grid-template-columns: 1fr; } .form label { text-align: left; } .form .hint, .form .err { grid-column: 1; }
 }
+
+/* Inline icons in text (instead of colour emoji) */
+.sym { width: 1.15em; height: 1.15em; vertical-align: -0.22em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.sym.ok { color: var(--ok); }

@@ -151,6 +151,21 @@ kbd { font: 11px var(--mono); opacity: .8; }
 // ── Static data (Phase 3: ModelCatalog.swift) ── checked 2026-10-22, ai.google.dev pricing
 // Phase 1 = Gemini TTS models with a free tier only (2.5 Pro TTS, paid-only, taken out 2026-10-23).
 // Generate = save the finished voice-over: a floppy disk (not a mic — nothing is recorded live).
+/** Icons instead of colour emoji: SF Symbol name (the app's) → the same 24-px stroke style as the rail icons. */
+const SYM = {
+  'checkmark.circle.fill': '<circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-4.9"/>',
+  'speaker.slash': '<path d="M11 5 6.5 9H3v6h3.5l4.5 4z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/>',
+  'speaker.wave.2': '<path d="M11 5 6.5 9H3v6h3.5l4.5 4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18.5 6a8.5 8.5 0 0 1 0 12"/>',
+  'pin.fill': '<path d="M9 3h6M10 3v6l-3 4h10l-3-4V3M12 13v8"/>',
+  key: '<circle cx="7.5" cy="15.5" r="4"/><path d="m10.4 12.6 9.1-9.1M16.5 6.5l2.5 2.5M14 9l2 2"/>',
+  movieclapper: '<path d="M3 10h18v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m3 10-.8-3.2a2 2 0 0 1 1.4-2.4l13-3.3a2 2 0 0 1 2.4 1.4L20 6zM7.5 5.6l2.8 3.3M13.3 4.1l2.8 3.3"/>',
+  'face.smiling': '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0M9 9.5v.5M15 9.5v.5"/>',
+  desktopcomputer: '<rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 21h8M12 16.5V21"/>',
+  waveform: '<path d="M3 10.5v3M7 7v10M11 3.5v17M15 7.5v9M19 5v14M23 10.5v3"/>',
+};
+const sf = (name, cls = 'sym') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${SYM[name]}</svg>`;
+/** Escaped text whose {sf.name} tokens become icons — the strings stay the same as Localizable.strings. */
+const symText = s => esc(s).replace(/\{([a-z.]+)\}/g, (m, name) => SYM[name] ? sf(name) : m);
 const GEN_ICON = '<path d="M4 5a2 2 0 0 1 2-2h10.2L20 6.8V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 3v5h7V3M12.5 4.5v2M7 21v-6a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v6"/>';
 const MODELS = [
   { id: 'gemini-3.8-flash-tts',         name: 'Gemini 3.8 Flash TTS',      freeTier: true,  thai: true,  inUSD: 0.5, outUSD: 9 },
@@ -178,11 +193,11 @@ const STYLES = [['Friendly', '😊'], ['Cheerful and friendly', '😄'], ['Calm 
   ['Excited', '🤩'], ['Energetic, upbeat ad', '📣'], ['Narrator, documentary', '🎬'], ['News anchor', '📰'],
   ['Storyteller', '📖'], ['Whisper', '🤫'], ['Serious', '🧐'], ['Sad', '😢']];
 // Paper-collage icons cut from one ChatGPT sheet (.claude/docs/design/art-style.md): img/styles/<slug>.png.
-// A style the user typed (not in STYLES) keeps the 🎭 placeholder. Only catalog names reach the path.
+// A style the user typed (not in STYLES) gets the face.smiling icon. Only catalog names reach the path.
 const styleSlug = name => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const styleIcon = (name, size = 28) => STYLES.some(([n]) => n === name)
   ? `<img class="xi" src="img/styles/${styleSlug(name)}.png" alt="" width="${size}" height="${size}">`
-  : `<span style="font-size:${Math.round(size * 0.7)}px;width:${size}px;text-align:center;flex:none">🎭</span>`;
+  : `<span style="font-size:${Math.round(size * 0.7)}px;width:${size}px;text-align:center;flex:none;color:var(--text2)">${sf('face.smiling')}</span>`;
 /** The scene at a glance: who speaks (voice portrait) and how (style icon badged on its bottom-right corner). */
 const voiceWithStyle = (voice, style, size) => `<span class="avwrap" style="width:${size}px;height:${size}px" title="${esc(voice)} · ${esc(style)}">${avatar(voice, size)}
   <span class="avbadge">${styleIcon(style, Math.round(size * 0.5))}</span></span>`;
@@ -248,7 +263,7 @@ const STRINGS = {
     // Timeline + Current Scene
     timeline: 'Script Timeline', script: 'Script', expression: 'Expression', currentScene: 'Current Scene', style: 'Style', voiceHint: 'Drag a voice here from Voice Library, or press Apply there. This scene speaks with it; a project can use up to 2 voices.',
     pvGen: 'Generate preview', pvBusy: 'Generating…', pvReady: 'Ready', pvRegen: 'Generate again', play: 'Play',
-    mute: 'Mute', unmute: 'Unmute', remove: 'Remove', empty: '(empty)', tlFoot: '{0} scenes · {1} muted · ≈ {2}', tlHint: 'Drag ⋮⋮ to reorder · 🔇 mutes a scene',
+    mute: 'Mute', unmute: 'Unmute', remove: 'Remove', empty: '(empty)', tlFoot: '{0} scenes · {1} muted · ≈ {2}', tlHint: 'Drag ⋮⋮ to reorder · {speaker.slash} mutes a scene',
     curExpr: 'Current expression', exprHint: 'Gemini reads it as a sound or a silence between lines.',
     repeat: 'Repeat', repeatTip: 'How many times in a row Gemini makes this sound (up to 10)',
     netOffline: 'No internet connection. Generate and scene previews need it — your edits are still saved on this Mac.',
@@ -290,10 +305,10 @@ const STRINGS = {
     'h.providers.t': 'AI Providers', 'h.providers.d': 'Left side, bottom of the rail (like Appearance on the right). Connect Google (Gemini API key, tested and kept for every project), check Ollama, Apple voices give each scene a free Quick preview. Opens by itself until Google is connected.',
     'h.projects.t': 'Recent Projects', 'h.projects.d': 'Left side: projects you opened before. Search by name, click to open. Open Project… brings in a project exported from another Mac. Projects save automatically; Export Project (toolbar) makes the file to take with you.',
     'h.model.t': 'Model', 'h.model.d': 'Every project uses one Gemini TTS model, chosen when you create it and shown under the name. Change says what changes: scene previews need generating again, Thai support and price follow; scenes, voices and old takes stay.',
-    'h.timeline.t': 'Script Timeline', 'h.timeline.d': 'Every line (Script) and every breath or pause (Expression) is a scene. Drag ⋮⋮ to reorder, 🔇 to leave a scene out of the take, click to edit it on the right.',
+    'h.timeline.t': 'Script Timeline', 'h.timeline.d': 'Every line (Script) and every breath or pause (Expression) is a scene. Drag ⋮⋮ to reorder, {speaker.slash} to leave a scene out of the take, click to edit it on the right.',
     'h.scene.t': 'Current Scene', 'h.scene.d': 'Script: the voice (drag from Voice Library), the style (drag from its Styles tab or type), the text, and the preview of this scene only (Generate preview → Ready → Play). Expression: the current one; change it from Expression Library.',
     'h.exprs.t': 'Expression Library', 'h.exprs.d': 'Right side. Breath, pauses, laugh, sigh, gasp, cough. Drag onto the timeline to insert, onto the Current Scene to change, or press Apply.',
-    'h.history.t': 'History', 'h.history.d': 'Right side, top. The last 30 edits of the open project, newest first. Double-click a step or press ↩ to go back — going back is a new step too, so nothing is lost. 📌 pins a version; the project as opened is pinned for you. Each project keeps its own History.',
+    'h.history.t': 'History', 'h.history.d': 'Right side, top. The last 30 edits of the open project, newest first. Double-click a step or press ↩ to go back — going back is a new step too, so nothing is lost. {pin.fill} pins a version; the project as opened is pinned for you. Each project keeps its own History.',
     'h.gen.t': 'Generate', 'h.gen.d': 'Right side. Preview of the whole project (every scene that isn’t muted), model, Generate with Gemini (⌘↵), then play, download or delete each result.',
     'h.voices.t': 'Voice Library', 'h.voices.d': 'The 30 Gemini TTS voices. Search, drag a voice onto the scene or press Apply.',
     'h.ai.t': 'AI Agent', 'h.ai.d': 'Ask Ollama about the project: a better opening line, where to pause, a translation. It answers; you change the scenes yourself.',
@@ -328,7 +343,7 @@ const STRINGS = {
     copyCurl: 'คัดลอก curl',
     timeline: 'ไทม์ไลน์บท', script: 'บท', expression: 'Expression', currentScene: 'ฉากปัจจุบัน', style: 'Style', voiceHint: 'ลากเสียงจากคลังเสียงมาวาง หรือกด Apply ในคลังเสียง · ฉากนี้จะพูดด้วยเสียงนั้น · หนึ่งโปรเจกต์ใช้ได้สูงสุด 2 เสียง',
     pvGen: 'สร้างเสียงลองฟัง', pvBusy: 'กำลังสร้าง…', pvReady: 'พร้อม', pvRegen: 'สร้างใหม่', play: 'เล่น',
-    mute: 'ปิดเสียง', unmute: 'เปิดเสียง', remove: 'ลบ', empty: '(ว่าง)', tlFoot: '{0} ฉาก · ปิดเสียง {1} · ≈ {2}', tlHint: 'ลาก ⋮⋮ เพื่อเปลี่ยนลำดับ · 🔇 ปิดเสียงฉากนั้น',
+    mute: 'ปิดเสียง', unmute: 'เปิดเสียง', remove: 'ลบ', empty: '(ว่าง)', tlFoot: '{0} ฉาก · ปิดเสียง {1} · ≈ {2}', tlHint: 'ลาก ⋮⋮ เพื่อเปลี่ยนลำดับ · {speaker.slash} ปิดเสียงฉากนั้น',
     curExpr: 'Expression ปัจจุบัน', exprHint: 'Gemini อ่านเป็นเสียงหรือช่วงเงียบระหว่างประโยค',
     repeat: 'ซ้ำ', repeatTip: 'ให้ Gemini ทำเสียงนี้ติดกันกี่ครั้ง (สูงสุด 10)',
     netOffline: 'ไม่มีการเชื่อมต่ออินเทอร์เน็ต สร้างเสียงและลองฟังฉากต้องใช้เน็ต — งานที่แก้ยังบันทึกอยู่ในเครื่องนี้',
@@ -367,10 +382,10 @@ const STRINGS = {
     'h.providers.t': 'ผู้ให้บริการ AI', 'h.providers.d': 'ด้านซ้าย ล่างสุดของแถบ (เหมือน Appearance ด้านขวา) เชื่อม Google (Gemini API key ทดสอบได้ และใช้ได้ทุกโปรเจกต์), ตรวจ Ollama, เสียง Apple ใช้ฟังด่วนในแต่ละฉาก (ฟรี) · เปิดเองจนกว่าจะเชื่อม Google',
     'h.projects.t': 'โปรเจกต์ล่าสุด', 'h.projects.d': 'ด้านซ้าย: โปรเจกต์ที่เคยเปิด ค้นหาด้วยชื่อ คลิกเพื่อเปิด · เปิดโปรเจกต์… ใช้นำเข้าโปรเจกต์ที่ส่งออกจากเครื่องอื่น · โปรเจกต์บันทึกอัตโนมัติ ส่งออกโปรเจกต์ (toolbar) ใช้ทำไฟล์ไปเปิดที่อื่น',
     'h.model.t': 'Model', 'h.model.d': 'ทุกโปรเจกต์ใช้ Gemini TTS หนึ่ง model เลือกตอนสร้างและแสดงใต้ชื่อ · เปลี่ยนได้ โดยบอกว่าอะไรเปลี่ยน: ต้องสร้างเสียงลองฟังใหม่ การรองรับไทยและราคาตาม model ใหม่ · ฉาก เสียง และ take เดิมไม่เปลี่ยน',
-    'h.timeline.t': 'ไทม์ไลน์บท', 'h.timeline.d': 'ทุกประโยค (บท) และทุกเสียงหายใจหรือช่วงเว้น (Expression) คือหนึ่งฉาก ลาก ⋮⋮ เพื่อเปลี่ยนลำดับ 🔇 เพื่อไม่ใส่ฉากนั้นใน take คลิกเพื่อแก้ทางขวา',
+    'h.timeline.t': 'ไทม์ไลน์บท', 'h.timeline.d': 'ทุกประโยค (บท) และทุกเสียงหายใจหรือช่วงเว้น (Expression) คือหนึ่งฉาก ลาก ⋮⋮ เพื่อเปลี่ยนลำดับ {speaker.slash} เพื่อไม่ใส่ฉากนั้นใน take คลิกเพื่อแก้ทางขวา',
     'h.scene.t': 'ฉากปัจจุบัน', 'h.scene.d': 'บท: เสียง (ลากจากคลังเสียง), style (ลากจากแท็บ Style หรือพิมพ์), ข้อความ และลองฟังเฉพาะฉากนี้ (สร้างเสียงลองฟัง → พร้อม → เล่น) · Expression: อันปัจจุบัน เปลี่ยนได้จากคลัง Expression',
     'h.exprs.t': 'คลัง Expression', 'h.exprs.d': 'ด้านขวา หายใจ, เว้นจังหวะ, หัวเราะ, ถอนหายใจ, ตกใจ, ไอ ลากไปวางในไทม์ไลน์เพื่อแทรก วางที่ฉากปัจจุบันเพื่อเปลี่ยน หรือกด Apply',
-    'h.history.t': 'ประวัติ', 'h.history.d': 'ด้านขวาบนสุด แก้ 30 ครั้งล่าสุดของโปรเจกต์ที่เปิดอยู่ ใหม่สุดอยู่บน ดับเบิลคลิกหรือกด ↩ เพื่อย้อน (การย้อนเป็นขั้นใหม่ ไม่มีอะไรหาย) 📌 ปักหมุดเวอร์ชันที่อยากเก็บ โปรเจกต์ตอนเปิดปักหมุดให้แล้ว แต่ละโปรเจกต์มีประวัติของตัวเอง',
+    'h.history.t': 'ประวัติ', 'h.history.d': 'ด้านขวาบนสุด แก้ 30 ครั้งล่าสุดของโปรเจกต์ที่เปิดอยู่ ใหม่สุดอยู่บน ดับเบิลคลิกหรือกด ↩ เพื่อย้อน (การย้อนเป็นขั้นใหม่ ไม่มีอะไรหาย) {pin.fill} ปักหมุดเวอร์ชันที่อยากเก็บ โปรเจกต์ตอนเปิดปักหมุดให้แล้ว แต่ละโปรเจกต์มีประวัติของตัวเอง',
     'h.gen.t': 'สร้างเสียง', 'h.gen.d': 'ด้านขวา ลองฟังทั้งโปรเจกต์ (ทุกฉากที่ไม่ได้ปิดเสียง), เลือก model, สร้างเสียงด้วย Gemini (⌘↵) แล้วเล่น ดาวน์โหลด หรือลบผลลัพธ์แต่ละอัน',
     'h.voices.t': 'คลังเสียง', 'h.voices.d': '30 เสียงของ Gemini TTS ค้นหา ลากเสียงไปวางที่ฉาก หรือกด Apply',
     'h.ai.t': 'AI Agent', 'h.ai.d': 'ถาม Ollama เรื่องโปรเจกต์ เช่น ประโยคเปิด, ควรเว้นจังหวะตรงไหน, แปล · AI ตอบเท่านั้น คุณแก้ฉากเอง',
@@ -497,10 +512,10 @@ function renderTimeline() {
       <span class="grip" aria-hidden="true">⋮⋮</span>${it.type === 'script' ? voiceWithStyle(S.draft.speakers[it.speaker].voice, it.style, 28) : ''}
       <span class="lbl">${label}</span>
       <button class="icon-btn mute" title="${esc(t(it.muted ? 'unmute' : 'mute'))}" aria-label="${esc(t(it.muted ? 'unmute' : 'mute'))}" aria-pressed="${it.muted}"
-        onclick="event.stopPropagation();toggleMute('${it.id}')">${it.muted ? '🔇' : '🔊'}</button>
+        onclick="event.stopPropagation();toggleMute('${it.id}')">${sf(it.muted ? 'speaker.slash' : 'speaker.wave.2')}</button>
       <button class="icon-btn" title="${esc(t('remove'))}" aria-label="${esc(t('remove'))}" onclick="event.stopPropagation();removeItem('${it.id}')" ${list.length < 2 ? 'disabled' : ''}>✕</button></div>`;
   }).join('');
-  $('tlFoot').textContent = t('tlFoot', list.length, list.filter(it => it.muted).length, fmt(estimateSeconds(plainText()))) + ' · ' + t('tlHint');
+  $('tlFoot').innerHTML = symText(t('tlFoot', list.length, list.filter(it => it.muted).length, fmt(estimateSeconds(plainText()))) + ' · ' + t('tlHint'));
 }
 function selectItem(id) { S.sel = id; renderTimeline(); renderScene(); if (['expressions', 'voices'].includes(Shell.panel)) Shell.renderPanel(); }
 /** A scene dropped on a scene moves above it; an expression dragged from Expression Library is inserted there. */
@@ -543,7 +558,7 @@ function renderScene() {
   const it = selItem(), box = $('scene');
   if (!it) { box.innerHTML = ''; return; }
   if (it.type === 'expr') {
-    box.innerHTML = `<div class="col-h">🎭 ${esc(t('currentScene'))} · ${esc(t('expression'))} #${sceneNo(it)}</div><div class="scene-b">
+    box.innerHTML = `<div class="col-h">${sf('face.smiling')} ${esc(t('currentScene'))} · ${esc(t('expression'))} #${sceneNo(it)}</div><div class="scene-b">
       <div class="dropzone" id="exprDrop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropExpr(event)">
         ${exIcon(it.tag, 64)}<div style="flex:1"><div class="muted">${esc(t('curExpr'))}</div><div class="expr-big" title="${esc(it.tag)}">&lt;${esc(exLabel(it.tag))}&gt;</div>
           <div class="muted">${esc(t('exd.' + exKey(it.tag)))} · ${esc(t('exprHint'))}</div>
@@ -555,7 +570,7 @@ function renderScene() {
     return;
   }
   const sp = S.draft.speakers[it.speaker], vd = VOICES.find(([v]) => v === sp.voice)?.[1] || '';
-  box.innerHTML = `<div class="col-h">🎬 ${esc(t('currentScene'))} · ${esc(t('script'))} #${sceneNo(it)}</div><div class="scene-b">
+  box.innerHTML = `<div class="col-h">${sf('movieclapper')} ${esc(t('currentScene'))} · ${esc(t('script'))} #${sceneNo(it)}</div><div class="scene-b">
     <div class="dropzone" id="voiceDrop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropVoice(event)">
       ${voiceWithStyle(sp.voice, it.style, 48)} ${esc(t('voice'))}: <b>${esc(sp.voice)}</b> ${genderPill(sp.voice)} <span class="muted">${esc(vd)}</span>
       <span class="spacer" style="flex:1"></span><button class="btn small to-right" onclick="S.vtab='voices';openPanel('voices')">${esc(t('panel.voices'))}</button>
@@ -662,7 +677,7 @@ function renderStatus() {
   const m = model();
   $('modelRow').innerHTML = `✦ <b>${esc(m.name)}</b> ${tierPill()} <button class="btn small" onclick="pickModel('change')">${esc(t('modelChange'))}</button>`;
   // Every warning lives here, under the project name (next to the model), nowhere else.
-  $('notices').innerHTML = (S.apiKey ? '' : `<div class="warnline">🔑 ${esc(t('needKey'))} <button class="btn small to-left" onclick="openProviders()">${esc(t('panel.providers'))}</button></div>`) +
+  $('notices').innerHTML = (S.apiKey ? '' : `<div class="warnline">${sf('key')} ${esc(t('needKey'))} <button class="btn small to-left" onclick="openProviders()">${esc(t('panel.providers'))}</button></div>`) +
     (m.thai === false && hasThai(plainText()) ? `<div class="warnline">${esc(t('thaiWarn'))} <button class="btn small" onclick="pickModel('change')">${esc(t('modelChange'))}</button></div>` : '');
   if (Shell.panel === 'generate' && !players.take.on) Shell.renderPanel();   // cost and length follow the timeline
 }
@@ -1042,7 +1057,7 @@ function providersPanel() {
   const steps = [[!!S.apiKey, t('stepGoogle')], [Shell.online, t('stepOllama')], [S.projects.length > 0 && !!S.apiKey, t('stepProject')]];
   const status = (ok, on, off) => `<span class="pill ${ok ? 'b-free' : 'b-mock'}">${esc(ok ? on : off)}</span>`;
   return `<h3 style="margin-top:0">${esc(t('getStarted'))}</h3>${steps.map(([ok, label], i) =>
-      `<div class="prow" style="cursor:default"><span>${ok ? '✅' : i + 1 + '.'}</span><div class="grow">${esc(label)}</div></div>`).join('')}
+      `<div class="prow" style="cursor:default"><span>${ok ? sf('checkmark.circle.fill', 'sym ok') : i + 1 + '.'}</span><div class="grow">${esc(label)}</div></div>`).join('')}
     <div class="pcard"><div class="pcard-h">✦ Google · Gemini TTS ${status(!!S.apiKey, t('connected'), t('notConnected'))}</div>
       <div class="muted">${esc(t('googleUse'))}</div>
       <form class="prow-ctl" onsubmit="event.preventDefault();saveKey(this.key.value)"><input name="key" type="password" placeholder="AIza…" value="${esc(S.apiKey)}"
@@ -1054,7 +1069,7 @@ function providersPanel() {
         <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">${esc(t('getKey'))}</a>
         <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">${esc(t('pricing'))}</a></div>
       <div id="gTest" class="muted"></div><p class="muted">${esc(t('keyNote'))}</p></div>
-    <div class="pcard"><div class="pcard-h">🦙 Ollama · ${esc(t('onThisMac'))} ${status(Shell.online, t('connected'), t('notRunning'))}</div>
+    <div class="pcard"><div class="pcard-h">${sf('desktopcomputer')} Ollama · ${esc(t('onThisMac'))} ${status(Shell.online, t('connected'), t('notRunning'))}</div>
       <div class="muted">${esc(t('ollamaUse'))}</div>
       ${Shell.online ? `<div class="prow-ctl"><select aria-label="Ollama model" onchange="Shell.model=this.value;store('model',this.value)">${Shell.models.map(m =>
         `<option ${m === Shell.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>`
@@ -1081,7 +1096,7 @@ async function testGoogle() {
 
 // ── Shell contract ──
 const App = {
-  name: 'AI Voice Manager', icon: '🎙️', version: '0.1.0', intro: 'ai.intro', strings: STRINGS,
+  name: 'AI Voice Manager', icon: sf('waveform'), version: '0.1.0', intro: 'ai.intro', strings: STRINGS,
   quick: ['q.hook', 'q.short', 'q.pauses', 'q.en', 'q.style'],
   help: [['h.projects.t', 'h.projects.d'], ['h.providers.t', 'h.providers.d'], ['h.model.t', 'h.model.d'], ['h.timeline.t', 'h.timeline.d'], ['h.scene.t', 'h.scene.d'], ['h.history.t', 'h.history.d'],
     ['h.voices.t', 'h.voices.d'], ['h.exprs.t', 'h.exprs.d'], ['h.gen.t', 'h.gen.d'], ['h.ai.t', 'h.ai.d']],

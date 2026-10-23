@@ -206,7 +206,7 @@
 "remove" = "Remove";
 "empty" = "(empty)";
 "tlFoot" = "%1$@ scenes · %2$@ muted · ≈ %3$@";
-"tlHint" = "Drag ⋮⋮ to reorder · 🔇 mutes a scene";
+"tlHint" = "Drag ⋮⋮ to reorder · {speaker.slash} mutes a scene";
 "curExpr" = "Current expression";
 "repeat" = "Repeat";
 "repeatTip" = "How many times in a row Gemini makes this sound (up to 10)";
@@ -312,13 +312,13 @@
 "h.model.t" = "Model";
 "h.model.d" = "Every project uses one Gemini TTS model, chosen when you create it and shown under the name. Change says what changes: scene previews need generating again, Thai support and price follow; scenes, voices and old takes stay.";
 "h.timeline.t" = "Script Timeline";
-"h.timeline.d" = "Every line (Script) and every breath or pause (Expression) is a scene. Drag ⋮⋮ to reorder, 🔇 to leave a scene out of the take, click to edit it on the right.";
+"h.timeline.d" = "Every line (Script) and every breath or pause (Expression) is a scene. Drag ⋮⋮ to reorder, {speaker.slash} to leave a scene out of the take, click to edit it on the right.";
 "h.scene.t" = "Current Scene";
 "h.scene.d" = "Script: the voice (drag from Voice Library), the style (drag from its Styles tab or type), the text, and the preview of this scene only (Generate preview → Ready → Play). Expression: the current one; change it from Expression Library.";
 "h.exprs.t" = "Expression Library";
 "h.exprs.d" = "Right side. Breath, pauses, laugh, sigh, gasp, cough. Drag onto the timeline to insert, onto the Current Scene to change, or press Apply.";
 "h.history.t" = "History";
-"h.history.d" = "Right side, top. The last 30 edits of the open project, newest first. Double-click a step or press ↩ to go back — going back is a new step too, so nothing is lost. 📌 pins a version; the project as opened is pinned for you. Each project keeps its own History.";
+"h.history.d" = "Right side, top. The last 30 edits of the open project, newest first. Double-click a step or press ↩ to go back — going back is a new step too, so nothing is lost. {pin.fill} pins a version; the project as opened is pinned for you. Each project keeps its own History.";
 "h.gen.t" = "Generate";
 "h.gen.d" = "Right side. Preview of the whole project (every scene that isn’t muted), model, Generate with Gemini (⌘↵), then play, download or delete each result.";
 "h.voices.t" = "Voice Library";

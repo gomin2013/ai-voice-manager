@@ -27,7 +27,7 @@ struct HelpPanel: View {
                             .accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(localized(item.key + ".t")).font(.callout.bold())
-                            Text(localized(item.key + ".d"))
+                            Text(symbols: localized(item.key + ".d"))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                                 .fixedSize(horizontal: false, vertical: true)

@@ -26,9 +26,13 @@ const ICONS = {
   help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/>',
   appearance: '<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-.9-.7-1.2-.7-2 0-.8.7-1.5 1.5-1.5H17a4 4 0 0 0 4-4c0-5-4-9-9-9z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/>',
   language: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>',
+  pin: '<path d="M9 3h6M10 3v6l-3 4h10l-3-4V3M12 13v8"/>',
+  doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
   about: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/>',
 };
 // Measured palette from swiftui-mac-skills `theming-accent-and-gradients` (all ≈ 0.16 luminance: one value, both modes).
+const ico = name => `<svg class="sym" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
 const ACCENTS = { system: '#036ae4', red: '#e00219', orange: '#b45403', amber: '#9a6405', olive: '#7f7002', lime: '#557b04',
   green: '#028132', emerald: '#057f60', teal: '#077d7a', cyan: '#027a8f', blue: '#036ae4', indigo: '#5c55ff', violet: '#8f3dfa',
   purple: '#b424d8', magenta: '#cf01a6', pink: '#db045e', graphite: '#6f6f6f' };
@@ -172,7 +176,7 @@ const Shell = {
     const el = document.getElementById(id);
     el.classList.toggle('closed', !p);
     if (!p) return;
-    const pin = p === 'history' ? `<button class="icon-btn" onclick="Shell.pin()" title="${esc(t('hist.pin'))}" aria-label="${esc(t('hist.pin'))}">📌</button>` : '';
+    const pin = p === 'history' ? `<button class="icon-btn" onclick="Shell.pin()" title="${esc(t('hist.pin'))}" aria-label="${esc(t('hist.pin'))}">${ico('pin')}</button>` : '';
     el.innerHTML = `<div class="panel-h"><span>${esc(t('panel.' + p))}</span><span>${pin}
       <button class="icon-btn" onclick="Shell.toggle('${p}')" title="${esc(t('hide'))}" aria-label="${esc(t('hide'))}">–</button></span></div>
       <div class="panel-b">${this.app.panels?.[p]?.() ?? this['panel_' + p]()}</div>`;
@@ -234,11 +238,11 @@ const Shell = {
       <span class="hico">${icon}</span><div class="grow">${esc(s.label)}<div class="sub">${histTime(s.at)}</div></div>
       ${cur ? `<span class="now">${esc(t('hist.now'))}</span>` : btn(back, '↩', 'hist.restore')}${extra}</div>`;
     return `<h3>${esc(t('hist.pinned'))}</h3>` +
-      this.pinned.map((s, i) => row(s, JSON.stringify(s.snap) === now, s.opened ? '📄' : '📌', `Shell.restorePinned(${i})`,
+      this.pinned.map((s, i) => row(s, JSON.stringify(s.snap) === now, ico(s.opened ? 'doc' : 'pin'), `Shell.restorePinned(${i})`,
         s.opened ? '' : btn(`Shell.renamePin(${i})`, '✎', 'hist.rename') + btn(`Shell.unpin(${i})`, '✕', 'hist.unpin'))).join('') +
       `<h3>${esc(t('hist.recent'))}</h3>` +
       this.hist.states.map((s, i) => [s, i]).reverse().map(([s, i]) => i === last ? row(s, true, '◉', '')
-        : row(s, false, '○', `Shell.restoreStep(${i})`, btn(`Shell.removeStep(${i})`, '🗑', 'hist.remove'))).join('');
+        : row(s, false, '○', `Shell.restoreStep(${i})`, btn(`Shell.removeStep(${i})`, ico('trash'), 'hist.remove'))).join('');
   },
 
   // MARK: AI Agent — real Ollama when running, canned answers otherwise
@@ -288,7 +292,7 @@ const Shell = {
   // MARK: Help
   panel_help() {
     return this.app.help.map(([title, desc]) => `<div style="margin-bottom:12px"><b>${esc(t(title))}</b>
-      <div class="muted">${esc(t(desc))}</div></div>`).join('');
+      <div class="muted">${(typeof symText === 'function' ? symText : esc)(t(desc))}</div></div>`).join('');
   },
 
   // MARK: Appearance / Language / About
