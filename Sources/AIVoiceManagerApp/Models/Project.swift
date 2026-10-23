@@ -30,14 +30,40 @@ struct ScriptScene: Codable, Hashable, Sendable {
 }
 
 struct ExpressionScene: Codable, Hashable, Sendable {
+    static let maxTimes = 10
+
     var id: String
     var tag: ExpressionTag
     var muted: Bool
+    /// Repeat ×1…×10 — the tag goes to Gemini this many times in a row. JSON key `times`, only written when > 1.
+    var times: Int
 
-    init(id: String = newSceneID(), tag: ExpressionTag, muted: Bool = false) {
+    init(id: String = newSceneID(), tag: ExpressionTag, muted: Bool = false, times: Int = 1) {
         self.id = id
         self.tag = tag
         self.muted = muted
+        self.times = min(Self.maxTimes, max(1, times))
+    }
+
+    /// What Gemini reads (prototype `exprText`): `<breath> <breath>` for ×2.
+    var text: String { Array(repeating: tag.rawValue, count: times).joined(separator: " ") }
+
+    private enum CodingKeys: String, CodingKey { case id, tag, muted, times }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(id: try container.decode(String.self, forKey: .id),
+                  tag: try container.decode(ExpressionTag.self, forKey: .tag),
+                  muted: try container.decode(Bool.self, forKey: .muted),
+                  times: try container.decodeIfPresent(Int.self, forKey: .times) ?? 1)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(tag, forKey: .tag)
+        try container.encode(muted, forKey: .muted)
+        if times > 1 { try container.encode(times, forKey: .times) }
     }
 }
 

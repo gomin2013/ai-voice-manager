@@ -78,6 +78,18 @@ struct ExpressionIcon: View {
 }
 
 /// Small coloured label: FREE TIER / PAID / MOCK / ♀ Female / ♂ Male.
+/// FREE TIER / PAID for the open project (prototype `tierPill`): paid when Billing is on or the model has no free
+/// tier — the model line, the scene preview and Generate all say the same thing.
+struct TierPill: View {
+    @Environment(EditorViewModel.self) private var vm
+    @AppStorage("gemini.tier") private var tier = "free"
+
+    var body: some View {
+        let paid = !vm.model.freeTier || tier == "paid"
+        Pill(text: localized(paid ? "bPaid" : "bTier"), color: paid ? .orange : .accentColor)
+    }
+}
+
 struct Pill: View {
     let text: String
     var color: Color = .accentColor

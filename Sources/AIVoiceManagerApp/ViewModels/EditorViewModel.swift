@@ -2,8 +2,8 @@ import Foundation
 import Observation
 
 /// The open window's state: every project, the open one, its History and its takes. Views call these methods and
-/// never change the draft themselves; the rules live in Models (segments, assignVoice, clean). Phase 2: in memory
-/// on `MockData` — Phase 3 adds ProjectStore underneath, same methods.
+/// never change the draft themselves; the rules live in Models (segments, assignVoice, clean). With a `store`,
+/// every History step also saves the project (autosave); without one (tests, previews) it stays in memory.
 @MainActor
 @Observable
 final class EditorViewModel {
@@ -18,9 +18,21 @@ final class EditorViewModel {
     var renameRequested = false
     /// ⌘↵: GeneratePanel takes it from here, so a paid take is confirmed the same way as with the button.
     var generateRequested = false
-    /// Scene previews (mock until Phase 3): ready while the scene's signature is unchanged (prototype `pvSig`).
-    private(set) var scenePreviews: [String: (signature: String, duration: Double)] = [:]
+    /// Scene previews: ready while the scene's signature is unchanged (prototype `pvSig`). In memory only — a
+    /// preview is cheap to make again and never part of a take.
+    private(set) var scenePreviews: [String: ScenePreview] = [:]
     private(set) var previewBusy: String?
+    /// The Script scene Ollama is rewriting (Polish / Add pauses) — set by `EditorViewModel+Ollama`.
+    var aiBusy: String?
+    /// A Gemini key is in the Keychain (the key itself is read from there only when a request goes out).
+    private(set) var hasGeminiKey: Bool
+
+    struct ScenePreview {
+        let signature: String
+        let duration: Double
+        let audio: Data
+        let heights: [Double]?
+    }
 
     struct Notice: Identifiable {
         let id = UUID()
@@ -28,11 +40,37 @@ final class EditorViewModel {
         var undo: (@MainActor () -> Void)?
     }
 
-    init(projects: [Project] = MockData.projects()) {
+    let store: ProjectStore?
+    /// Tests swap in a stubbed session and key; the app talks to Google with the Keychain's key.
+    @ObservationIgnored var session = URLSession.shared
+    @ObservationIgnored var loadKey: () -> String? = KeychainStore.load
+    @ObservationIgnored private var waveforms: [String: [Double]] = [:]
+    /// Ollama's answer for Polish / Add pauses (model, messages) — tests swap in a canned one.
+    @ObservationIgnored var askOllama: (String, [OllamaClient.Message]) async throws -> String = {
+        try await OllamaClient.complete(model: $0, messages: $1)
+    }
+
+    init(projects: [Project] = MockData.projects(), hasGeminiKey: Bool = KeychainStore.load() != nil,
+         store: ProjectStore? = nil) {
         precondition(!projects.isEmpty, "the window always has a project")
         self.projects = projects
+        self.hasGeminiKey = hasGeminiKey
+        self.store = store
         currentID = projects[0].id
         openHistory()
+    }
+
+    /// The app's start: every saved project, newest opened first. The very first launch writes the demo projects
+    /// (without their mock takes) so the window isn't empty.
+    static func launch(store: ProjectStore = .standard) -> EditorViewModel {
+        var projects = store.loadAll()
+        if projects.isEmpty {
+            projects = MockData.projects().map {
+                Project(id: UUID().uuidString, opened: $0.opened, draft: $0.draft, takes: [], selection: nil)
+            }
+            for project in projects { try? store.save(project) }
+        }
+        return EditorViewModel(projects: projects, store: store)
     }
 
     // MARK: - The open project
@@ -58,9 +96,16 @@ final class EditorViewModel {
     /// Recent Projects order: last opened first.
     var recentProjects: [Project] { projects.sorted { $0.opened > $1.opened } }
 
-    /// After an edit: one History step, labelled by what changed. Autosave hooks in here in Phase 3.
+    /// After an edit: one History step, labelled by what changed — and the project is saved.
     func record(_ label: String) {
         histories[currentID, default: history].record(label, snapshot: draft)
+        save(project)
+    }
+
+    /// Autosave: `project.json` only (takes are written once, when generated).
+    func save(_ project: Project) {
+        guard let store else { return }
+        do { try store.save(project) } catch { notice = Notice(text: localized("saveFailed", project.draft.title)) }
     }
 
     private func openHistory() {
@@ -76,6 +121,7 @@ final class EditorViewModel {
         currentID = id
         project.opened = .now
         openHistory()
+        save(project)
     }
 
     /// New Project (after the model sheet): starts as "Untitled project" with one empty Script scene.
@@ -90,19 +136,26 @@ final class EditorViewModel {
     func add(_ draft: ProjectDraft, takes: [Take] = []) {
         let project = Project(id: UUID().uuidString, opened: .now, draft: draft, takes: takes, selection: nil)
         projects.append(project)
-        switchProject(to: project.id)
+        switchProject(to: project.id)   // saves it
     }
 
-    /// Forgets the entry only (the files stay — Phase 3). The last project can't go: the window needs one.
+    /// Its folder goes to the Trash; Undo brings it back. The last project can't go: the window needs one.
     func removeProject(_ id: String) {
         guard projects.count > 1, let at = projects.firstIndex(where: { $0.id == id }) else { return }
+        let trashed: URL?
+        do { trashed = try store?.trash(id) } catch {
+            notice = Notice(text: localized("trashFailed", projects[at].draft.title))
+            return
+        }
         let removed = projects.remove(at: at)
         if id == currentID {
             currentID = recentProjects[0].id
             openHistory()
         }
         notice = Notice(text: localized("removed", removed.draft.title)) { [weak self] in
-            self?.projects.insert(removed, at: min(at, self?.projects.count ?? 0))
+            guard let self else { return }
+            if let trashed { try? store?.restore(id, from: trashed) }
+            projects.insert(removed, at: min(at, projects.count))
         }
     }
 
@@ -145,22 +198,96 @@ final class EditorViewModel {
     func unpin(_ id: UUID) { histories[currentID, default: history].unpin(id) }
     func removeStep(_ id: UUID) { histories[currentID, default: history].removeStep(id) }
 
-    // MARK: - Generate (mock until Phase 3)
+    // MARK: - Google key (AI Providers): one key for every project, in the Keychain
 
-    /// Whole project only (ADR-009). Mock: waits like a request, then keeps a take marked MOCK.
+    /// Save (trimmed; empty = nothing to save). Returns false if the Keychain refused.
+    @discardableResult
+    func saveGeminiKey(_ key: String) -> Bool {
+        let key = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty else { return false }
+        guard KeychainStore.save(key) else { notice = Notice(text: localized("keyFailed")); return false }
+        hasGeminiKey = true
+        notice = Notice(text: localized("keySaved"))
+        return true
+    }
+
+    /// Remove, with Undo (the key comes back into the Keychain).
+    func removeGeminiKey() {
+        guard let old = KeychainStore.load() else { return }
+        KeychainStore.remove()
+        hasGeminiKey = false
+        notice = Notice(text: localized("keyRemoved")) { [weak self] in
+            if KeychainStore.save(old) { self?.hasGeminiKey = true }
+        }
+    }
+
+    /// Test connection → the line shown under the buttons.
+    func testGeminiKey() async -> String {
+        guard let key = KeychainStore.load() else { return "" }
+        do {
+            try await GeminiTTS.testKey(key)
+            return "✓ " + localized("testOk")
+        } catch let failure as GeminiTTS.Failure {
+            return "✗ " + failure.text
+        } catch {
+            return "✗ " + error.localizedDescription
+        }
+    }
+
+    // MARK: - Generate
+
+    /// Gemini TTS with the Keychain key, or nil after telling the user why not.
+    private func geminiKey() -> String? {
+        guard let key = loadKey() else {
+            hasGeminiKey = false
+            notice = Notice(text: localized("needKey"))
+            return nil
+        }
+        return key
+    }
+
+    /// Whole project only (ADR-009) → `Takes/<id>/take.wav` + `take.json`. A failure leaves no take behind.
     func generate() async {
         guard !isGenerating else { return }
         guard !segments(of: draft).isEmpty else { notice = Notice(text: localized("nothing")); return }
+        guard let key = geminiKey() else { return }
         let projectID = currentID, snapshot = draft
         isGenerating = true
         defer { isGenerating = false }
-        try? await Task.sleep(for: .milliseconds(1400))
-        // The user may have switched project meanwhile: the take belongs to the one that was generated
-        guard let at = projects.firstIndex(where: { $0.id == projectID }) else { return }
-        let take = Take(id: UUID().uuidString, created: .now, duration: estimateSeconds(plainText(of: snapshot)),
-                        draft: snapshot, mock: true)
-        projects[at].takes.insert(take, at: 0)
-        notice = Notice(text: localized("saved"))
+        do {
+            let wav = try await GeminiTTS.generate(snapshot, key: key, session: session)
+            // The user may have switched (or removed) the project meanwhile: the take belongs to the one generated
+            guard let at = projects.firstIndex(where: { $0.id == projectID }) else { return }
+            let created = Date.now
+            let take = Take(id: store?.newTakeID(at: created, in: projectID) ?? UUID().uuidString, created: created,
+                            duration: wavDuration(wav) ?? estimateSeconds(plainText(of: snapshot)),
+                            draft: snapshot, mock: false)
+            try store?.saveTake(take, wav: wav, in: projectID)
+            projects[at].takes.insert(take, at: 0)
+            notice = Notice(text: localized("saved"))
+        } catch {
+            notice = Notice(text: message(for: error))
+        }
+    }
+
+    func message(for error: Error) -> String {
+        (error as? GeminiTTS.Failure)?.text ?? error.localizedDescription
+    }
+
+    /// A take's bars, read from its WAV once and kept while the app runs (a take never changes).
+    func waveform(of take: Take) -> [Double]? {
+        if let cached = waveforms[take.id] { return cached }
+        guard let url = audio(of: take), let wav = try? Data(contentsOf: url), let heights = waveHeights(wav)
+        else { return nil }
+        waveforms[take.id] = heights
+        return heights
+    }
+
+    /// The take's WAV on disk, nil for a mock take (or without a store).
+    func audio(of take: Take) -> URL? {
+        guard !take.mock, let url = store?.audio(of: take.id, in: currentID),
+              FileManager.default.fileExists(atPath: url.path) else { return nil }
+        return url
     }
 
     /// The take's timeline comes back (fresh scene ids, the project keeps its name) as one History step.
@@ -172,12 +299,22 @@ final class EditorViewModel {
         record(localized("hist.take", Duration.seconds(take.duration).formatted(.time(pattern: .minuteSecond))))
     }
 
+    /// The take's folder goes to the Trash; Undo brings it back.
     func deleteTake(_ id: String) {
         let projectID = currentID
         guard let at = project.takes.firstIndex(where: { $0.id == id }) else { return }
+        var trashed: URL?
+        if !project.takes[at].mock, let store,
+           FileManager.default.fileExists(atPath: store.takeFolder(id, of: projectID).path) {
+            do { trashed = try store.trashTake(id, of: projectID) } catch {
+                notice = Notice(text: localized("trashFailed", id))
+                return
+            }
+        }
         let take = project.takes.remove(at: at)
         notice = Notice(text: localized("deleted")) { [weak self] in
             guard let self, let owner = projects.firstIndex(where: { $0.id == projectID }) else { return }
+            if let trashed { try? store?.restoreTake(id, of: projectID, from: trashed) }
             projects[owner].takes.insert(take, at: min(at, projects[owner].takes.count))
         }
     }
@@ -190,17 +327,32 @@ extension EditorViewModel {
             .joined(separator: "\u{1F}")
     }
 
-    func readyPreview(of scene: ScriptScene) -> Double? {
-        scenePreviews[scene.id].flatMap { $0.signature == previewSignature(of: scene) ? $0.duration : nil }
+    /// The scene's preview while it still matches the scene (any edit makes it stale).
+    func readyPreview(of scene: ScriptScene) -> ScenePreview? {
+        scenePreviews[scene.id].flatMap { $0.signature == previewSignature(of: scene) ? $0 : nil }
     }
 
-    /// Generate preview: this one scene, same model and voice as the take. Mock: waits, then it's Ready.
+    /// Generate preview: this one scene alone, same model and voice as the take.
     func generatePreview(of scene: ScriptScene) async {
         guard previewBusy == nil else { return }
+        guard !scene.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            notice = Notice(text: localized("nothing"))
+            return
+        }
+        guard let key = geminiKey() else { return }
         previewBusy = scene.id
         defer { previewBusy = nil }
-        try? await Task.sleep(for: .milliseconds(900))
-        scenePreviews[scene.id] = (previewSignature(of: scene), estimateSeconds(scene.text))
+        let signature = previewSignature(of: scene)
+        let one = ProjectDraft(title: draft.title, model: draft.model, speakers: draft.speakers,
+                               items: [.script(scene)])
+        do {
+            let wav = try await GeminiTTS.generate(one, key: key, session: session)
+            let duration = wavDuration(wav) ?? estimateSeconds(scene.text)
+            scenePreviews[scene.id] = ScenePreview(signature: signature, duration: duration, audio: wav,
+                                                   heights: waveHeights(wav))
+        } catch {
+            notice = Notice(text: message(for: error))
+        }
     }
 }
 

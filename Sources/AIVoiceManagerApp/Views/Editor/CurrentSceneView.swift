@@ -56,6 +56,7 @@ private struct DropZone: ViewModifier {
 }
 
 private struct ScriptSceneView: View {
+    @Environment(OllamaStatus.self) private var ollama
     let scene: ScriptScene
     @Environment(EditorViewModel.self) private var vm
     @AppStorage("ui.toolPanel") private var rightPanel = RightPanel.agent.rawValue
@@ -90,7 +91,8 @@ private struct ScriptSceneView: View {
                     }
                 }
                 Spacer(minLength: 4)
-                Button(localized("panel.voices") + " →") { open(.voices, tab: "voices") }.controlSize(.small)
+                Button { open(.voices, tab: "voices") } label: { ChevronLabel(localized("panel.voices")) }
+                    .controlSize(.small)
             }
             Text(localized("voiceHint")).font(.app(11.5)).foregroundStyle(.secondary)
         }
@@ -114,7 +116,8 @@ private struct ScriptSceneView: View {
                 TextField(localized("style"), text: $style)
                     .textFieldStyle(.roundedBorder)
                     .onSubmit { vm.setStyle(style, of: scene.id) }
-                Button(localized("styleLib") + " →") { open(.voices, tab: "styles") }.controlSize(.small)
+                Button { open(.voices, tab: "styles") } label: { ChevronLabel(localized("styleLib")) }
+                    .controlSize(.small)
             }
             Text(localized("styleHint")).font(.app(11.5)).foregroundStyle(.secondary)
         }
@@ -151,10 +154,15 @@ private struct ScriptSceneView: View {
                 Text(localized("chars", "\(scene.text.count)", "\(Int(estimateSeconds(scene.text).rounded()))"))
                     .lineLimit(1).layoutPriority(-1)
                 Spacer(minLength: 4)
-                Text(verbatim: "✦ qwen3.8").lineLimit(1).layoutPriority(-2).help(localized("aiHelp"))
-                // ponytail: Ollama is Phase 3 (OllamaClient); Phase 2 says it's off, like the prototype offline
-                Button(localized("oPolish")) { vm.notice = .init(text: localized("ollamaOff")) }
-                Button(localized("oTags")) { vm.notice = .init(text: localized("ollamaOff")) }
+                Text(verbatim: "✦ " + (ollama.isRunning ? ollama.shortName : "Ollama"))
+                    .lineLimit(1).layoutPriority(-2).help(localized("aiHelp"))
+                if vm.aiBusy == scene.id {
+                    ProgressView().controlSize(.mini)
+                    Text(localized("ai.thinking"))
+                } else {
+                    Button(localized("oPolish")) { rewrite(.polish) }.disabled(vm.aiBusy != nil)
+                    Button(localized("oTags")) { rewrite(.pauses) }.disabled(vm.aiBusy != nil)
+                }
             }
             .controlSize(.small)
             .font(.app(11.5))
@@ -163,12 +171,24 @@ private struct ScriptSceneView: View {
         }
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(.separator))
     }
+
+    /// ✦ Polish / Add pauses: Ollama rewrites this scene (one History step); not running → say how to start it.
+    private func rewrite(_ kind: EditorViewModel.Rewrite) {
+        vm.commitText(of: scene.id)
+        guard ollama.isRunning else {
+            vm.notice = .init(text: localized("ollamaOff"))
+            Task { await ollama.probe() }   // maybe it was started since launch
+            return
+        }
+        Task { await vm.rewrite(kind, sceneID: scene.id, model: ollama.model) }
+    }
 }
 
 /// "✦ PREVIEW THIS SCENE WITH GEMINI TTS": the scene's own player — greyed out until Generate preview.
 private struct ScenePreviewSection: View {
     let scene: ScriptScene
     @Environment(EditorViewModel.self) private var vm
+    @Environment(ConnectionMonitor.self) private var net
     @Environment(Playback.self) private var playback
 
     var body: some View {
@@ -178,10 +198,10 @@ private struct ScenePreviewSection: View {
             HStack(spacing: 6) {
                 Text("✦ " + localized("previewScene").uppercased())
                     .font(.app(11, .semibold)).foregroundStyle(.secondary)
-                Pill(text: localized("bTier"))
+                TierPill()
             }
-            MockPlayer(source: .scene(scene.id), duration: ready ?? estimateSeconds(scene.text),
-                       seed: scene.id.hashValue)
+            PlayerBar(source: .scene(scene.id), duration: ready?.duration ?? estimateSeconds(scene.text),
+                      seed: scene.id.hashValue, audio: ready.map { .data($0.audio) }, heights: ready?.heights)
                 .disabled(ready == nil)
             HStack(spacing: 8) {
                 if busy {
@@ -190,8 +210,10 @@ private struct ScenePreviewSection: View {
                 } else if ready != nil {
                     Pill(text: "✓ " + localized("pvReady"), color: .green)
                     Button("↻ " + localized("pvRegen"), action: generate).controlSize(.small)
+                        .disabled(!net.isOnline).help(net.isOnline ? "" : localized("netNeeds"))
                 } else {
                     Button(localized("pvGen"), action: generate).glassButton(prominent: true)
+                        .disabled(!net.isOnline).help(net.isOnline ? "" : localized("netNeeds"))
                 }
                 let voice = vm.draft.speaker(scene.speaker).voice
                 Text(localized("sceneOnly", vm.model.name.replacingOccurrences(of: "Gemini ", with: ""), voice))
@@ -216,10 +238,21 @@ private struct ExpressionSceneView: View {
                     Text(localized("curExpr")).foregroundStyle(.secondary)
                     Text("<\(vm.label(scene.tag))>").font(.app(22, .bold)).help(scene.tag.rawValue)
                     Text(localized("exd." + scene.tag.key) + " · " + localized("exprHint")).foregroundStyle(.secondary)
+                    Picker(localized("repeat"), selection: Binding(get: { scene.times },
+                                                                    set: { vm.setTimes($0, of: scene.id) })) {
+                        ForEach(1...ExpressionScene.maxTimes, id: \.self) { Text(verbatim: "×\($0)").tag($0) }
+                    }
+                    .pickerStyle(.menu)
+                    .fixedSize()
+                    .controlSize(.small)
+                    .help(localized("repeatTip"))
                 }
                 Spacer()
-                Button(localized("panel.expressions") + " →") { rightPanel = RightPanel.expressions.rawValue }
-                    .controlSize(.small)
+                Button { rightPanel = RightPanel.expressions.rawValue } label: {
+                    ChevronLabel(localized("panel.expressions"))
+                }
+                .controlSize(.small)
+                .fixedSize()   // the description wraps instead; a narrow editor truncated the button
             }
             Text(localized("exprDrop")).font(.app(11.5)).foregroundStyle(.secondary)
         }
@@ -229,6 +262,29 @@ private struct ExpressionSceneView: View {
             return true
         }
         .padding(10)
+    }
+}
+
+/// Button title with a chevron (prototype `.to-right` / `.to-left`): "go to that panel".
+struct ChevronLabel: View {
+    let title: String
+    var back = false
+
+    init(_ title: String, back: Bool = false) {
+        self.title = title
+        self.back = back
+    }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            if back { chevron("chevron.left") }
+            Text(title)
+            if !back { chevron("chevron.right") }
+        }
+    }
+
+    private func chevron(_ name: String) -> some View {
+        Image(systemName: name).font(.system(size: 9, weight: .bold)).accessibilityHidden(true)
     }
 }
 

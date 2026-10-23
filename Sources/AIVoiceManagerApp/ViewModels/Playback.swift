@@ -3,32 +3,46 @@ import Foundation
 import Observation
 
 /// One player at a time (ADR-009): the scene's own preview or a take in Generate — starting one stops the other.
-/// Phase 2 is the prototype's mock: no audio yet, the clock runs and the UI says MOCK. Phase 3 swaps in AVAudioPlayer.
+/// Real audio plays through AVAudioPlayer; a mock take (demo data, no WAV) just runs the clock and says MOCK.
 @MainActor
 @Observable
 final class Playback {
     enum Source: Equatable { case scene(String), take(String) }
+    enum Audio { case data(Data), file(URL) }
 
     private(set) var source: Source?
     private(set) var elapsed: Double = 0
     private(set) var duration: Double = 0
     @ObservationIgnored private var clock: Task<Void, Never>?
+    @ObservationIgnored private var player: AVAudioPlayer?
 
     func isPlaying(_ source: Source) -> Bool { self.source == source }
 
-    func toggle(_ source: Source, duration: Double) {
-        if isPlaying(source) { stop() } else { play(source, duration: duration) }
+    func toggle(_ source: Source, duration: Double, audio: Audio? = nil) {
+        if isPlaying(source) { stop() } else { play(source, duration: duration, audio: audio) }
     }
 
-    func play(_ source: Source, duration: Double) {
+    func play(_ source: Source, duration: Double, audio: Audio? = nil) {
         stop()
         QuickPreview.shared.stop()
+        if let audio {
+            player = switch audio {
+            case .data(let data): try? AVAudioPlayer(data: data)
+            case .file(let url): try? AVAudioPlayer(contentsOf: url)
+            }
+            guard let player, player.play() else { self.player = nil; return }
+        }
         self.source = source
-        self.duration = max(duration, 1)
+        self.duration = max(player?.duration ?? duration, 1)
         clock = Task { [weak self] in
             while let self, !Task.isCancelled, elapsed < self.duration {
                 try? await Task.sleep(for: .milliseconds(100))
-                elapsed = min(elapsed + 0.1, self.duration)
+                if let player {
+                    guard player.isPlaying else { break }
+                    elapsed = player.currentTime
+                } else {
+                    elapsed = min(elapsed + 0.1, self.duration)
+                }
             }
             if !Task.isCancelled { self?.stop() }
         }
@@ -37,6 +51,8 @@ final class Playback {
     func stop() {
         clock?.cancel()
         clock = nil
+        player?.stop()
+        player = nil
         source = nil
         elapsed = 0
     }

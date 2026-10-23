@@ -96,7 +96,8 @@ private struct TimelineRow: View {
                 .lineLimit(1)
         case .expr(let scene):
             ExpressionIcon(tag: scene.tag, size: 22)
-            Text("<\(vm.label(scene.tag))>").foregroundStyle(.secondary).help(scene.tag.rawValue)
+            Text("<\(vm.label(scene.tag))>").foregroundStyle(.secondary).help(scene.text)
+            if scene.times > 1 { Text(verbatim: "×\(scene.times)").font(.app(11, .bold)).foregroundStyle(.tint) }
         }
     }
 }

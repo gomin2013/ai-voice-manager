@@ -16,10 +16,10 @@ func segments(of draft: ProjectDraft) -> [Segment] {
         switch item {
         case .expr(let scene):
             if let last = out.popLast() {
-                let text = last.text + " " + scene.tag.rawValue
+                let text = last.text + " " + scene.text
                 out.append(Segment(speaker: last.speaker, style: last.style, text: text))
             } else {
-                lead += scene.tag.rawValue + " "
+                lead += scene.text + " "
             }
         case .script(let scene):
             out.append(Segment(speaker: scene.speaker, style: scene.style, text: lead + scene.text))

@@ -2,8 +2,10 @@ import SwiftUI
 
 @main
 struct AIVoiceManagerApp: App {
-    @State private var vm = EditorViewModel()
+    @State private var vm = EditorViewModel.launch()
     @State private var playback = Playback()
+    @State private var net = ConnectionMonitor()
+    @State private var ollama = OllamaStatus()
     @State private var modelSheet: ModelPickerSheet.Mode?
 
     var body: some Scene {
@@ -12,9 +14,17 @@ struct AIVoiceManagerApp: App {
             ContentView(modelSheet: $modelSheet)
                 .environment(vm)
                 .environment(playback)
+                .environment(net)
+                .environment(ollama)
+                .task { net.start() }
+                .task { await ollama.probe() }
                 .frame(minWidth: 1440, minHeight: 760)   // both tool windows open (2 × 384) + the editor
-                .sheet(item: $modelSheet) { ModelPickerSheet(mode: $0).environment(vm) }
+                .sheet(item: $modelSheet) { ModelPickerSheet(mode: $0).environment(vm).environment(net) }
                 .onChange(of: vm.currentID) { playback.stop(); QuickPreview.shared.stop() }
+                // Text is committed on focus-out; quitting mid-sentence still saves what's typed
+                .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
+                    vm.save(vm.project)
+                }
         }
         .windowResizability(.contentMinSize)
         .commands {

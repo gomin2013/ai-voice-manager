@@ -4,6 +4,7 @@ import SwiftUI
 /// all under the name, nowhere else (prototype `.title-row` + `renderStatus`).
 struct ProjectHeader: View {
     @Environment(EditorViewModel.self) private var vm
+    @Environment(ConnectionMonitor.self) private var net
     @AppStorage("ui.toolPanel") private var rightPanel = RightPanel.agent.rawValue
     @AppStorage("ui.leftPanel") private var leftPanel = LeftPanel.providers.rawValue
     @Binding var modelSheet: ModelPickerSheet.Mode?
@@ -17,13 +18,14 @@ struct ProjectHeader: View {
             HStack(spacing: 8) {
                 title
                 Spacer()
-                Button {} label: { Label(localized("exportProject"), systemImage: "arrow.up.to.line") }
+                Button(action: export) { Label(localized("exportProject"), systemImage: "arrow.up.to.line") }
                     .glassButton()
-                    // ponytail: Phase 2 writes no files — Export / Open Project… come with ProjectStore (Phase 3)
-                    .disabled(true)
                     .help(localized("exportTip"))
                 Button { rightPanel = RightPanel.generate.rawValue } label: {
-                    Label { Text(localized("generateDots") + " →") } icon: { FloppyIcon.image }
+                    Label { ChevronLabel(localized("generateDots")) } icon: {
+                        // The 24 pt template image at SF Symbol size: at full size it made Generate taller than Export
+                        FloppyIcon.image.resizable().scaledToFit().frame(width: 16, height: 16)
+                    }
                 }
                 .glassButton(prominent: true)
             }
@@ -86,26 +88,32 @@ struct ProjectHeader: View {
         HStack(spacing: 8) {
             Text(verbatim: "✦").foregroundStyle(.secondary)
             Text(vm.model.name).font(.app(12.5, .semibold))
-            Pill(text: localized("bTier"))
+            TierPill()
             Button(localized("modelChange")) { modelSheet = .change }.controlSize(.small)
         }
     }
 
     @ViewBuilder
     private var notices: some View {
-        // ponytail: Phase 2 has no Keychain, so Google always reads as not connected (the prototype's first run)
-        notice("🔑 " + localized("needKey"), button: "← " + localized("panel.providers")) {
-            leftPanel = LeftPanel.providers.rawValue
+        NetAlertBanner().animation(.easeInOut(duration: 0.2), value: net.alert)
+        if !vm.hasGeminiKey {
+            notice("🔑 " + localized("needKey"), button: localized("panel.providers"), back: true) {
+                leftPanel = LeftPanel.providers.rawValue
+            }
         }
         if vm.model.readsThai == false && containsThai(plainText(of: vm.draft)) {
             notice(localized("thaiWarn"), button: localized("modelChange")) { modelSheet = .change }
         }
     }
 
-    private func notice(_ text: String, button: String, action: @escaping () -> Void) -> some View {
+    private func notice(_ text: String, button: String, back: Bool = false,
+                        action: @escaping () -> Void) -> some View {
         HStack(spacing: 8) {
             Text(text).font(.app(12))
-            Button(button, action: action).controlSize(.small)
+            Button(action: action) {
+                if back { ChevronLabel(button, back: true) } else { Text(button) }
+            }
+            .controlSize(.small)
             Spacer(minLength: 0)
         }
         .foregroundStyle(.orange)
@@ -168,6 +176,21 @@ struct ModelPickerSheet: View {
         case true: "thaiOk"
         case false: "thaiNo"
         case nil: "thaiUnknown"
+        }
+    }
+}
+
+extension ProjectHeader {
+    func export() {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = vm.fileStem + "." + ProjectArchive.fileExtension
+        panel.allowedContentTypes = [.zip]
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try vm.exportArchive(to: url)
+            vm.notice = EditorViewModel.Notice(text: localized("exportDone", url.lastPathComponent))
+        } catch {
+            vm.notice = EditorViewModel.Notice(text: localized("saveFailed", url.lastPathComponent))
         }
     }
 }

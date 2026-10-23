@@ -24,7 +24,8 @@ func clean(imported object: Any?, fallbackTitle: String) -> ProjectDraft {
             let muted = item["muted"] as? Bool == true
             if item["type"] as? String == "expr" {
                 let tag = ExpressionTag(rawValue: item["tag"] as? String ?? "") ?? .breath
-                return .expr(ExpressionScene(tag: tag, muted: muted))
+                // times: the init clamps to 1…10
+                return .expr(ExpressionScene(tag: tag, muted: muted, times: item["times"] as? Int ?? 1))
             }
             return .script(ScriptScene(speaker: speakerID(item["speaker"]), style: text(item["style"], 200),
                                        text: text(item["text"], 10_000), muted: muted))

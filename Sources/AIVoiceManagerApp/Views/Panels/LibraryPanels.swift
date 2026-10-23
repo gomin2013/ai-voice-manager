@@ -51,10 +51,10 @@ struct VoiceLibraryPanel: View {
                 TextField(localized("vSearch"), text: $query).textFieldStyle(.roundedBorder)
                 Picker(localized("gender"), selection: $filter) {
                     Text(localized("all") + " \(VoiceCatalog.all.count)").tag(VoiceFilter.all)
-                    Text("♂ " + localized("male") + " \(male)").tag(VoiceFilter.gender(.male))
-                    Text("♀ " + localized("female") + " \(female)").tag(VoiceFilter.gender(.female))
-                    // ★ only: a 4th worded segment outgrows the 320 pt panel (Thai) and pushes every panel under the rail
-                    Text("★ \(favorites.count)").help(localized("fav")).accessibilityLabel(localized("fav"))
+                    Text(localized("male") + " \(male)").tag(VoiceFilter.gender(.male))
+                    Text(localized("female") + " \(female)").tag(VoiceFilter.gender(.female))
+                    // ♥ only: a 4th worded segment outgrows the 320 pt panel (Thai) and pushes every panel under the rail
+                    Text("♥ \(favorites.count)").help(localized("fav")).accessibilityLabel(localized("fav"))
                         .tag(VoiceFilter.favorites)
                 }
                 .pickerStyle(.segmented)
@@ -166,8 +166,8 @@ private struct LibraryRow<Icon: View, Title: View>: View {
             if let favorite {
                 let hint = localized(favorite.isOn ? "favRemove" : "favAdd")
                 Button(action: favorite.toggle) {
-                    Image(systemName: favorite.isOn ? "star.fill" : "star")
-                        .foregroundStyle(favorite.isOn ? AnyShapeStyle(.yellow) : AnyShapeStyle(.secondary))
+                    Image(systemName: favorite.isOn ? "heart.fill" : "heart")   // like Google's TTS playground
+                        .foregroundStyle(favorite.isOn ? AnyShapeStyle(.pink) : AnyShapeStyle(.secondary))
                 }
                 .buttonStyle(.borderless).help(hint).accessibilityLabel(hint)
                 .accessibilityAddTraits(favorite.isOn ? .isSelected : [])

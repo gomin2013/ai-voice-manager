@@ -1,44 +1,74 @@
 import SwiftUI
 
-/// AI Agent — ponytail: Phase 2 mock (no network). Ollama + hosts-manager's ChatPanel / AIStreaming arrive with
-/// OllamaClient in Phase 3; this keeps the prototype's offline look: intro, Try asking, canned MOCK answers.
+/// AI Agent: chat with Ollama about the project (prototype `panel_agent`). The answer streams in as Ollama writes
+/// it; Stop cancels. Ollama not running → the prototype's canned MOCK answer, still about this project.
+/// The conversation is view state, kept while the app runs (ToolWindow keeps every panel mounted).
 struct AgentPanel: View {
     @Environment(EditorViewModel.self) private var vm
+    @Environment(OllamaStatus.self) private var ollama
     @State private var messages: [Message] = []
+    @State private var draftQuestion = ""
+    @State private var reply: Task<Void, Never>?
 
     private struct Message: Identifiable {
         let id = UUID()
         let question: String
-        let answer: String
+        var answer: String
     }
-    @State private var draftQuestion = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Circle().fill(.secondary).frame(width: 7, height: 7)
-                Text(localized("ai.offline")).font(.app(11)).foregroundStyle(.secondary)
-            }
-            ScrollView {
-                VStack(alignment: .leading, spacing: 10) {
-                    if messages.isEmpty { intro }
-                    ForEach(messages) { message in
-                        Text(message.question).padding(8)
-                            .background(.tint.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                        Text(markdown(message.answer)).textSelection(.enabled)
+            status
+            ScrollViewReader { scroller in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 10) {
+                        if messages.isEmpty { intro }
+                        ForEach(messages) { message in
+                            Text(message.question).padding(8)
+                                .background(.tint.opacity(0.15), in: RoundedRectangle(cornerRadius: 8))
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                            Text(message.answer.isEmpty ? AttributedString(localized("ai.thinking"))
+                                                        : markdown(message.answer))
+                                .foregroundStyle(message.answer.isEmpty ? .secondary : .primary)
+                                .textSelection(.enabled)
+                                .id(message.id)
+                        }
                     }
                 }
+                .onChange(of: messages.last?.answer) { scroller.scrollTo(messages.last?.id, anchor: .bottom) }
             }
             HStack {
                 TextField(localized("ai.ask"), text: $draftQuestion).textFieldStyle(.roundedBorder).onSubmit(send)
-                Button(localized("ai.send"), action: send)
-                    .disabled(draftQuestion.trimmingCharacters(in: .whitespaces).isEmpty)
+                if reply != nil {
+                    Button(localized("stop")) { reply?.cancel() }
+                } else {
+                    Button(localized("ai.send"), action: send)
+                        .disabled(draftQuestion.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
             }
         }
         .font(.app(12.5))
         .padding(.horizontal, 14)
         .padding(.bottom, 12)
+    }
+
+    @ViewBuilder
+    private var status: some View {
+        HStack(spacing: 6) {
+            Circle().fill(ollama.isRunning ? AnyShapeStyle(.green) : AnyShapeStyle(.secondary))
+                .frame(width: 7, height: 7)
+            if ollama.isRunning {
+                @Bindable var ollama = ollama
+                Picker(localized("ai.model"), selection: $ollama.model) {
+                    ForEach(ollama.models, id: \.self) { Text($0).tag($0) }
+                }
+                .labelsHidden()
+                .controlSize(.small)
+                .fixedSize()
+            } else {
+                Text(localized("ai.offline")).font(.app(11)).foregroundStyle(.secondary)
+            }
+        }
     }
 
     private var intro: some View {
@@ -54,7 +84,7 @@ struct AgentPanel: View {
                         Spacer()
                         Image(systemName: "chevron.right").foregroundStyle(.tertiary)
                     }
-                        .contentShape(Rectangle())
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .padding(.vertical, 3)
@@ -67,14 +97,33 @@ struct AgentPanel: View {
         return (try? AttributedString(markdown: text, options: options)) ?? AttributedString(text)
     }
 
-    /// The prototype's `mockReply`: names who says what, so the canned answer is still about this project.
     private func send() {
         let question = draftQuestion.trimmingCharacters(in: .whitespaces)
-        guard !question.isEmpty else { return }
-        let lines = segments(of: vm.draft).map { "**\(vm.draft.speaker($0.speaker).name)**: " +
-            $0.text.replacing(/<[^>]+>/, with: "").trimmingCharacters(in: .whitespaces) }
-        let answer = localized("ai.mock") + "\n\n" + lines.joined(separator: "\n")
-        messages.append(Message(question: question, answer: answer))
+        guard !question.isEmpty, reply == nil else { return }
         draftQuestion = ""
+        guard ollama.isRunning else {
+            messages.append(Message(question: question, answer: localized("ai.mock") + "\n\n" + vm.agentMockReply))
+            Task { await ollama.probe() }   // started since launch? the next question uses it
+            return
+        }
+        // The project as it is now, then the last 4 exchanges (the prototype's last 8 turns)
+        var turns: [OllamaClient.Message] = [.init(role: .system, content: vm.agentContext)]
+        for message in messages.suffix(4) {
+            turns += [.init(role: .user, content: message.question), .init(role: .assistant, content: message.answer)]
+        }
+        turns.append(.init(role: .user, content: question))
+        messages.append(Message(question: question, answer: ""))
+        let index = messages.count - 1, model = ollama.model
+        reply = Task {
+            do {
+                for try await piece in OllamaClient.stream(model: model, messages: turns) {
+                    messages[index].answer += piece
+                }
+            } catch where Task.isCancelled {   // Stop: keep what came so far (URLSession throws URLError here)
+            } catch {
+                messages[index].answer += (messages[index].answer.isEmpty ? "" : "\n\n") + localized("ollamaFailed")
+            }
+            reply = nil
+        }
     }
 }

@@ -102,6 +102,16 @@ extension EditorViewModel {
         record(localized("hist.expr", label(tag)))
     }
 
+    /// Repeat ×1…×10 (clamped by `ExpressionScene`).
+    func setTimes(_ times: Int, of id: String) {
+        guard let at = items.firstIndex(where: { $0.id == id }), case .expr(var scene) = items[at] else { return }
+        let old = scene.times
+        scene.times = min(ExpressionScene.maxTimes, max(1, times))
+        guard scene.times != old else { return }
+        draft.items[at] = .expr(scene)
+        record(localized("hist.times", label(scene.tag), "\(scene.times)"))
+    }
+
     /// Style Library Apply: the selected Script scene gets the style.
     func useStyle(_ name: String) {
         guard case .script(let scene) = selectedItem else { notice = Notice(text: localized("pickScript")); return }

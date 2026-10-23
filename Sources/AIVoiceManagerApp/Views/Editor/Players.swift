@@ -1,27 +1,31 @@
 import AVFoundation
 import SwiftUI
 
-/// ▶ waveform 0:00 / 0:07 MOCK — the scene's and the take's player look the same; `Playback` keeps one playing.
-struct MockPlayer: View {
+/// ▶ waveform 0:00 / 0:07 — the scene's and the take's player look the same; `Playback` keeps one playing.
+/// No `audio` = a mock take (demo data): the clock runs and it says MOCK.
+struct PlayerBar: View {
     let source: Playback.Source
     let duration: Double
     let seed: Int
+    var audio: Playback.Audio?
+    /// The real waveform (`waveHeights`); nil = seeded bars (a mock take, or before it's computed).
+    var heights: [Double]?
     @Environment(Playback.self) private var playback
     @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         let playing = playback.isPlaying(source)
         HStack(spacing: 10) {
-            Button { playback.toggle(source, duration: duration) } label: {
+            Button { playback.toggle(source, duration: duration, audio: audio) } label: {
                 Image(systemName: playing ? "stop.fill" : "play.fill")
             }
             .buttonStyle(.borderless)
             .help(localized(playing ? "stop" : "play"))
             .accessibilityLabel(localized(playing ? "stop" : "play"))
-            WaveBars(seed: seed, progress: playing ? playback.elapsed / playback.duration : 0)
+            WaveBars(seed: seed, progress: playing ? playback.elapsed / playback.duration : 0, heights: heights)
             Text(time(playing ? playback.elapsed : 0) + " / " + time(duration))
                 .font(.data(11)).foregroundStyle(.secondary)
-            Pill(text: localized("bMock"), color: .secondary)
+            if audio == nil { Pill(text: localized("bMock"), color: .secondary) }
         }
         .padding(8)
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(.separator))
@@ -33,13 +37,15 @@ struct MockPlayer: View {
     }
 }
 
-/// 60 bars from a fixed seed (the prototype's `waveBars`), filled up to `progress`.
+/// 60 bars — the audio's own (`waveHeights`) or, without audio, from a fixed seed (the prototype's `waveBars`) —
+/// filled up to `progress`.
 struct WaveBars: View {
     let seed: Int
     let progress: Double
+    var heights: [Double]?
 
     var body: some View {
-        let heights = Self.heights(seed: seed)
+        let heights = heights ?? Self.heights(seed: seed)
         // Canvas: the bars spread over whatever width there is (a fixed bar width set the column's minimum)
         Canvas { context, size in
             let step = size.width / CGFloat(heights.count)
