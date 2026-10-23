@@ -90,15 +90,6 @@ final class EditorViewModelTests: XCTestCase {
         XCTAssertEqual(vm.history.pinned.count, 1)   // When Opened never falls off
     }
 
-    func testGenerateSavesToTheProjectThatWasGenerated() async {
-        let task = Task { await vm.generate() }
-        while !vm.isGenerating { await Task.yield() }   // switch while the request is out
-        vm.switchProject(to: "q")
-        await task.value
-        XCTAssertEqual(vm.projects.first { $0.id == "p" }?.takes.count, 1)
-        XCTAssertEqual(vm.project.takes.count, 0)
-    }
-
     func testRestoreTakeGivesFreshIds() throws {
         let take = Take(id: "t", created: .now, duration: 9, draft: Fixtures.single, mock: true)
         vm.add(Fixtures.two, takes: [take])

@@ -15,5 +15,8 @@ final class InfoPlistTests: XCTestCase {
         XCTAssertEqual(plist["CFBundleExecutable"] as? String, "AIVoiceManager")
         XCTAssertEqual(plist["CFBundleIdentifier"] as? String, "com.aivoicemanager.app")
         XCTAssertEqual(plist["LSMinimumSystemVersion"] as? String, "14.0")
+        // build-app.sh copies Packaging/Assets.car (macOS 26) + AppIcon.icns (14–15): both are found by this name
+        XCTAssertEqual(plist["CFBundleIconName"] as? String, "AppIcon")
+        XCTAssertEqual(plist["CFBundleIconFile"] as? String, "AppIcon")
     }
 }
