@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.0.1 — 2026-10-24
+
+### Changed
+
+- **Icons instead of emoji** — Getting started ticks, the Ollama card, the Current Scene header, the missing-key
+  notice and the mute and pin hints in the timeline and Help are drawn with SF Symbols, in the app's own colours.
+- **Website: the whole Gomin family in the footer** — every page now links AI Voice Manager too, in the family
+  order: Gomin Apps · Hosts Manager · Git Exclude Manager · AI Voice Manager · SwiftUI Mac Skills · Profile · GitHub ·
+  Sponsor.
+
+### Installation
+
+Download `AIVoiceManager-1.0.1.dmg` (and `SHA256SUMS.txt`), drag **AI Voice Manager** to **Applications** (replace
+the old copy) and allow the first launch in **System Settings → Privacy & Security → Open Anyway** (or
+`xattr -dr com.apple.quarantine "/Applications/AIVoiceManager.app"`). Then paste a Gemini API key from
+[Google AI Studio](https://aistudio.google.com/apikey) in **AI Providers**. Requires an Apple silicon Mac with
+macOS 14 or later and an internet connection; Ollama is optional.
+
 ## v1.0.0 — 2026-10-24
 
 The first release: AI voice-overs written scene by scene, previewed free with the Mac's own voices and generated with
