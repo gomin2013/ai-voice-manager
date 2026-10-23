@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.0 — Unreleased
+## v1.0.0 — 2026-10-24
 
 The first release: AI voice-overs written scene by scene, previewed free with the Mac's own voices and generated with
 Gemini TTS on your own API key. Every take is kept.
