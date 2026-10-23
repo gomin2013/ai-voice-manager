@@ -31,7 +31,7 @@ struct ScriptTimeline: View {
             .listStyle(.inset)
             .scrollContentBackground(.hidden)
             Divider()
-            Text(footer)
+            Text(symbols: footer)
                 .font(.app(11))
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)

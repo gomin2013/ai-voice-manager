@@ -59,7 +59,8 @@ struct StyleIcon: View {
             Image(nsImage: image).resizable().scaledToFit().frame(width: size, height: size)
                 .accessibilityHidden(true)
         } else {
-            Text(verbatim: "🎭").font(.system(size: size * 0.7)).frame(width: size, height: size)
+            Image(systemName: "face.smiling").font(.system(size: size * 0.6)).foregroundStyle(.secondary)
+                .frame(width: size, height: size)
                 .accessibilityHidden(true)
         }
     }
@@ -137,5 +138,26 @@ extension Date {
         let locale = Locale(identifier: LanguageService.shared.current.rawValue)
         let style = Date.FormatStyle(date: .abbreviated, time: .shortened, locale: locale, calendar: locale.calendar)
         return formatted(style)
+    }
+}
+
+extension Text {
+    /// A string whose `{sf.name}` tokens are drawn as SF Symbols: icons inside translated text instead of emoji.
+    init(symbols string: String) {
+        self = Self.symbolRuns(string).reduce(Text(verbatim: "")) { text, run in
+            guard let symbol = run.symbol else { return Text("\(text)\(Text(verbatim: run.text))") }
+            return Text("\(text)\(Text(verbatim: run.text))\(Image(systemName: symbol))")
+        }
+    }
+
+    /// "Drag · {speaker.slash} mutes" → ("Drag · ", "speaker.slash"), (" mutes", nil). A lone `{` stays text.
+    nonisolated static func symbolRuns(_ string: String) -> [(text: String, symbol: String?)] {
+        var runs: [(text: String, symbol: String?)] = []
+        var rest = Substring(string)
+        while let open = rest.firstIndex(of: "{"), let close = rest[open...].firstIndex(of: "}") {
+            runs.append((String(rest[..<open]), String(rest[rest.index(after: open)..<close])))
+            rest = rest[rest.index(after: close)...]
+        }
+        return runs + [(String(rest), nil)]
     }
 }

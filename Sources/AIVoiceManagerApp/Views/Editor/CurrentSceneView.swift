@@ -8,7 +8,7 @@ struct CurrentSceneView: View {
     var body: some View {
         let item = vm.selectedItem
         VStack(alignment: .leading, spacing: 0) {
-            Text(header(item)).font(.app(13, .semibold)).padding(10)
+            header(item).font(.app(13, .semibold)).padding(10)
             Divider()
             ScrollView {
                 switch item {
@@ -21,10 +21,11 @@ struct CurrentSceneView: View {
         .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.separator))
     }
 
-    private func header(_ item: TimelineItem) -> String {
+    private func header(_ item: TimelineItem) -> Text {
         let isExpression = if case .expr = item { true } else { false }
-        return (isExpression ? "🎭 " : "🎬 ") + localized("currentScene") + " · "
-            + localized(isExpression ? "expression" : "script") + " #\(vm.sceneNumber(item.id))"
+        let title = localized("currentScene") + " · " + localized(isExpression ? "expression" : "script")
+            + " #\(vm.sceneNumber(item.id))"
+        return Text("\(Image(systemName: isExpression ? "face.smiling" : "movieclapper")) \(title)")
     }
 }
 
