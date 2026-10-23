@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-th="AI Voice Manager · เขียนบทเป็นฉาก แล้วฟังด้วยเสียง AI">AI Voice Manager · Write it scene by scene, hear it in AI voices</title>
+  <meta name="description" data-th="แอป macOS ฟรีโอเพนซอร์สสำหรับทำเสียงพากย์ AI เขียนบทเป็นฉาก ลองฟังฟรีด้วยเสียงของ Mac แล้วสร้างเสียงจริงด้วย Gemini TTS ผ่าน key ของคุณเอง ทุก take เก็บไว้" content="A free, open-source macOS app for AI voice-overs. Write a script scene by scene, listen free with your Mac's voices, then generate the take with Gemini TTS on your own key. Every take is kept.">
+  <link rel="canonical" href="https://gomin2013.github.io/ai-voice-manager/">
+  <link rel="alternate" hreflang="en" href="https://gomin2013.github.io/ai-voice-manager/">
+  <link rel="alternate" hreflang="th" href="https://gomin2013.github.io/ai-voice-manager/th/">
+  <link rel="alternate" hreflang="x-default" href="https://gomin2013.github.io/ai-voice-manager/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AI Voice Manager">
+  <meta property="og:title" data-th="AI Voice Manager · เขียนบทเป็นฉาก แล้วฟังด้วยเสียง AI" content="AI Voice Manager · Write it scene by scene, hear it in AI voices">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="th_TH">
+  <meta property="og:description" data-th="ฟรีและโอเพนซอร์ส เสียง Gemini 30 แบบ ลองฟังทีละฉาก และเก็บทุก take ไว้ในหน้าต่าง Mac เดียว" content="Free and open source. 30 Gemini voices, scene-by-scene previews and every take kept, in one native Mac window.">
+  <meta property="og:url" content="https://gomin2013.github.io/ai-voice-manager/">
+  <meta property="og:image" content="https://gomin2013.github.io/ai-voice-manager/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f7f7f8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0c0d10" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="assets/img/avm-icon.png">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="assets/site.css">
+  <script>try{var d=document.documentElement,n=(navigator.language||"").toLowerCase(),l=localStorage.getItem("avm.lang")||(/^zh-(hant|tw|hk|mo)/.test(n)?"zh-Hant":/^zh/.test(n)?"zh-Hans":/^fil/.test(n)?"tl":n.slice(0,2));if("en th ja ko vi id ms tl zh-Hans zh-Hant es ru".split(" ").indexOf(l)<0)l="en";d.lang=l;if(l==="th"){d.classList.add("th");document.querySelectorAll("[data-th]").forEach(function(e){e.tagName==="TITLE"?e.textContent=e.dataset.th:e.content=e.dataset.th})}else if(l!=="en")d.classList.add("i18n-wait")}catch(e){}</script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "AI Voice Manager",
+    "operatingSystem": "macOS 14 or later",
+    "applicationCategory": "MultimediaApplication",
+    "description": "A free, open-source macOS app for AI voice-overs: write a script scene by scene, preview it with the Mac's own voices, generate takes with Gemini TTS on your own API key, and keep every take.",
+    "url": "https://gomin2013.github.io/ai-voice-manager/",
+    "downloadUrl": "https://github.com/gomin2013/ai-voice-manager/releases/latest",
+    "image": "https://gomin2013.github.io/ai-voice-manager/assets/img/avm-icon.png",
+    "screenshot": "https://gomin2013.github.io/ai-voice-manager/assets/img/avm-main.png",
+    "softwareVersion": "1.0.0",
+    "license": "https://opensource.org/licenses/MIT",
+    "inLanguage": ["en", "th"],
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Watthajak Jinasam", "url": "https://github.com/gomin2013" }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap nav">
+      <a class="brand" href="./"><img src="assets/img/avm-icon.png" alt="" width="30" height="30">AI Voice Manager</a>
+      <nav class="nav-links" aria-label="Main">
+        <a href="#features" class="hide-sm"><span class="en">Features</span><span class="th">ฟีเจอร์</span></a>
+        <a href="download/"><i class="ph ph-download-simple" aria-hidden="true"></i><span class="en">Download</span><span class="th">ดาวน์โหลด</span></a>
+        <a href="about/"><i class="ph ph-info" aria-hidden="true"></i><span class="en">About</span><span class="th">เกี่ยวกับ</span></a>
+        <a href="https://github.com/gomin2013/ai-voice-manager" target="_blank" rel="noopener" class="hide-sm">GitHub</a>
+      </nav>
+      <button type="button" class="lang-btn" data-lang-open aria-haspopup="dialog" aria-label="Language"><i class="ph ph-globe" aria-hidden="true"></i><span class="lang-name">English</span><span class="lang-code">en</span></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero: asymmetric split, real screenshot -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1 class="reveal">
+            <span class="en">Write it scene by scene. Hear it in AI voices.</span>
+            <span class="th">เขียนบทเป็นฉาก แล้วฟังด้วยเสียง AI</span>
+          </h1>
+          <p class="lede reveal" data-d="1">
+            <span class="en">A free macOS app for AI voice-overs. Listen free with your Mac's own voices while you write, then generate the real take with Gemini TTS on your own key. Every take is kept.</span>
+            <span class="th">แอป macOS ฟรีสำหรับทำเสียงพากย์ AI ลองฟังฟรีด้วยเสียงของ Mac ระหว่างเขียน แล้วสร้างเสียงจริงด้วย Gemini TTS ผ่าน key ของคุณเอง ทุก take เก็บไว้ให้</span>
+          </p>
+          <div class="cta-row reveal" data-d="2">
+            <a class="btn btn-primary" href="download/"><i class="ph ph-download-simple" aria-hidden="true"></i><span class="en">Download for Mac</span><span class="th">ดาวน์โหลดสำหรับ Mac</span></a>
+            <a class="btn btn-ghost" href="https://github.com/gomin2013/ai-voice-manager" target="_blank" rel="noopener"><i class="ph ph-github-logo" aria-hidden="true"></i><span class="en">View on GitHub</span><span class="th">ดูบน GitHub</span></a>
+          </div>
+        </div>
+        <div class="hero-shot reveal" data-d="1">
+          <img class="shot" src="assets/img/avm-main.png" width="1440" height="792" fetchpriority="high"
+               alt="AI Voice Manager window: Recent Projects on the left, a Script Timeline of lines and breaths, the Current Scene with its voice and style, and the Voice Library with Gemini voices, portraits and favourites">
+          <img class="mascot" src="assets/img/avm-mascot.png" width="512" height="512" alt="" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <!-- Facts strip -->
+    <section class="facts" aria-label="At a glance">
+      <div class="wrap">
+        <ul>
+          <li class="reveal"><i class="ph ph-code" aria-hidden="true"></i><span><strong><span class="en">Free and open source</span><span class="th">ฟรีและโอเพนซอร์ส</span></strong><span class="en">MIT license, no ads</span><span class="th">สัญญาอนุญาต MIT ไม่มีโฆษณา</span></span></li>
+          <li class="reveal" data-d="1"><i class="ph ph-apple-logo" aria-hidden="true"></i><span><strong><span class="en">Native macOS app</span><span class="th">แอป macOS แท้</span></strong><span class="en">Apple silicon, macOS 14+, Liquid Glass on macOS 26</span><span class="th">Apple silicon, macOS 14 ขึ้นไป, Liquid Glass บน macOS 26</span></span></li>
+          <li class="reveal" data-d="2"><i class="ph ph-key" aria-hidden="true"></i><span><strong><span class="en">Your key, your Mac</span><span class="th">key ของคุณ เครื่องของคุณ</span></strong><span class="en">No account with us; projects are plain files</span><span class="th">ไม่ต้องสมัครกับเรา โปรเจกต์เป็นไฟล์ธรรมดา</span></span></li>
+          <li class="reveal" data-d="3"><i class="ph ph-translate" aria-hidden="true"></i><span><strong><span class="en">English and Thai</span><span class="th">อังกฤษและไทย</span></strong><span class="en">The app, and the voices: Gemini reads Thai</span><span class="th">ทั้งตัวแอปและเสียง Gemini อ่านภาษาไทยได้</span></span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Features: bento, 7 items = 7 cells (a 4×2, b c 2, d e f g 3) -->
+    <section id="features">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2><span class="en">A voice-over studio that keeps your work</span><span class="th">สตูดิโอพากย์เสียงที่ไม่ทำงานของคุณหาย</span></h2>
+          <p><span class="en">No more losing a good take when you leave the playground. Projects save themselves, and every take stays in Results.</span><span class="th">ไม่ต้องเสีย take ดีๆ เพราะปิดหน้า playground อีกต่อไป โปรเจกต์บันทึกเอง และทุก take อยู่ใน Results</span></p>
+        </div>
+        <div class="bento">
+          <article class="cell cell-a reveal">
+            <i class="ph ph-list-bullets ico" aria-hidden="true"></i>
+            <h3><span class="en">A script you can rearrange</span><span class="th">บทที่จัดเรียงใหม่ได้</span></h3>
+            <p><span class="en">Every line and every pause is a scene. Drag to reorder, mute a scene to leave it out of the take, and give each line its own voice and style.</span><span class="th">ทุกบรรทัดและทุกช่วงหยุดคือหนึ่งฉาก ลากสลับลำดับได้ ปิดเสียงฉากที่ไม่อยากให้อยู่ใน take และกำหนดเสียงกับสไตล์ให้แต่ละบรรทัดได้</span></p>
+            <img src="assets/img/avm-timeline.png" width="690" height="620" loading="lazy"
+                 alt="Script Timeline with two lines and two breaths, next to the Current Scene showing its voice, its style and the line's text">
+          </article>
+          <article class="cell cell-b reveal" data-d="1">
+            <i class="ph ph-user-sound ico" aria-hidden="true"></i>
+            <h3><span class="en">30 Gemini voices</span><span class="th">เสียง Gemini 30 แบบ</span></h3>
+            <p><span class="en">Each with a portrait and a short description. Filter Male or Female, search, and ♥ the ones you use most.</span><span class="th">ทุกเสียงมีภาพและคำอธิบายสั้นๆ กรองชายหรือหญิง ค้นหา และกด ♥ เสียงที่ใช้บ่อย</span></p>
+          </article>
+          <article class="cell cell-c reveal" data-d="2">
+            <i class="ph ph-users ico" aria-hidden="true"></i>
+            <h3><span class="en">Two voices in one take</span><span class="th">สองเสียงใน take เดียว</span></h3>
+            <p><span class="en">Gemini speaks a conversation in one go: give a line the other voice and it becomes the second speaker.</span><span class="th">Gemini พูดเป็นบทสนทนาได้ในครั้งเดียว แค่ให้บรรทัดนั้นใช้อีกเสียง ก็กลายเป็นผู้พูดคนที่สอง</span></p>
+          </article>
+          <article class="cell cell-d reveal">
+            <i class="ph ph-wind ico" aria-hidden="true"></i>
+            <h3><span class="en">Breaths, pauses and laughs</span><span class="th">หายใจ เว้นจังหวะ และหัวเราะ</span></h3>
+            <p><span class="en">Drag an expression between two lines — breath, short or long pause, laugh, sigh, gasp, cough — and repeat it up to ×10.</span><span class="th">ลาก expression ไปวางระหว่างบรรทัด ทั้งหายใจ เว้นสั้น เว้นยาว หัวเราะ ถอนหายใจ ตกใจ ไอ และให้ซ้ำได้สูงสุด ×10</span></p>
+            <img src="assets/img/avm-expressions.png" width="348" height="520" loading="lazy"
+                 alt="Expression Library: Breath, Short pause, Long pause, Laugh, Sigh, Gasp and Cough, each with a paper-collage icon and an Insert button">
+          </article>
+          <article class="cell cell-e reveal" data-d="1">
+            <i class="ph ph-headphones ico" aria-hidden="true"></i>
+            <h3><span class="en">Hear it before you pay</span><span class="th">ฟังก่อนจ่าย</span></h3>
+            <p><span class="en">Quick preview reads the line with your Mac's voices, free and instant. Generate preview makes just one scene with Gemini. Only then the whole take.</span><span class="th">Quick preview อ่านบรรทัดด้วยเสียงของ Mac ฟรีและทันที Generate preview สร้างเสียงจริงแค่ฉากเดียว แล้วค่อยสร้างทั้ง take</span></p>
+<pre aria-label="Example script with expression tags"><span class="c"># Rami · Friendly</span>
+Still editing /etc/hosts in vim?
+&lt;short pause&gt;
+Hosts Manager does it in one click.
+
+<span class="c"># Mali · Calm</span>
+&lt;breath&gt; ×2</pre>
+          </article>
+          <article class="cell cell-f reveal">
+            <i class="ph ph-waveform ico" aria-hidden="true"></i>
+            <h3><span class="en">Every take kept</span><span class="th">เก็บทุก take</span></h3>
+            <p><span class="en">Results keeps every take. Play it with its waveform, download the WAV, or bring its timeline back. History keeps your last 30 edits per project.</span><span class="th">Results เก็บทุก take ไว้ เล่นพร้อมดู waveform ดาวน์โหลด WAV หรือดึงไทม์ไลน์ของ take นั้นกลับมาได้ ส่วน History เก็บการแก้ไข 30 ครั้งล่าสุดของแต่ละโปรเจกต์</span></p>
+            <img src="assets/img/avm-generate.png" width="348" height="372" loading="lazy"
+                 alt="Generate panel: the take's waveform in the player, the project's scenes, length and price, the Generate button and three takes in Results">
+          </article>
+          <article class="cell cell-g reveal" data-d="1">
+            <i class="ph ph-palette ico" aria-hidden="true"></i>
+            <h3><span class="en">Make it yours</span><span class="th">ปรับให้เป็นสไตล์คุณ</span></h3>
+            <p><span class="en">Liquid Glass on macOS 26 and Sukhumvit Set type. Light, Dark or System, 16 accent colours and 8 gradient themes.</span><span class="th">Liquid Glass บน macOS 26 และฟอนต์ Sukhumvit Set เลือก Light, Dark หรือตามระบบ สี accent 16 สี และธีม gradient 8 แบบ</span></p>
+            <div class="swatches" aria-hidden="true">
+              <span style="--c:#E00219"></span><span style="--c:#B45403"></span><span style="--c:#9A6405"></span><span style="--c:#7F7002"></span><span style="--c:#557B04"></span><span style="--c:#028132"></span><span style="--c:#057F60"></span><span style="--c:#077D7A"></span><span style="--c:#027A8F"></span><span style="--c:#036AE4"></span><span style="--c:#5C55FF"></span><span style="--c:#8F3DFA"></span><span style="--c:#B424D8"></span><span style="--c:#CF01A6"></span><span style="--c:#DB045E"></span><span style="--c:#6F6F6F"></span>
+            </div>
+            <div class="gradients" aria-hidden="true">
+              <span style="--a:#007CBE;--b:#FFF7AE"></span><span style="--a:#E57A44;--b:#251351"></span><span style="--a:#F1FEC6;--b:#A882DD"></span><span style="--a:#DB5375;--b:#B3FFB3"></span><span style="--a:#02C3BD;--b:#4E148C"></span><span style="--a:#629460;--b:#F4D35E"></span><span style="--a:#414288;--b:#B0DB43"></span><span style="--a:#FFC145;--b:#EC368D"></span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works: horizontal flow -->
+    <section id="how">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2><span class="en">From script to voice-over</span><span class="th">จากบทสู่เสียงพากย์</span></h2>
+          <p><span class="en">Five steps, and only the last two talk to Google.</span><span class="th">ห้าขั้นตอน และมีแค่สองขั้นสุดท้ายที่ติดต่อ Google</span></p>
+        </div>
+        <ol class="flow">
+          <li class="reveal"><span class="dot"><i class="ph ph-pencil-simple-line" aria-hidden="true"></i></span>
+            <h3><span class="en">Write</span><span class="th">เขียนบท</span></h3>
+            <p><span class="en">Type the lines, or open a project exported from another Mac.</span><span class="th">พิมพ์บท หรือเปิดโปรเจกต์ที่ส่งออกมาจาก Mac เครื่องอื่น</span></p></li>
+          <li class="reveal" data-d="1"><span class="dot"><i class="ph ph-user-sound" aria-hidden="true"></i></span>
+            <h3><span class="en">Cast</span><span class="th">เลือกเสียง</span></h3>
+            <p><span class="en">Drag a voice and a style onto each scene, and a breath or pause between them.</span><span class="th">ลากเสียงและสไตล์ไปวางที่แต่ละฉาก และวางหายใจหรือเว้นจังหวะไว้ระหว่างฉาก</span></p></li>
+          <li class="reveal" data-d="2"><span class="dot"><i class="ph ph-speaker-simple-high" aria-hidden="true"></i></span>
+            <h3><span class="en">Listen free</span><span class="th">ฟังฟรี</span></h3>
+            <p><span class="en">Quick preview reads it with your Mac's voices — nothing leaves your Mac.</span><span class="th">Quick preview อ่านด้วยเสียงของ Mac ไม่มีอะไรออกจากเครื่อง</span></p></li>
+          <li class="reveal" data-d="3"><span class="dot"><i class="ph ph-play-circle" aria-hidden="true"></i></span>
+            <h3><span class="en">Preview a scene</span><span class="th">ลองฟังหนึ่งฉาก</span></h3>
+            <p><span class="en">Gemini makes just that scene, in the voice the take will use.</span><span class="th">Gemini สร้างเสียงเฉพาะฉากนั้น ด้วยเสียงเดียวกับที่ take จะใช้</span></p></li>
+          <li class="reveal" data-d="3"><span class="dot"><i class="ph ph-floppy-disk" aria-hidden="true"></i></span>
+            <h3><span class="en">Generate</span><span class="th">สร้างเสียง</span></h3>
+            <p><span class="en">The whole project becomes one take, saved as a WAV next to its timeline.</span><span class="th">ทั้งโปรเจกต์กลายเป็นหนึ่ง take บันทึกเป็นไฟล์ WAV คู่กับไทม์ไลน์ของมัน</span></p></li>
+        </ol>
+        <div class="pin-note reveal">
+          <i class="ph ph-currency-circle-dollar" aria-hidden="true"></i>
+          <p><span class="en">Gemini runs on your own Google API key, kept in your Keychain. On the free tier a take costs nothing, but Google may use your text and audio to improve its products. With billing on, the app shows the price in US dollars and your currency and asks before every paid take.</span><span class="th">Gemini ทำงานด้วย Google API key ของคุณเอง เก็บไว้ใน Keychain ถ้าใช้ free tier สร้าง take ไม่เสียเงิน แต่ Google อาจนำข้อความและเสียงไปพัฒนาผลิตภัณฑ์ ถ้าเปิด billing แอปจะแสดงราคาเป็นดอลลาร์และสกุลเงินของคุณ และถามก่อนสร้าง take ที่เสียเงินทุกครั้ง</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI: split with a real screenshot -->
+    <section class="ai" id="ai">
+      <div class="wrap ai-grid">
+        <div class="ai-visual reveal">
+          <img class="panel" src="assets/img/avm-agent.png" width="348" height="740" loading="lazy"
+               alt="AI Agent panel on qwen3.8 with one-click questions such as Write a stronger opening line and Where should I add pauses?">
+          <img class="buddy" src="assets/img/avm-mascot.png" width="512" height="512" alt="" loading="lazy">
+        </div>
+        <div class="ai-copy">
+          <p class="eyebrow reveal">AI Agent</p>
+          <h2 class="reveal"><span class="en">A script helper on your Mac</span><span class="th">ผู้ช่วยเขียนบทในเครื่องของคุณ</span></h2>
+          <p class="lede reveal" data-d="1"><span class="en">Ollama runs on your Mac, with no login. It has no voices — it helps with the words, and never changes your project without you.</span><span class="th">Ollama ทำงานในเครื่องของคุณ ไม่ต้องล็อกอิน ไม่มีเสียงของตัวเอง ช่วยแค่เรื่องถ้อยคำ และไม่แก้โปรเจกต์โดยที่คุณไม่ได้สั่ง</span></p>
+          <ul>
+            <li class="reveal" data-d="1"><i class="ph ph-magic-wand" aria-hidden="true"></i><span><span class="en">Polish rewrites one scene so it sounds natural spoken. Add pauses places breaths and short pauses. One click, one step in History.</span><span class="th">Polish เกลาบทหนึ่งฉากให้พูดแล้วเป็นธรรมชาติ Add pauses ใส่จังหวะหายใจและเว้นจังหวะให้ คลิกเดียว ย้อนได้ใน History</span></span></li>
+            <li class="reveal" data-d="1"><i class="ph ph-chat-circle-text" aria-hidden="true"></i><span><span class="en">Ask about the whole project — “Make it fit 15 seconds”, “Suggest a style for each scene” — and watch the answer stream in.</span><span class="th">ถามเรื่องทั้งโปรเจกต์ได้ เช่น “ย่อให้พอดี 15 วินาที” หรือ “แนะนำสไตล์ของแต่ละฉาก” แล้วดูคำตอบค่อยๆ แสดงขึ้นมา</span></span></li>
+            <li class="reveal" data-d="2"><i class="ph ph-hard-drives" aria-hidden="true"></i><span><span class="en">Pick any model you have installed. Nothing you ask leaves your Mac.</span><span class="th">เลือกโมเดลที่ติดตั้งไว้ได้ สิ่งที่ถามไม่ออกนอกเครื่อง</span></span></li>
+            <li class="reveal" data-d="3"><i class="ph ph-wifi-slash" aria-hidden="true"></i><span><span class="en">The app tells you when the internet drops, comes back or slows down — and keeps your edits saved either way.</span><span class="th">แอปบอกเมื่ออินเทอร์เน็ตหลุด กลับมา หรือช้าลง และงานที่แก้ยังบันทึกอยู่เสมอ</span></span></li>
+          </ul>
+          <div class="logos reveal" data-d="3" aria-label="Works with">
+            <img src="assets/img/logos/googlegemini.svg" alt="Google Gemini TTS" width="26" height="26">
+            <img src="assets/img/logos/ollama.svg" alt="Ollama" width="26" height="26">
+            <img src="assets/img/logos/apple.svg" alt="Apple voices" width="22" height="26">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sibling apps -->
+    <section id="family">
+      <div class="wrap">
+        <div class="sibling reveal">
+          <div>
+            <p class="eyebrow"><span class="en">Also by the same author</span><span class="th">จากผู้พัฒนาคนเดียวกัน</span></p>
+            <div class="who">
+              <img src="assets/img/hm-icon.png" width="56" height="56" alt="">
+              <h2 style="font-size:30px">Hosts Manager</h2>
+            </div>
+            <p><span class="en">The same window and the same ideas, for /etc/hosts. Point domains at your local server, block trackers and undo any save, without sudo in a terminal.</span><span class="th">หน้าตาและแนวคิดเดียวกัน แต่สำหรับ /etc/hosts ชี้โดเมนมาที่เซิร์ฟเวอร์ในเครื่อง บล็อก tracker และย้อนการบันทึกได้ โดยไม่ต้องพิมพ์ sudo ใน Terminal</span></p>
+            <div class="cta-row" style="margin-top:22px">
+              <a class="btn btn-ghost" href="https://gomin2013.github.io/hosts-manager/"><i class="ph ph-arrow-square-out" aria-hidden="true"></i><span class="en">Website</span><span class="th">เว็บไซต์</span></a>
+              <a class="btn btn-ghost" href="https://github.com/gomin2013/hosts-manager" target="_blank" rel="noopener"><i class="ph ph-github-logo" aria-hidden="true"></i>GitHub</a>
+            </div>
+          </div>
+          <img class="shot" src="assets/img/hm-main-dark.png" width="1432" height="972" loading="lazy"
+               alt="Hosts Manager window with /etc/hosts entries grouped into Local dev, Staging and Blocked sections">
+        </div>
+        <div class="sibling reveal" style="margin-top:24px">
+          <div>
+            <div class="who">
+              <img src="assets/img/gem-icon.png" width="56" height="56" alt="">
+              <h2 style="font-size:30px">Git Exclude Manager</h2>
+            </div>
+            <p><span class="en">Keep local files out of git status. Edit .git/info/exclude in a native window, with sections, History and pattern sharing between repositories.</span><span class="th">ซ่อนไฟล์ส่วนตัวจาก git status แก้ .git/info/exclude ในหน้าต่าง Mac แบ่งหมวดได้ มี History และแชร์ pattern ข้าม repository ได้</span></p>
+            <div class="cta-row" style="margin-top:22px">
+              <a class="btn btn-ghost" href="https://gomin2013.github.io/git-exclude-manager/"><i class="ph ph-arrow-square-out" aria-hidden="true"></i><span class="en">Website</span><span class="th">เว็บไซต์</span></a>
+              <a class="btn btn-ghost" href="https://github.com/gomin2013/git-exclude-manager" target="_blank" rel="noopener"><i class="ph ph-github-logo" aria-hidden="true"></i>GitHub</a>
+            </div>
+          </div>
+          <img class="shot" src="assets/img/gem-main.png" width="1100" height="800" loading="lazy"
+               alt="Git Exclude Manager window with repository tabs and patterns grouped into Editors, Secrets and Claude Code sections">
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing -->
+    <section class="closing">
+      <div class="wrap">
+        <div class="closing-inner reveal">
+          <img src="assets/img/avm-mascot.png" width="512" height="512" alt="" loading="lazy">
+          <div>
+            <h2><span class="en">Get AI Voice Manager for your Mac</span><span class="th">ใช้ AI Voice Manager บน Mac ของคุณ</span></h2>
+            <p class="lede"><span class="en">Free and open source. Bring a Gemini API key from Google AI Studio and you're ready.</span><span class="th">ฟรีและโอเพนซอร์ส แค่มี Gemini API key จาก Google AI Studio ก็พร้อมใช้งาน</span></p>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="download/"><i class="ph ph-download-simple" aria-hidden="true"></i><span class="en">Download for Mac</span><span class="th">ดาวน์โหลดสำหรับ Mac</span></a>
+              <a class="btn btn-ghost" href="https://github.com/gomin2013/ai-voice-manager" target="_blank" rel="noopener"><i class="ph ph-github-logo" aria-hidden="true"></i><span class="en">View on GitHub</span><span class="th">ดูบน GitHub</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap foot">
+      <a class="brand" href="./"><img src="assets/img/avm-icon.png" alt="" width="30" height="30">AI Voice Manager</a>
+      <div class="foot-links">
+        <nav aria-label="Footer">
+          <a href="download/"><span class="en">Download</span><span class="th">ดาวน์โหลด</span></a>
+          <a href="about/"><span class="en">About</span><span class="th">เกี่ยวกับ</span></a>
+          <a href="privacy-policy/"><span class="en">Privacy Policy</span><span class="th">นโยบายความเป็นส่วนตัว</span></a>
+          <a href="terms-of-use/"><span class="en">Terms of Use</span><span class="th">ข้อกำหนดการใช้งาน</span></a>
+        </nav>
+        <nav aria-label="Gomin Apps">
+          <a href="/">Gomin Apps</a>
+          <a href="/hosts-manager/">Hosts Manager</a>
+          <a href="/git-exclude-manager/">Git Exclude Manager</a>
+          <a href="/swiftui-mac-skills/">SwiftUI Mac Skills</a>
+          <a href="/profile/"><span class="en">Profile</span><span class="th">โปรไฟล์</span></a>
+          <a href="https://github.com/gomin2013/ai-voice-manager" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/sponsors/gomin2013" target="_blank" rel="noopener"><span class="en">Sponsor</span><span class="th">สนับสนุน</span></a>
+        </nav>
+      </div>
+      <small><span class="en">© 2026 Watthajak Jinasam. Released under the MIT License. Not affiliated with Apple, Google or Ollama.</span><span class="th">© 2026 Watthajak Jinasam เผยแพร่ภายใต้สัญญาอนุญาต MIT ไม่มีส่วนเกี่ยวข้องกับ Apple, Google หรือ Ollama</span></small>
+    </div>
+  </footer>
+  <script src="assets/site.js" defer></script>
+</body>
+</html>
