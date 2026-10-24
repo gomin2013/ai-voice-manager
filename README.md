@@ -6,7 +6,7 @@
 
 A native macOS app for **AI voice-overs**: write a script scene by scene, listen free with the Mac's own voices while
 you write, then generate the real take with **Gemini TTS** on your own API key. Projects save themselves and every
-take is kept. Opens from Launchpad / Applications like any other app. English and Thai.
+take is kept. Opens from Launchpad / Applications like any other app. In 12 languages.
 
 **Website & download:** [gomin2013.github.io/ai-voice-manager](https://gomin2013.github.io/ai-voice-manager/)
 
@@ -107,7 +107,7 @@ Sources/AIVoiceManagerApp/Services/    Gemini TTS, Keychain, project files + zip
 Sources/AIVoiceManagerApp/ViewModels/  the editor, History, playback
 Sources/AIVoiceManagerApp/Views/       SwiftUI views and the Gomin shell (tool windows, settings)
 Sources/AIVoiceManagerApp/Art/         paper-collage voice portraits, expression and style icons
-Sources/AIVoiceManagerApp/Resources/   strings: English and Thai
+Sources/AIVoiceManagerApp/Resources/   strings in 12 languages
 Tests/AIVoiceManagerTests/             XCTest (75+)
 scripts/build-app.sh                   assembles + ad-hoc signs build/AIVoiceManager.app
 scripts/make-dmg.sh                    build/AIVoiceManager-<version>.dmg for Releases
