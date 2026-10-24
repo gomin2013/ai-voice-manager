@@ -220,12 +220,17 @@ const CURRENCIES = { USD: ['en', '🇺🇸', 1], THB: ['th', '🇹🇭', 33], JP
 const currency = () => { const c = load('currency', 'auto');   // 'auto' = follow the app language
   return CURRENCIES[c] ? c : Object.keys(CURRENCIES).find(k => CURRENCIES[k][0] === Shell.lang) ?? 'USD'; };
 // Short symbol (฿ not THB) unless another listed currency shares it ($ = USD / TWD, ¥ = JPY / CNY) → NT$, CN¥.
-const sym = (code, display) => new Intl.NumberFormat(Shell.lang, { style: 'currency', currency: code, currencyDisplay: display })
+// "US$" and "$" share it too (Traditional Chinese): a still-bare standard symbol takes the English one (NT$).
+const sym = (code, display, lang = Shell.lang) => new Intl.NumberFormat(lang, { style: 'currency', currency: code, currencyDisplay: display })
   .formatToParts(1).find(x => x.type === 'currency').value;
+const bare = s => /^\p{L}+$/u.test(s) ? s : s.replace(/\p{L}/gu, '');   // "US$" → "$"; RM, Rp, 元 stay themselves
 const fmtMoney = (v, code) => {
-  const clash = Object.keys(CURRENCIES).some(c => c !== code && sym(c, 'narrowSymbol') === sym(code, 'narrowSymbol'));
-  return new Intl.NumberFormat(Shell.lang, { style: 'currency', currency: code, currencyDisplay: clash ? 'symbol' : 'narrowSymbol',
+  const mine = bare(sym(code, 'narrowSymbol'));
+  const clash = Object.keys(CURRENCIES).some(c => c !== code && bare(sym(c, 'narrowSymbol')) === mine);
+  const text = new Intl.NumberFormat(Shell.lang, { style: 'currency', currency: code, currencyDisplay: clash ? 'symbol' : 'narrowSymbol',
     maximumSignificantDigits: 3 }).format(v);
+  const standard = sym(code, 'symbol');
+  return clash && !/\p{L}/u.test(standard) ? text.replace(standard, sym(code, 'symbol', 'en')) : text;
 };
 const money = usd => currency() === 'USD' ? fmtMoney(usd, 'USD')
   : `${fmtMoney(usd, 'USD')} (${fmtMoney(usd * CURRENCIES[currency()][2], currency())})`;   // costPaid already says ≈
