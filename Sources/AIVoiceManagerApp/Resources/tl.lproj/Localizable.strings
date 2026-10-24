@@ -73,6 +73,10 @@
 "hist.pinned" = "Naka-pin";
 "hist.recent" = "Kamakailan";
 "hist.pin" = "I-pin ang Kasalukuyang Bersyon";
+"hist.pinThis" = "I-pin ang Bersyong Ito";
+"hist.tabScene" = "Eksena";
+"hist.sceneBefore" = "Eksena %1$@ bago i-edit";
+"hist.sceneEmpty" = "I-edit ang text ng isang eksena at lalabas dito ang mga bersyon nito.";
 "hist.opened" = "Noong Binuksan";
 "hist.now" = "Ngayon";
 "hist.restore" = "Ibalik ang Bersyong Ito";
@@ -87,9 +91,6 @@
 "ai.ask" = "Magtanong sa AI…";
 "ai.send" = "Ipadala";
 "ai.thinking" = "Nag-iisip…";
-"ai.mock" = "(DEMO — hindi tumatakbo ang Ollama, sample na sagot ito)";
-"ai.offline" = "demo · offline ang Ollama";
-"ai.settings" = "Kasama sa Swift app ang mga setting ng mga serbisyo ng AI (Apple, Ollama, OpenAI, Gemini, Claude).";
 "ap.mode" = "Hitsura";
 "ap.system" = "System";
 "ap.light" = "Maliwanag";
@@ -116,7 +117,7 @@
 "oPolish" = "I-polish";
 "oTranslate" = "Isalin TH↔EN";
 "chars" = "%1$@ character · ≈ %2$@ s";
-"aiHelp" = "Ang eksenang ito lang ang nire-rewrite ng Ollama sa Mac na ito. I-undo sa History.";
+"aiHelp" = "Ang eksenang ito lang ang nire-rewrite ng AI Agent. I-undo sa History.";
 "preview" = "Preview";
 "stop" = "Ihinto";
 "generate" = "I-generate";
@@ -133,7 +134,7 @@
 "needKey" = "Ikonekta muna ang Google (Gemini API key) sa Mga Serbisyo ng AI.";
 "getStarted" = "Pagsisimula";
 "stepGoogle" = "Ikonekta ang Google · Gemini TTS (kailangan para gumawa ng boses)";
-"stepOllama" = "Ollama sa Mac na ito (opsyonal, AI Agent)";
+"stepAgent" = "Pumili ng AI Agent (opsyonal: chat, I-polish, Magdagdag ng pause)";
 "stepProject" = "Gawin ang iyong unang project";
 "connected" = "Nakakonekta";
 "notConnected" = "Hindi nakakonekta";
@@ -183,9 +184,7 @@
 "thaiUnknown" = "Hindi dokumentado ang suporta sa Thai";
 "saved" = "Na-save sa Mga Resulta";
 "deleted" = "Nabura ang rekording";
-"ollamaOff" = "Hindi tumatakbo ang Ollama — simulan ito (ollama serve), saka pindutin ulit ang button.";
-"ollamaFailed" = "Hindi sumagot ang Ollama — tingnan kung tumatakbo pa ito, saka subukan ulit.";
-"ai.model" = "Model";
+"ollamaFailed" = "Hindi sumagot ang AI Agent — tingnan ang Mga Serbisyo ng AI › AI Agent, saka subukan ulit.";
 "nothing" = "Naka-mute ang lahat ng eksena — walang ige-generate.";
 "rawTitle" = "Preview ng Raw · ang request na ipinapadala ng app";
 "rawNote" = "Pinagsama ang timeline sa mga speech segment, inline ang mga tag, hindi isinama ang mga naka-mute na eksena. Kaparehong body na binubuo ng GeminiTTS service sa Swift (Interactions API).";
@@ -299,14 +298,14 @@
 "hist.ai" = "✦ %1$@";
 "hist.take" = "Timeline mula sa rekording %1$@";
 "about.desc" = "Sumulat ng voice-over project kada eksena, i-preview ang kahit anong eksena, saka i-generate ang buong project gamit ang Gemini TTS. Itinatago ang bawat rekording.";
-"ai.intro" = "Magtanong sa Ollama tungkol sa iyong project. Tumatakbo ito sa Mac na ito, walang login. Walang boses ang Ollama: sa mga salita lang ito tumutulong.";
+"ai.intro" = "Magtanong sa AI Agent tungkol sa project mo. Kasama ang script sa bawat tanong; sumasagot lang ang AI — ikaw ang magpapasya kung ano ang babaguhin.";
 "q.hook" = "Sumulat ng mas malakas na opening line";
 "q.short" = "Paikliin para magkasya sa 15 segundo";
 "q.pauses" = "Saan ako dapat maglagay ng pause?";
 "q.en" = "Isalin ang project sa English";
 "q.style" = "Magmungkahi ng estilo para sa bawat eksena";
 "h.providers.t" = "Mga Serbisyo ng AI";
-"h.providers.d" = "Kaliwang bahagi, ibaba ng rail (gaya ng Hitsura sa kanan). Ikonekta ang Google (Gemini API key, tine-test at itinatago para sa bawat project), i-check ang Ollama, at nagbibigay ang mga boses ng Apple ng libreng Quick preview sa bawat eksena. Kusa itong bumubukas hangga't hindi pa nakakonekta ang Google.";
+"h.providers.d" = "Kaliwang bahagi, ibaba ng rail (gaya ng Hitsura sa kanan). May dalawang tab. Mga Boses: ikonekta ang Google (Gemini API key, tine-test at itinatago para sa bawat project); nagbibigay ang mga boses ng Apple ng libreng Quick preview sa bawat eksena. AI Agent: piliin kung sino ang sasagot sa chat at magre-rewrite ng mga eksena — Apple, Ollama, OpenAI, Gemini o Claude. Kusa itong bumubukas hangga't hindi pa nakakonekta ang Google.";
 "h.projects.t" = "Mga Kamakailang Project";
 "h.projects.d" = "Kaliwang bahagi: mga project na binuksan mo dati. Maghanap ayon sa pangalan, i-click para buksan. Ipinapasok ng Buksan ang Project… ang project na na-export mula sa ibang Mac. Awtomatikong nase-save ang mga project; ang I-export ang Project (toolbar) ang gumagawa ng file na madadala mo.";
 "h.model.t" = "Model";
@@ -318,13 +317,13 @@
 "h.exprs.t" = "Koleksyon ng Ekspresyon";
 "h.exprs.d" = "Kanang bahagi. Hinga, pause, tawa, buntong-hininga, singhap, ubo. I-drag sa timeline para mag-insert, sa Kasalukuyang Eksena para magpalit, o pindutin ang Gamitin.";
 "h.history.t" = "History";
-"h.history.d" = "Kanang bahagi, itaas. Ang huling 30 edit ng nakabukas na project, pinakabago muna. I-double-click ang isang hakbang o pindutin ang ↩ para bumalik — ang pagbalik ay bagong hakbang din, kaya walang mawawala. Nagpi-pin ng bersyon ang {pin.fill}; awtomatikong naka-pin ang project noong binuksan. May sariling History ang bawat project.";
+"h.history.d" = "Kanang bahagi, itaas. Dalawang tab na tig-30. Script: ang mga huling edit ng nakabukas na project, pinakabago muna; nagpi-pin ng bersyon ang {pin.fill}, at awtomatikong naka-pin ang project noong binuksan. Eksena: ang mga bersyon ng text ng mga eksena — ang pagbalik ay nagbabago lang sa eksenang iyon. I-double-click ang isang hilera o pindutin ang ↩ para bumalik — ang pagbalik ay bagong hakbang din, kaya walang mawawala. May sariling History ang bawat project.";
 "h.gen.t" = "I-generate";
 "h.gen.d" = "Kanang bahagi. Preview ng buong project (bawat eksenang hindi naka-mute), model, I-generate gamit ang Gemini (⌘↵), saka i-play, i-download o burahin ang bawat resulta.";
 "h.voices.t" = "Koleksyon ng Boses";
 "h.voices.d" = "Ang 30 boses ng Gemini TTS. Maghanap, i-drag ang isang boses sa eksena o pindutin ang Gamitin.";
 "h.ai.t" = "AI Agent";
-"h.ai.d" = "Magtanong sa Ollama tungkol sa project: mas magandang opening line, saan magpa-pause, isang salin. Sasagot ito; ikaw mismo ang magbabago ng mga eksena.";
+"h.ai.d" = "Magtanong sa AI Agent tungkol sa project: mas magandang opening line, saan magpa-pause, isang salin. Piliin kung sino ang sasagot — Apple, Ollama, OpenAI, Gemini o Claude — sa ⚙ o sa Mga Serbisyo ng AI › AI Agent. Sasagot ito; ikaw mismo ang magbabago ng mga eksena.";
 
 /* Style presets: what the user reads (Gemini gets the English name) */
 "style.friendly" = "Magiliw at madaling lapitan";
@@ -339,3 +338,23 @@
 "style.whisper" = "Napakahina, malapit sa mic";
 "style.serious" = "Seryoso, walang ngiti";
 "style.sad" = "Mababa at mabigat";
+
+/* AI Agent: Hosts Manager's AI settings + chat (keys and translations shared), then AVM's own */
+"settings.title" = "Mga Setting ng AI API";
+"settings.provider" = "Provider";
+"settings.apiKey" = "API Key";
+"settings.model" = "Model";
+"settings.noModels" = "Walang nahanap na model.";
+"settings.recommended" = "Inirerekomenda";
+"settings.appleNote" = "Tumatakbo sa device gamit ang Apple Intelligence (macOS 26+). Hindi kailangan ng API key o model.";
+"settings.keychainNote" = "Ang API key ay iniimbak sa iyong macOS Keychain.";
+"chat.setUp" = "I-set Up ang AI Provider…";
+"chat.step.waiting" = "Naghihintay sa %@";
+"chat.step.thinking" = "Nag-iisip";
+"chat.step.writing" = "Isinusulat ang sagot";
+"chat.thought" = "Nag-isip nang %ld s";
+"chat.seconds" = "%ld s";
+"ai.notConfigured" = "Hindi Naitakda";
+"agentPrivacy" = "Kasama sa mga tanong mo ang script ng project na ito, na ipinapadala sa provider na ito.";
+"agentGeminiKey" = "Ginagamit ang Google key mo mula sa tab na Mga Boses.";
+"chat.step.attached" = "Nakalakip ang project · %ld eksena";

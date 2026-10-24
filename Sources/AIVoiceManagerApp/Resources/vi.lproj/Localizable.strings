@@ -73,6 +73,10 @@
 "hist.pinned" = "Đã ghim";
 "hist.recent" = "Gần đây";
 "hist.pin" = "Ghim phiên bản hiện tại";
+"hist.pinThis" = "Ghim phiên bản này";
+"hist.tabScene" = "Cảnh";
+"hist.sceneBefore" = "Cảnh %1$@ trước khi sửa";
+"hist.sceneEmpty" = "Sửa văn bản của một cảnh, các phiên bản sẽ hiện ở đây.";
 "hist.opened" = "Khi mở";
 "hist.now" = "Bây giờ";
 "hist.restore" = "Khôi phục phiên bản này";
@@ -87,9 +91,6 @@
 "ai.ask" = "Hỏi AI…";
 "ai.send" = "Gửi";
 "ai.thinking" = "Đang suy nghĩ…";
-"ai.mock" = "(MÔ PHỎNG — Ollama chưa chạy, đây là câu trả lời mẫu)";
-"ai.offline" = "mô phỏng · Ollama ngoại tuyến";
-"ai.settings" = "Cài đặt nhà cung cấp (Apple, Ollama, OpenAI, Gemini, Claude) có trong ứng dụng Swift.";
 "ap.mode" = "Giao diện";
 "ap.system" = "Hệ thống";
 "ap.light" = "Sáng";
@@ -116,7 +117,7 @@
 "oPolish" = "Trau chuốt";
 "oTranslate" = "Dịch Thái↔Anh";
 "chars" = "%1$@ ký tự · ≈ %2$@ giây";
-"aiHelp" = "Ollama trên máy Mac này chỉ viết lại cảnh này. Hoàn tác trong Lịch sử.";
+"aiHelp" = "Trợ lý AI chỉ viết lại cảnh này. Hoàn tác trong Lịch sử.";
 "preview" = "Nghe thử";
 "stop" = "Dừng";
 "generate" = "Tạo âm thanh";
@@ -133,7 +134,7 @@
 "needKey" = "Hãy kết nối Google (khóa API Gemini) trong Nhà cung cấp AI trước.";
 "getStarted" = "Bắt đầu";
 "stepGoogle" = "Kết nối Google · Gemini TTS (cần để tạo giọng)";
-"stepOllama" = "Ollama trên máy Mac này (tùy chọn, Trợ lý AI)";
+"stepAgent" = "Chọn Trợ lý AI (không bắt buộc: trò chuyện, Trau chuốt, Thêm khoảng ngắt)";
 "stepProject" = "Tạo dự án đầu tiên";
 "connected" = "Đã kết nối";
 "notConnected" = "Chưa kết nối";
@@ -183,9 +184,7 @@
 "thaiUnknown" = "Chưa có tài liệu về hỗ trợ tiếng Thái";
 "saved" = "Đã lưu vào Kết quả";
 "deleted" = "Đã xóa bản thu";
-"ollamaOff" = "Ollama chưa chạy — hãy khởi động (ollama serve), rồi nhấn lại nút.";
-"ollamaFailed" = "Ollama không phản hồi — hãy kiểm tra Ollama vẫn đang chạy, rồi thử lại.";
-"ai.model" = "Mô hình";
+"ollamaFailed" = "Trợ lý AI không trả lời — hãy kiểm tra Nhà cung cấp AI › Trợ lý AI rồi thử lại.";
 "nothing" = "Mọi cảnh đều bị tắt tiếng — không có gì để tạo.";
 "rawTitle" = "Xem trước bản gốc · yêu cầu ứng dụng gửi đi";
 "rawNote" = "Dòng thời gian được gộp thành các đoạn lời nói, thẻ nằm trong dòng, bỏ qua các cảnh bị tắt tiếng. Cùng nội dung yêu cầu mà dịch vụ GeminiTTS trong Swift tạo ra (Interactions API).";
@@ -299,14 +298,14 @@
 "hist.ai" = "✦ %1$@";
 "hist.take" = "Dòng thời gian từ bản thu %1$@";
 "about.desc" = "Viết dự án lồng tiếng theo từng cảnh, nghe thử bất kỳ cảnh nào, rồi tạo âm thanh cho cả dự án bằng Gemini TTS. Mọi bản thu đều được giữ lại.";
-"ai.intro" = "Hỏi Ollama về dự án của bạn. Ollama chạy trên máy Mac này, không cần đăng nhập. Ollama không có giọng: chỉ giúp về câu chữ.";
+"ai.intro" = "Hỏi Trợ lý AI về dự án của bạn. Kịch bản được gửi kèm mỗi câu hỏi; AI chỉ trả lời — bạn quyết định thay đổi gì.";
 "q.hook" = "Viết câu mở đầu hấp dẫn hơn";
 "q.short" = "Rút gọn cho vừa 15 giây";
 "q.pauses" = "Nên thêm khoảng ngắt ở đâu?";
 "q.en" = "Dịch dự án sang tiếng Anh";
 "q.style" = "Gợi ý giọng điệu cho từng cảnh";
 "h.providers.t" = "Nhà cung cấp AI";
-"h.providers.d" = "Bên trái, cuối thanh bên (giống Giao diện ở bên phải). Kết nối Google (khóa API Gemini, được kiểm tra và dùng cho mọi dự án), kiểm tra Ollama; giọng Apple cho mỗi cảnh một bản Nghe nhanh miễn phí. Tự mở cho đến khi Google được kết nối.";
+"h.providers.d" = "Bên trái, cuối thanh bên (giống Giao diện ở bên phải). Có hai thẻ. Giọng: kết nối Google (khóa API Gemini, được kiểm tra và dùng cho mọi dự án); giọng Apple cho mỗi cảnh một bản Nghe nhanh miễn phí. Trợ lý AI: chọn AI trả lời trò chuyện và viết lại cảnh — Apple, Ollama, OpenAI, Gemini hoặc Claude. Tự mở cho đến khi Google được kết nối.";
 "h.projects.t" = "Dự án gần đây";
 "h.projects.d" = "Bên trái: các dự án bạn đã mở trước đây. Tìm theo tên, nhấp để mở. Mở dự án… nhập một dự án được xuất từ máy Mac khác. Dự án được lưu tự động; Xuất dự án (thanh công cụ) tạo tệp để mang đi.";
 "h.model.t" = "Mô hình";
@@ -318,13 +317,13 @@
 "h.exprs.t" = "Thư viện biểu cảm";
 "h.exprs.d" = "Bên phải. Hơi thở, khoảng ngắt, cười, thở dài, hít mạnh, ho. Kéo vào dòng thời gian để chèn, vào Cảnh hiện tại để thay đổi, hoặc nhấn Áp dụng.";
 "h.history.t" = "Lịch sử";
-"h.history.d" = "Bên phải, trên cùng. 30 thay đổi gần nhất của dự án đang mở, mới nhất trước. Nhấp đúp vào một bước hoặc nhấn ↩ để quay lại — quay lại cũng là một bước mới, nên không có gì bị mất. {pin.fill} ghim một phiên bản; phiên bản lúc mở dự án được ghim sẵn cho bạn. Mỗi dự án có Lịch sử riêng.";
+"h.history.d" = "Bên phải, trên cùng. Hai thẻ, mỗi thẻ 30 mục. Kịch bản: các thay đổi gần nhất của dự án đang mở, mới nhất trước; {pin.fill} ghim một phiên bản, phiên bản lúc mở dự án được ghim sẵn. Cảnh: các phiên bản văn bản của cảnh — quay lại chỉ thay đổi cảnh đó. Nhấp đúp vào một dòng hoặc nhấn ↩ để quay lại — quay lại cũng là một bước mới, nên không có gì bị mất. Mỗi dự án có Lịch sử riêng.";
 "h.gen.t" = "Tạo âm thanh";
 "h.gen.d" = "Bên phải. Nghe thử cả dự án (mọi cảnh không bị tắt tiếng), mô hình, Tạo âm thanh bằng Gemini (⌘↵), rồi phát, tải về hoặc xóa từng kết quả.";
 "h.voices.t" = "Thư viện giọng";
 "h.voices.d" = "30 giọng Gemini TTS. Tìm kiếm, kéo một giọng vào cảnh hoặc nhấn Áp dụng.";
 "h.ai.t" = "Trợ lý AI";
-"h.ai.d" = "Hỏi Ollama về dự án: câu mở đầu hay hơn, nên ngắt ở đâu, một bản dịch. Ollama chỉ trả lời; bạn tự thay đổi các cảnh.";
+"h.ai.d" = "Hỏi Trợ lý AI về dự án: câu mở đầu hay hơn, nên ngắt ở đâu, một bản dịch. Chọn AI trả lời — Apple, Ollama, OpenAI, Gemini hoặc Claude — bằng ⚙ hoặc trong Nhà cung cấp AI › Trợ lý AI. AI chỉ trả lời; bạn tự thay đổi các cảnh.";
 
 /* Style presets: what the user reads (Gemini gets the English name) */
 "style.friendly" = "Ấm áp và gần gũi";
@@ -339,3 +338,23 @@
 "style.whisper" = "Rất nhẹ, sát micro";
 "style.serious" = "Nghiêm nghị, không cười";
 "style.sad" = "Trầm và nặng nề";
+
+/* AI Agent: Hosts Manager's AI settings + chat (keys and translations shared), then AVM's own */
+"settings.title" = "Cài đặt API AI";
+"settings.provider" = "Nhà cung cấp";
+"settings.apiKey" = "Khóa API";
+"settings.model" = "Mô hình";
+"settings.noModels" = "Không tìm thấy mô hình nào.";
+"settings.recommended" = "Đề xuất";
+"settings.appleNote" = "Chạy trên thiết bị với Apple Intelligence (macOS 26 trở lên). Không cần khóa API hay mô hình.";
+"settings.keychainNote" = "Khóa API được lưu trong Keychain trên macOS của bạn.";
+"chat.setUp" = "Thiết lập nhà cung cấp AI…";
+"chat.step.waiting" = "Đang chờ %@";
+"chat.step.thinking" = "Đang suy nghĩ";
+"chat.step.writing" = "Đang viết câu trả lời";
+"chat.thought" = "Đã suy nghĩ %ld giây";
+"chat.seconds" = "%ld giây";
+"ai.notConfigured" = "Chưa đặt";
+"agentPrivacy" = "Câu hỏi của bạn kèm theo kịch bản của dự án này và được gửi đến nhà cung cấp này.";
+"agentGeminiKey" = "Dùng khóa Google của bạn ở thẻ Giọng.";
+"chat.step.attached" = "Đã đính kèm dự án · %ld cảnh";

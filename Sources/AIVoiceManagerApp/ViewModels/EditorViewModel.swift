@@ -10,6 +10,8 @@ final class EditorViewModel {
     private(set) var projects: [Project]
     private(set) var currentID: String
     private(set) var histories: [String: ProjectHistory<ProjectDraft>] = [:]
+    /// History › Scene, per project id (`EditorViewModel+SceneHistory`).
+    var sceneHistories: [String: SceneHistory] = [:]
     /// A short message under the toolbar ("Select a script scene first", the two-voice refusal …), with an optional
     /// Undo. The view shows it and clears it.
     var notice: Notice?
@@ -45,9 +47,9 @@ final class EditorViewModel {
     @ObservationIgnored var session = URLSession.shared
     @ObservationIgnored var loadKey: () -> String? = KeychainStore.load
     @ObservationIgnored private var waveforms: [String: [Double]] = [:]
-    /// Ollama's answer for Polish / Add pauses (model, messages) — tests swap in a canned one.
-    @ObservationIgnored var askOllama: (String, [OllamaClient.Message]) async throws -> String = {
-        try await OllamaClient.complete(model: $0, messages: $1)
+    /// The AI Agent's answer for Polish / Add pauses (settings, system, turns) — tests swap in a canned one.
+    @ObservationIgnored var askAI: (AISettings, String, [ChatTurn]) async throws -> String = {
+        try await AIService.complete($0, system: $1, turns: $2)
     }
 
     init(projects: [Project] = MockData.projects(), hasGeminiKey: Bool = KeychainStore.load() != nil,
@@ -189,9 +191,14 @@ final class EditorViewModel {
                : step.isOpened ? localized("hist.revertedOpened") : localized("hist.restored", step.label))
     }
 
-    func pinCurrent() {
+    func pinCurrent() { pin(draft) }
+
+    /// History › right-click › Pin This Version: any step, named like Pin Current Version (Hosts Manager).
+    func pin(_ stepID: UUID) { if let step = history.step(stepID) { pin(step.snapshot) } }
+
+    private func pin(_ snapshot: ProjectDraft) {
         let time = Date.now.formatted(date: .omitted, time: .shortened)
-        histories[currentID, default: history].pin(localized("hist.pinDefault", time), snapshot: draft)
+        histories[currentID, default: history].pin(localized("hist.pinDefault", time), snapshot: snapshot)
     }
 
     func renamePin(_ id: UUID, to label: String) { histories[currentID, default: history].renamePin(id, to: label) }

@@ -73,6 +73,10 @@
 "hist.pinned" = "ピン留め済み";
 "hist.recent" = "最近";
 "hist.pin" = "現在のバージョンをピン留め";
+"hist.pinThis" = "このバージョンをピン留め";
+"hist.tabScene" = "シーン";
+"hist.sceneBefore" = "シーン%1$@（編集前）";
+"hist.sceneEmpty" = "シーンのテキストを編集すると、その版がここに表示されます。";
 "hist.opened" = "開いた時点";
 "hist.now" = "現在";
 "hist.restore" = "このバージョンに戻す";
@@ -87,9 +91,6 @@
 "ai.ask" = "AIに質問…";
 "ai.send" = "送信";
 "ai.thinking" = "考え中…";
-"ai.mock" = "(ダミー — Ollamaが起動していないため、あらかじめ用意された回答です)";
-"ai.offline" = "ダミー · Ollamaはオフライン";
-"ai.settings" = "プロバイダ設定(Apple、Ollama、OpenAI、Gemini、Claude)はSwiftアプリで対応します。";
 "ap.mode" = "外観";
 "ap.system" = "システム";
 "ap.light" = "ライト";
@@ -116,7 +117,7 @@
 "oPolish" = "推敲";
 "oTranslate" = "タイ語↔英語に翻訳";
 "chars" = "%1$@文字 · ≈ %2$@秒";
-"aiHelp" = "このMac上のOllamaがこのシーンだけを書き直します。履歴で取り消せます。";
+"aiHelp" = "AIエージェントがこのシーンだけを書き直します。履歴で取り消せます。";
 "preview" = "試聴";
 "stop" = "停止";
 "generate" = "生成";
@@ -133,7 +134,7 @@
 "needKey" = "先にAIプロバイダでGoogle(Gemini APIキー)に接続してください。";
 "getStarted" = "はじめに";
 "stepGoogle" = "Googleに接続 · Gemini TTS(音声の生成に必要)";
-"stepOllama" = "このMac上のOllama(任意、AIエージェント用)";
+"stepAgent" = "AIエージェントを選ぶ（任意：チャット・推敲・間を入れる）";
 "stepProject" = "最初のプロジェクトを作成";
 "connected" = "接続済み";
 "notConnected" = "未接続";
@@ -183,9 +184,7 @@
 "thaiUnknown" = "タイ語対応は明記されていません";
 "saved" = "結果に保存しました";
 "deleted" = "テイクを削除しました";
-"ollamaOff" = "Ollamaが起動していません。起動(ollama serve)してから、もう一度ボタンを押してください。";
-"ollamaFailed" = "Ollamaが応答しませんでした。実行中か確認してから、もう一度お試しください。";
-"ai.model" = "モデル";
+"ollamaFailed" = "AIエージェントが応答しませんでした。AIプロバイダ › AIエージェントを確認してから、もう一度お試しください。";
 "nothing" = "すべてのシーンがミュートされているため、生成するものがありません。";
 "rawTitle" = "未加工のプレビュー · アプリが送信するリクエスト";
 "rawNote" = "タイムラインを発話セグメントにまとめ、タグをインラインで挿入し、ミュートしたシーンを除外したものです。SwiftのGeminiTTSサービスが作成するのと同じボディです(Interactions API)。";
@@ -299,14 +298,14 @@
 "hist.ai" = "✦ %1$@";
 "hist.take" = "テイク%1$@のタイムライン";
 "about.desc" = "ボイスオーバーのプロジェクトをシーンごとに書き、好きなシーンを試聴してから、Gemini TTSでプロジェクト全体を生成できます。テイクはすべて保存されます。";
-"ai.intro" = "プロジェクトについてOllamaに質問できます。このMac上で動作し、ログインは不要です。Ollamaにはボイスがなく、言葉の面だけを手伝います。";
+"ai.intro" = "プロジェクトについてAIエージェントに質問できます。質問ごとに台本が送られます。AIは答えるだけで、何を変えるかはあなたが決めます。";
 "q.hook" = "もっと引きのある書き出しにして";
 "q.short" = "15秒に収めて";
 "q.pauses" = "どこに間を入れるべき?";
 "q.en" = "プロジェクトを英語に翻訳して";
 "q.style" = "各シーンの話し方を提案して";
 "h.providers.t" = "AIプロバイダ";
-"h.providers.d" = "左側、バーの一番下(右側の「外観」と同じ位置)。Googleに接続し(Gemini APIキーはテストでき、すべてのプロジェクトで使われます)、Ollamaを確認できます。Appleのボイスで各シーンを無料でクイック試聴できます。Googleに接続するまでは自動で開きます。";
+"h.providers.d" = "左側、バーの一番下(右側の「外観」と同じ位置)。タブは2つあります。ボイス:Googleに接続します(Gemini APIキーはテストでき、すべてのプロジェクトで使われます)。Appleのボイスで各シーンを無料でクイック試聴できます。AIエージェント:チャットに答え、シーンを書き直すAIを選びます(Apple、Ollama、OpenAI、Gemini、Claude)。Googleに接続するまでは自動で開きます。";
 "h.projects.t" = "最近のプロジェクト";
 "h.projects.d" = "左側: 以前に開いたプロジェクト。名前で検索し、クリックで開きます。「プロジェクトを開く…」で別のMacから書き出したプロジェクトを取り込めます。プロジェクトは自動で保存されます。「プロジェクトを書き出す」(ツールバー)で持ち運び用のファイルを作成します。";
 "h.model.t" = "モデル";
@@ -318,13 +317,13 @@
 "h.exprs.t" = "音・間ライブラリ";
 "h.exprs.d" = "右側。息、間、笑い、ため息、息をのむ音、咳。タイムラインにドラッグすると挿入、現在のシーンにドラッグすると変更されます。「適用」を押しても使えます。";
 "h.history.t" = "履歴";
-"h.history.d" = "右側の一番上。開いているプロジェクトの最新30件の編集が新しい順に表示されます。項目をダブルクリックするか↩を押すと戻せます。戻す操作も新しい項目になるため、何も失われません。{pin.fill}でバージョンをピン留めできます。開いた時点のプロジェクトは自動でピン留めされます。履歴はプロジェクトごとに保持されます。";
+"h.history.d" = "右側の一番上。タブは2つで、それぞれ最新30件です。台本:開いているプロジェクトの編集が新しい順に表示されます。{pin.fill}でバージョンをピン留めでき、開いた時点のプロジェクトは自動でピン留めされます。シーン:シーンのテキストの版です。戻すとそのシーンだけが変わります。項目をダブルクリックするか↩を押すと戻せます。戻す操作も新しい項目になるため、何も失われません。履歴はプロジェクトごとに保持されます。";
 "h.gen.t" = "音声生成";
 "h.gen.d" = "右側。プロジェクト全体の試聴(ミュートされていないすべてのシーン)、モデル、Geminiで生成(⌘↵)。その後、各結果を再生、ダウンロード、削除できます。";
 "h.voices.t" = "ボイスライブラリ";
 "h.voices.d" = "Gemini TTSの30種類のボイス。検索して、ボイスをシーンにドラッグするか「適用」を押します。";
 "h.ai.t" = "AIエージェント";
-"h.ai.d" = "より良い書き出し、間を入れる位置、翻訳など、プロジェクトについてOllamaに質問できます。Ollamaは答えるだけで、シーンの変更はご自身で行います。";
+"h.ai.d" = "より良い書き出し、間を入れる位置、翻訳など、プロジェクトについてAIエージェントに質問できます。答えるAI(Apple、Ollama、OpenAI、Gemini、Claude)は⚙またはAIプロバイダ › AIエージェントで選べます。AIは答えるだけで、シーンの変更はご自身で行います。";
 
 /* Style presets: what the user reads (Gemini gets the English name) */
 "style.friendly" = "温かく親しみやすい";
@@ -339,3 +338,23 @@
 "style.whisper" = "ごく柔らかく、マイクの近くで";
 "style.serious" = "重々しく、笑みなし";
 "style.sad" = "低く重い";
+
+/* AI Agent: Hosts Manager's AI settings + chat (keys and translations shared), then AVM's own */
+"settings.title" = "AI API設定";
+"settings.provider" = "プロバイダ";
+"settings.apiKey" = "APIキー";
+"settings.model" = "モデル";
+"settings.noModels" = "モデルが見つかりません。";
+"settings.recommended" = "おすすめ";
+"settings.appleNote" = "Apple Intelligenceを使用してデバイス上で実行されます(macOS 26以降)。APIキーやモデルは不要です。";
+"settings.keychainNote" = "APIキーはmacOSのキーチェーンに保存されます。";
+"chat.setUp" = "AIプロバイダを設定…";
+"chat.step.waiting" = "%@の応答を待機中";
+"chat.step.thinking" = "考え中";
+"chat.step.writing" = "回答を作成中";
+"chat.thought" = "%ld秒間考えました";
+"chat.seconds" = "%ld秒";
+"ai.notConfigured" = "未設定";
+"agentPrivacy" = "質問にはこのプロジェクトの台本が含まれ、このプロバイダに送信されます。";
+"agentGeminiKey" = "「ボイス」タブのGoogleキーを使います。";
+"chat.step.attached" = "プロジェクトを添付 · %ldシーン";

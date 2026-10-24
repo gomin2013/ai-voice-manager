@@ -73,6 +73,10 @@
 "hist.pinned" = "已釘選";
 "hist.recent" = "最近";
 "hist.pin" = "釘選目前版本";
+"hist.pinThis" = "釘選此版本";
+"hist.tabScene" = "場景";
+"hist.sceneBefore" = "場景 %1$@（編輯前）";
+"hist.sceneEmpty" = "編輯場景的文字後，它的各個版本會顯示在這裡。";
 "hist.opened" = "打開時";
 "hist.now" = "現在";
 "hist.restore" = "還原此版本";
@@ -87,9 +91,6 @@
 "ai.ask" = "詢問 AI⋯";
 "ai.send" = "傳送";
 "ai.thinking" = "正在思考⋯";
-"ai.mock" = "（模擬 — Ollama 未在執行，這是預設回答）";
-"ai.offline" = "模擬 · Ollama 離線";
-"ai.settings" = "提供者設定（Apple、Ollama、OpenAI、Gemini、Claude）會隨 Swift App 提供。";
 "ap.mode" = "外觀";
 "ap.system" = "系統";
 "ap.light" = "淺色";
@@ -116,7 +117,7 @@
 "oPolish" = "潤飾";
 "oTranslate" = "翻譯 泰↔英";
 "chars" = "%1$@ 個字元 · ≈ %2$@ 秒";
-"aiHelp" = "這台 Mac 上的 Ollama 只會改寫此場景。可在歷史記錄中還原。";
+"aiHelp" = "AI 助理只會改寫此場景。可在歷史記錄中還原。";
 "preview" = "試聽";
 "stop" = "停止";
 "generate" = "產生";
@@ -133,7 +134,7 @@
 "needKey" = "請先在「AI 提供者」中連接 Google（Gemini API 金鑰）。";
 "getStarted" = "開始使用";
 "stepGoogle" = "連接 Google · Gemini TTS（產生聲音所需）";
-"stepOllama" = "這台 Mac 上的 Ollama（選用，用於 AI 助理）";
+"stepAgent" = "選擇 AI 助理（選用：聊天、潤飾、加入停頓）";
 "stepProject" = "建立你的第一個專案";
 "connected" = "已連接";
 "notConnected" = "未連接";
@@ -183,9 +184,7 @@
 "thaiUnknown" = "文件未說明是否支援泰文";
 "saved" = "已儲存至結果";
 "deleted" = "已刪除錄音";
-"ollamaOff" = "Ollama 未在執行 — 請啟動它（ollama serve），然後再按一次按鈕。";
-"ollamaFailed" = "Ollama 沒有回應 — 請確認它仍在執行，然後再試一次。";
-"ai.model" = "模型";
+"ollamaFailed" = "AI 助理沒有回應——請檢查「AI 提供者 › AI 助理」，然後再試一次。";
 "nothing" = "所有場景都已靜音 — 沒有可產生的內容。";
 "rawTitle" = "預覽原始內容 · App 傳送的請求";
 "rawNote" = "時間軸合併為語音片段、標籤內嵌，已靜音的場景不包含在內。與 Swift GeminiTTS 服務建立的請求本文相同（Interactions API）。";
@@ -299,14 +298,14 @@
 "hist.ai" = "✦ %1$@";
 "hist.take" = "來自 %1$@ 錄音的時間軸";
 "about.desc" = "逐一場景撰寫配音專案、試聽任何場景，再以 Gemini TTS 產生整個專案。每段錄音都會保留。";
-"ai.intro" = "向 Ollama 詢問你的專案。它在這台 Mac 上執行，無需登入。Ollama 沒有聲音：它只協助處理文字。";
+"ai.intro" = "向 AI 助理詢問你的專案。每個問題都會附上腳本；AI 只負責回答，要改什麼由你決定。";
 "q.hook" = "寫一句更吸引人的開場白";
 "q.short" = "控制在 15 秒內";
 "q.pauses" = "應該在哪裡加入停頓？";
 "q.en" = "將專案翻譯成英文";
 "q.style" = "為每個場景建議一種語氣";
 "h.providers.t" = "AI 提供者";
-"h.providers.d" = "左側邊欄底部（就像右側的外觀）。連接 Google（Gemini API 金鑰，測試後用於所有專案）、檢查 Ollama；Apple 聲音為每個場景提供免費的快速試聽。連接 Google 之前會自動打開。";
+"h.providers.d" = "左側邊欄底部（就像右側的外觀）。共有兩個分頁。聲音：連接 Google（Gemini API 金鑰，測試後用於所有專案）；Apple 聲音為每個場景提供免費的快速試聽。AI 助理：選擇負責回答聊天與改寫場景的 AI——Apple、Ollama、OpenAI、Gemini 或 Claude。連接 Google 之前會自動打開。";
 "h.projects.t" = "最近使用的專案";
 "h.projects.d" = "左側：你之前打開過的專案。可依名稱搜尋，按一下即可打開。「打開專案⋯」可匯入從另一台 Mac 匯出的專案。專案會自動儲存；「匯出專案」（工具列）會產生可隨身攜帶的檔案。";
 "h.model.t" = "模型";
@@ -318,13 +317,13 @@
 "h.exprs.t" = "音效庫";
 "h.exprs.d" = "右側。呼吸、停頓、笑聲、嘆氣、倒抽氣、咳嗽。拖移到時間軸即可插入，拖移到目前場景即可更改，或按「套用」。";
 "h.history.t" = "歷史記錄";
-"h.history.d" = "右側頂端。目前專案最近 30 次編輯，最新的在最上方。按兩下步驟或按 ↩ 即可回到該步驟 — 回復本身也會成為新的步驟，因此不會遺失任何內容。{pin.fill} 可釘選版本；專案打開時的版本會自動為你釘選。每個專案都有自己的歷史記錄。";
+"h.history.d" = "右側頂端。兩個分頁，各保留最近 30 筆。腳本：目前專案的最近編輯，最新的在最上方；{pin.fill} 可釘選版本，專案打開時的版本會自動為你釘選。場景：場景文字的各個版本——回復只會改變該場景。按兩下某一列或按 ↩ 即可回復 — 回復本身也會成為新的步驟，因此不會遺失任何內容。每個專案都有自己的歷史記錄。";
 "h.gen.t" = "產生";
 "h.gen.d" = "右側。試聽整個專案（所有未靜音的場景）、選擇模型、以 Gemini 產生（⌘↵），然後播放、下載或刪除每個結果。";
 "h.voices.t" = "聲音庫";
 "h.voices.d" = "30 種 Gemini TTS 聲音。可搜尋、將聲音拖移到場景上，或按「套用」。";
 "h.ai.t" = "AI 助理";
-"h.ai.d" = "向 Ollama 詢問專案：更好的開場白、在哪裡停頓、翻譯。它只負責回答；場景由你自行修改。";
+"h.ai.d" = "向 AI 助理詢問專案：更好的開場白、在哪裡停頓、翻譯。可透過 ⚙ 或「AI 提供者 › AI 助理」選擇由誰回答——Apple、Ollama、OpenAI、Gemini 或 Claude。它只負責回答；場景由你自行修改。";
 
 /* Style presets: what the user reads (Gemini gets the English name) */
 "style.friendly" = "溫暖親切";
@@ -339,3 +338,23 @@
 "style.whisper" = "非常輕柔，貼近麥克風";
 "style.serious" = "嚴肅，不帶笑意";
 "style.sad" = "低沉，沉重";
+
+/* AI Agent: Hosts Manager's AI settings + chat (keys and translations shared), then AVM's own */
+"settings.title" = "AI API 設定";
+"settings.provider" = "提供者";
+"settings.apiKey" = "API 金鑰";
+"settings.model" = "模型";
+"settings.noModels" = "找不到模型。";
+"settings.recommended" = "推薦";
+"settings.appleNote" = "透過 Apple Intelligence 在裝置上執行（macOS 26 以上）。不需要 API 金鑰或模型。";
+"settings.keychainNote" = "API 金鑰會儲存在你的 macOS 鑰匙圈中。";
+"chat.setUp" = "設定 AI 提供者⋯";
+"chat.step.waiting" = "正在等待 %@";
+"chat.step.thinking" = "思考中";
+"chat.step.writing" = "正在撰寫回答";
+"chat.thought" = "思考了 %ld 秒";
+"chat.seconds" = "%ld 秒";
+"ai.notConfigured" = "未設定";
+"agentPrivacy" = "你的問題會附上此專案的腳本，並傳送給該提供者。";
+"agentGeminiKey" = "使用「聲音」分頁中的 Google 金鑰。";
+"chat.step.attached" = "已附加專案 · %ld 個場景";

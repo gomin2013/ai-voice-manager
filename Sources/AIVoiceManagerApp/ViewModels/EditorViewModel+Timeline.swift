@@ -70,10 +70,8 @@ extension EditorViewModel {
         update(id) { $0.text = String(text.prefix(10_000)) }
     }
 
-    func commitText(of id: String) {
-        guard draft != history.current?.snapshot else { return }
-        record(localized("hist.edit", "\(sceneNumber(id))"))
-    }
+    /// Typing pauses or the editor loses focus: the scene's new text becomes one History › Scene row.
+    func commitText(of id: String) { recordSceneText(of: id) }
 
     func setStyle(_ style: String, of id: String) {
         let style = String(style.trimmingCharacters(in: .whitespacesAndNewlines).prefix(200))

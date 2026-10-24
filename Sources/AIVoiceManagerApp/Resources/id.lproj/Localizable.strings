@@ -73,6 +73,10 @@
 "hist.pinned" = "Disematkan";
 "hist.recent" = "Terbaru";
 "hist.pin" = "Sematkan Versi Saat Ini";
+"hist.pinThis" = "Sematkan Versi Ini";
+"hist.tabScene" = "Adegan";
+"hist.sceneBefore" = "Adegan %1$@ sebelum diedit";
+"hist.sceneEmpty" = "Edit teks sebuah adegan, versinya akan muncul di sini.";
 "hist.opened" = "Saat Dibuka";
 "hist.now" = "Sekarang";
 "hist.restore" = "Pulihkan Versi Ini";
@@ -87,9 +91,6 @@
 "ai.ask" = "Tanya AI…";
 "ai.send" = "Kirim";
 "ai.thinking" = "Berpikir…";
-"ai.mock" = "(SIMULASI — Ollama tidak berjalan, ini jawaban contoh)";
-"ai.offline" = "simulasi · Ollama offline";
-"ai.settings" = "Pengaturan penyedia (Apple, Ollama, OpenAI, Gemini, Claude) tersedia di app Swift.";
 "ap.mode" = "Tampilan";
 "ap.system" = "Sistem";
 "ap.light" = "Terang";
@@ -116,7 +117,7 @@
 "oPolish" = "Perhalus";
 "oTranslate" = "Terjemahkan Thai↔Inggris";
 "chars" = "%1$@ karakter · ≈ %2$@ dtk";
-"aiHelp" = "Ollama di Mac ini hanya menulis ulang adegan ini. Urungkan di Riwayat.";
+"aiHelp" = "Agen AI hanya menulis ulang adegan ini. Urungkan di Riwayat.";
 "preview" = "Pratinjau";
 "stop" = "Berhenti";
 "generate" = "Buat Audio";
@@ -133,7 +134,7 @@
 "needKey" = "Hubungkan Google (kunci API Gemini) di Penyedia AI terlebih dahulu.";
 "getStarted" = "Memulai";
 "stepGoogle" = "Hubungkan Google · Gemini TTS (diperlukan untuk membuat suara)";
-"stepOllama" = "Ollama di Mac ini (opsional, Agen AI)";
+"stepAgent" = "Pilih Agen AI (opsional: obrolan, Perhalus, Tambah jeda)";
 "stepProject" = "Buat proyek pertama Anda";
 "connected" = "Terhubung";
 "notConnected" = "Belum terhubung";
@@ -183,9 +184,7 @@
 "thaiUnknown" = "Dukungan bahasa Thai tidak didokumentasikan";
 "saved" = "Disimpan ke Hasil";
 "deleted" = "Rekaman dihapus";
-"ollamaOff" = "Ollama tidak berjalan — jalankan (ollama serve), lalu tekan tombolnya lagi.";
-"ollamaFailed" = "Ollama tidak menjawab — pastikan masih berjalan, lalu coba lagi.";
-"ai.model" = "Model";
+"ollamaFailed" = "Agen AI tidak menjawab — periksa Penyedia AI › Agen AI, lalu coba lagi.";
 "nothing" = "Semua adegan dibisukan — tidak ada yang dapat dibuat.";
 "rawTitle" = "Pratinjau Mentah · permintaan yang dikirim app";
 "rawNote" = "Linimasa digabung menjadi segmen ucapan, tag di dalam baris, adegan yang dibisukan dilewati. Isi permintaan yang sama dengan yang dibuat layanan GeminiTTS di Swift (Interactions API).";
@@ -299,14 +298,14 @@
 "hist.ai" = "✦ %1$@";
 "hist.take" = "Linimasa dari rekaman %1$@";
 "about.desc" = "Tulis proyek sulih suara adegan demi adegan, pratinjau adegan mana pun, lalu buat audio seluruh proyek dengan Gemini TTS. Setiap rekaman disimpan.";
-"ai.intro" = "Tanyakan Ollama tentang proyek Anda. Berjalan di Mac ini, tanpa login. Ollama tidak punya suara: hanya membantu soal kata-kata.";
+"ai.intro" = "Tanyakan proyek Anda kepada Agen AI. Naskah dikirim bersama setiap pertanyaan; AI hanya menjawab — Anda yang memutuskan apa yang diubah.";
 "q.hook" = "Tulis kalimat pembuka yang lebih kuat";
 "q.short" = "Buat pas dalam 15 detik";
 "q.pauses" = "Di mana sebaiknya saya menambahkan jeda?";
 "q.en" = "Terjemahkan proyek ke bahasa Inggris";
 "q.style" = "Sarankan gaya untuk setiap adegan";
 "h.providers.t" = "Penyedia AI";
-"h.providers.d" = "Sisi kiri, bagian bawah bilah (seperti Tampilan di kanan). Hubungkan Google (kunci API Gemini, diuji dan dipakai untuk semua proyek), periksa Ollama; suara Apple memberi setiap adegan Dengar Cepat gratis. Terbuka sendiri sampai Google terhubung.";
+"h.providers.d" = "Sisi kiri, bagian bawah bilah (seperti Tampilan di kanan). Ada dua tab. Suara: hubungkan Google (kunci API Gemini, diuji dan dipakai untuk semua proyek); suara Apple memberi setiap adegan Dengar Cepat gratis. Agen AI: pilih AI yang menjawab obrolan dan menulis ulang adegan — Apple, Ollama, OpenAI, Gemini, atau Claude. Terbuka sendiri sampai Google terhubung.";
 "h.projects.t" = "Proyek Terbaru";
 "h.projects.d" = "Sisi kiri: proyek yang pernah Anda buka. Cari berdasarkan nama, klik untuk membuka. Buka Proyek… memasukkan proyek yang diekspor dari Mac lain. Proyek disimpan otomatis; Ekspor Proyek (bar alat) membuat file untuk dibawa.";
 "h.model.t" = "Model";
@@ -318,13 +317,13 @@
 "h.exprs.t" = "Pustaka Ekspresi";
 "h.exprs.d" = "Sisi kanan. Napas, jeda, tawa, desahan, terkesiap, batuk. Seret ke linimasa untuk menyisipkan, ke Adegan Saat Ini untuk mengubah, atau tekan Terapkan.";
 "h.history.t" = "Riwayat";
-"h.history.d" = "Sisi kanan, paling atas. 30 perubahan terakhir pada proyek yang terbuka, terbaru di atas. Klik dua kali sebuah langkah atau tekan ↩ untuk kembali — kembali juga menjadi langkah baru, jadi tidak ada yang hilang. {pin.fill} menyematkan versi; versi saat proyek dibuka disematkan otomatis. Setiap proyek memiliki Riwayat sendiri.";
+"h.history.d" = "Sisi kanan, paling atas. Dua tab, masing-masing 30. Naskah: perubahan terakhir pada proyek yang terbuka, terbaru di atas; {pin.fill} menyematkan versi, dan versi saat proyek dibuka disematkan otomatis. Adegan: versi teks adegan — kembali hanya mengubah adegan itu. Klik dua kali sebuah baris atau tekan ↩ untuk kembali — kembali juga menjadi langkah baru, jadi tidak ada yang hilang. Setiap proyek memiliki Riwayat sendiri.";
 "h.gen.t" = "Buat Audio";
 "h.gen.d" = "Sisi kanan. Pratinjau seluruh proyek (setiap adegan yang tidak dibisukan), model, Buat Audio dengan Gemini (⌘↵), lalu putar, unduh, atau hapus setiap hasil.";
 "h.voices.t" = "Pustaka Suara";
 "h.voices.d" = "30 suara Gemini TTS. Cari, seret suara ke adegan, atau tekan Terapkan.";
 "h.ai.t" = "Agen AI";
-"h.ai.d" = "Tanyakan Ollama tentang proyek: kalimat pembuka yang lebih baik, di mana perlu jeda, terjemahan. Ollama menjawab; Anda sendiri yang mengubah adegan.";
+"h.ai.d" = "Tanyakan Agen AI tentang proyek: kalimat pembuka yang lebih baik, di mana perlu jeda, terjemahan. Pilih AI yang menjawab — Apple, Ollama, OpenAI, Gemini, atau Claude — lewat ⚙ atau di Penyedia AI › Agen AI. AI menjawab; Anda sendiri yang mengubah adegan.";
 
 /* Style presets: what the user reads (Gemini gets the English name) */
 "style.friendly" = "Hangat dan ramah";
@@ -339,3 +338,23 @@
 "style.whisper" = "Sangat lembut, dekat mikrofon";
 "style.serious" = "Serius, tanpa senyum";
 "style.sad" = "Rendah dan berat";
+
+/* AI Agent: Hosts Manager's AI settings + chat (keys and translations shared), then AVM's own */
+"settings.title" = "Pengaturan API AI";
+"settings.provider" = "Penyedia";
+"settings.apiKey" = "Kunci API";
+"settings.model" = "Model";
+"settings.noModels" = "Model tidak ditemukan.";
+"settings.recommended" = "Direkomendasikan";
+"settings.appleNote" = "Berjalan di perangkat dengan Apple Intelligence (macOS 26+). Tidak memerlukan kunci API atau model.";
+"settings.keychainNote" = "Kunci API disimpan di Keychain macOS Anda.";
+"chat.setUp" = "Siapkan Penyedia AI…";
+"chat.step.waiting" = "Menunggu %@";
+"chat.step.thinking" = "Berpikir";
+"chat.step.writing" = "Menulis jawaban";
+"chat.thought" = "Berpikir selama %ld dtk";
+"chat.seconds" = "%ld dtk";
+"ai.notConfigured" = "Belum Diatur";
+"agentPrivacy" = "Pertanyaan Anda menyertakan naskah proyek ini, yang dikirim ke penyedia ini.";
+"agentGeminiKey" = "Memakai kunci Google Anda dari tab Suara.";
+"chat.step.attached" = "Proyek terlampir · %ld adegan";

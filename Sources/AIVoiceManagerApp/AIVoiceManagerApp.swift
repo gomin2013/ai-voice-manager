@@ -6,6 +6,7 @@ struct AIVoiceManagerApp: App {
     @State private var playback = Playback()
     @State private var net = ConnectionMonitor()
     @State private var ollama = OllamaStatus()
+    @State private var agent = AgentSettings()
     @State private var modelSheet: ModelPickerSheet.Mode?
 
     var body: some Scene {
@@ -16,6 +17,7 @@ struct AIVoiceManagerApp: App {
                 .environment(playback)
                 .environment(net)
                 .environment(ollama)
+                .environment(agent)
                 .task { net.start() }
                 .task { await ollama.probe() }
                 .frame(minWidth: 1440, minHeight: 760)   // both tool windows open (2 × 384) + the editor
