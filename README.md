@@ -32,11 +32,14 @@ Same window layout as [Hosts Manager](https://github.com/gomin2013/hosts-manager
 - **Results** — every take with its waveform: play, download the WAV, bring its timeline back, delete with Undo.
 - **Costs in plain sight** — Free tier or Billing on; with billing on the price shows in US dollars and your
   currency, and every paid take asks first.
-- **AI Agent (optional)** — Ollama on your Mac, no login: **Polish** and **Add pauses** rewrite one scene (one step
-  in History), and the chat answers about the whole project as it streams in, with Stop.
+- **AI Agent (optional)** — pick who answers in AI Providers › AI Agent: **Apple** Foundation Models or **Ollama**
+  on your Mac, or **OpenAI**, **Gemini** (your Google key) or **Claude** with your key. **Polish** and **Add pauses**
+  rewrite one scene (one step in History; not with Apple), and the chat answers about the whole project as it
+  streams in — with the model's thinking, Markdown and Stop.
 - **Internet alerts** — offline, back online, slow, fast again; Generate and previews are disabled while offline.
-- **History** — the last 30 edits per project, named after what changed; double-click one to go back (going back is
-  a step too, so nothing is lost). Pin versions to keep them — the project as opened is pinned for you.
+- **History** — two tabs of 30: **Script** keeps the project's edits, named after what changed (pin versions to keep
+  them — the project as opened is pinned for you); **Scene** keeps the text versions of each scene, recorded when you
+  pause typing, so deleted words come back. Double-click one to go back — going back is a step too, so nothing is lost.
 - **Export / Open** — one `.avmproject.zip` with every take, to carry a project to another Mac.
 - **Tool windows** — Recent Projects · AI Providers on the left; History · Voices · Expressions · Generate ·
   AI Agent · Help, plus Appearance · Language & Currency · About on the right; ⌥⌘1…0, one panel per side.
@@ -75,12 +78,14 @@ Create a key in [Google AI Studio](https://aistudio.google.com/apikey), open **A
 paste it, press **Save**, then **Test connection**. Pick **Free tier** or **Billing on** to match the key's Google
 project. The key stays in your Keychain and is only ever sent to Google.
 
-Optional, for Polish, Add pauses and the AI Agent: install [Ollama](https://ollama.com), then
-`ollama pull qwen3.8 && ollama serve` and press **Check again** in AI Providers.
+Optional, for Polish, Add pauses and the AI Agent: open **AI Providers › AI Agent** and pick a provider —
+**Apple** (on-device, macOS 26 with Apple Intelligence), **Ollama** (install [Ollama](https://ollama.com), then
+`ollama pull qwen3.8 && ollama serve` and press **Check again**), **Gemini** (uses the key above), or **OpenAI** /
+**Claude** (paste a key; it's kept in your Keychain).
 
 ### Uninstall
 
-1. In **AI Providers**, press **Remove key**, then quit the app.
+1. In **AI Providers**, press **Remove key** (and remove any OpenAI / Claude key under AI Agent), then quit the app.
 2. Move `/Applications/AIVoiceManager.app` to the Trash.
 3. Optional: delete `~/Library/Application Support/AI Voice Manager` (your projects and takes) and run
    `defaults delete com.aivoicemanager.app` (settings).
@@ -93,7 +98,8 @@ AIVoiceManager.app (one process, no helper)
   │                 project.json · Takes/<date>/take.wav + take.json
   ├─ Generate ──▶ Gemini TTS (generativelanguage.googleapis.com), your key from the Keychain
   │               unmuted scenes in → WAV 24 kHz mono out
-  ├─ Polish / AI Agent ──▶ Ollama, localhost:11434 (stays on your Mac)
+  ├─ Polish / AI Agent ──▶ the provider you pick: Apple Foundation Models or Ollama (localhost:11434) stay on
+  │                         your Mac; OpenAI, Gemini or Claude get the question + script, with your key
   └─ Quick preview ──▶ the Mac's own voices (AVSpeechSynthesizer, offline)
 ```
 
@@ -125,7 +131,7 @@ docs/                                  the website (GitHub Pages, 12 languages)
 
 - An Apple silicon Mac with macOS 14 Sonoma or later, and an internet connection for Gemini
 - A Gemini API key from Google AI Studio (the free tier works)
-- Optional: Ollama for the AI Agent
+- Optional, for the AI Agent: Apple Intelligence (macOS 26), Ollama, or an OpenAI / Gemini / Claude key
 - No third-party dependencies
 
 ## Privacy
@@ -133,7 +139,9 @@ docs/                                  the website (GitHub Pages, 12 languages)
 No account with us, no telemetry, no server of ours. **Generate** sends the project's unmuted scenes (text,
 expression tags, styles, speaker names, voices, model) from your Mac to Google's Gemini API with your own key;
 **Generate preview** sends one scene. On the free tier Google may use that text and audio to improve its products.
-Quick preview and Ollama stay on your Mac. Details:
+The AI Agent sends your question and the project's script to the provider you pick — OpenAI, Google (Gemini) or
+Anthropic (Claude), with your key — or keeps it on your Mac with Apple or Ollama. Quick preview stays on your Mac.
+Details:
 [Privacy Policy](https://gomin2013.github.io/ai-voice-manager/privacy-policy/).
 
 ## Troubleshooting
@@ -141,7 +149,8 @@ Quick preview and Ollama stay on your Mac. Details:
 - **"Google refused the key"** — check the key in AI Providers, or that the Gemini API / billing is on for its
   Google project.
 - **"Free-tier limit reached"** — wait, or turn billing on for the key's project.
-- **Polish / AI Agent say Ollama isn't running** — start `ollama serve`, then **Check again** in AI Providers.
+- **"The AI Agent didn't answer"** — check AI Providers › AI Agent: for Ollama start `ollama serve` and press
+  **Check again**; for OpenAI / Claude check the key and the model name.
 - **Reset all app settings** — `defaults delete com.aivoicemanager.app` (projects stay in Application Support).
 
 ## Contributing
