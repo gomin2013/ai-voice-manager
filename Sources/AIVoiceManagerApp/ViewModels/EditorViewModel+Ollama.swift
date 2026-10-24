@@ -1,6 +1,7 @@
 import Foundation
 
-/// Ollama (ADR-003): the scene's ✦ Polish / Add pauses, and what the AI Agent knows about the project.
+/// The AI Agent (any provider in AI Providers › AI Agent): the scene's ✦ Polish / Add pauses, and what the chat
+/// knows about the project.
 extension EditorViewModel {
     enum Rewrite: Sendable {
         case polish, pauses
@@ -20,19 +21,17 @@ extension EditorViewModel {
     }
 
     /// Rewrites this Script scene only; tags in the answer become Expression scenes where they were — one History
-    /// step. If the scene is deleted or edited while Ollama thinks, the answer is dropped (never clobbers typing).
-    func rewrite(_ kind: Rewrite, sceneID: String, model: String) async {
+    /// step. If the scene is deleted or edited while the AI thinks, the answer is dropped (never clobbers typing).
+    func rewrite(_ kind: Rewrite, sceneID: String, settings: AISettings) async {
         guard aiBusy == nil, case .script(let scene) = items.first(where: { $0.id == sceneID }),
               !scene.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         aiBusy = sceneID
         defer { aiBusy = nil }
         let answer: String
         do {
-            let messages: [OllamaClient.Message] = [
-                .init(role: .system, content: kind.prompt + " Reply with the script only."),
-                .init(role: .user, content: scene.text)
-            ]
-            answer = try await askOllama(model, messages).trimmingCharacters(in: .whitespacesAndNewlines)
+            let system = kind.prompt + " Reply with the script only."
+            answer = try await askAI(settings, system, [ChatTurn(role: .user, text: scene.text)])
+                .trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
             notice = Notice(text: localized("ollamaFailed"))
             return

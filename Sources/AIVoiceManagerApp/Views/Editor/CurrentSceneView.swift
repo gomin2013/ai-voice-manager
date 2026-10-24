@@ -57,7 +57,9 @@ private struct DropZone: ViewModifier {
 }
 
 private struct ScriptSceneView: View {
-    @Environment(OllamaStatus.self) private var ollama
+    @Environment(AgentSettings.self) private var agent
+    @AppStorage("ui.leftPanel") private var leftPanel = LeftPanel.providers.rawValue
+    @AppStorage("ui.providersTab") private var providersTab = "voices"
     let scene: ScriptScene
     @Environment(EditorViewModel.self) private var vm
     @AppStorage("ui.toolPanel") private var rightPanel = RightPanel.agent.rawValue
@@ -150,19 +152,27 @@ private struct ScriptSceneView: View {
                 .frame(minHeight: 120)
                 .padding(.horizontal, 8)
                 .onChange(of: textFocused) { if !textFocused { vm.commitText(of: scene.id) } }
+                // A pause in typing is one History › Scene row too, not only leaving the editor
+                .task(id: scene.text) {
+                    try? await Task.sleep(for: .seconds(1.5))
+                    if !Task.isCancelled { vm.commitText(of: scene.id) }
+                }
             Divider()
             HStack(spacing: 8) {
                 Text(localized("chars", "\(scene.text.count)", "\(Int(estimateSeconds(scene.text).rounded()))"))
                     .lineLimit(1).layoutPriority(-1)
                 Spacer(minLength: 4)
-                Text(verbatim: "✦ " + (ollama.isRunning ? ollama.shortName : "Ollama"))
-                    .lineLimit(1).layoutPriority(-2).help(localized("aiHelp"))
-                if vm.aiBusy == scene.id {
-                    ProgressView().controlSize(.mini)
-                    Text(localized("ai.thinking"))
-                } else {
-                    Button(localized("oPolish")) { rewrite(.polish) }.disabled(vm.aiBusy != nil)
-                    Button(localized("oTags")) { rewrite(.pauses) }.disabled(vm.aiBusy != nil)
+                // Apple Foundation Models doesn't rewrite scenes: no ✦ buttons. Ollama / Gemini / OpenAI / Claude do.
+                if agent.settings.provider != .apple {
+                    Text(verbatim: "✦ " + (agent.label.split(separator: ":").first.map(String.init) ?? agent.label))
+                        .lineLimit(1).layoutPriority(-2).help(localized("aiHelp"))
+                    if vm.aiBusy == scene.id {
+                        ProgressView().controlSize(.mini)
+                        Text(localized("ai.thinking"))
+                    } else {
+                        Button(localized("oPolish")) { rewrite(.polish) }.disabled(vm.aiBusy != nil)
+                        Button(localized("oTags")) { rewrite(.pauses) }.disabled(vm.aiBusy != nil)
+                    }
                 }
             }
             .controlSize(.small)
@@ -173,15 +183,15 @@ private struct ScriptSceneView: View {
         .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(.separator))
     }
 
-    /// ✦ Polish / Add pauses: Ollama rewrites this scene (one History step); not running → say how to start it.
+    /// ✦ Polish / Add pauses: the AI Agent rewrites this scene (one History step); not set up → AI Providers › AI Agent.
     private func rewrite(_ kind: EditorViewModel.Rewrite) {
         vm.commitText(of: scene.id)
-        guard ollama.isRunning else {
-            vm.notice = .init(text: localized("ollamaOff"))
-            Task { await ollama.probe() }   // maybe it was started since launch
+        guard agent.isConfigured else {
+            providersTab = "agent"
+            leftPanel = LeftPanel.providers.rawValue
             return
         }
-        Task { await vm.rewrite(kind, sceneID: scene.id, model: ollama.model) }
+        Task { await vm.rewrite(kind, sceneID: scene.id, settings: agent.settings) }
     }
 }
 

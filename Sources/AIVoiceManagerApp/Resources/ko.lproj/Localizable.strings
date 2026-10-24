@@ -73,6 +73,10 @@
 "hist.pinned" = "고정됨";
 "hist.recent" = "최근";
 "hist.pin" = "현재 버전 고정";
+"hist.pinThis" = "이 버전 고정";
+"hist.tabScene" = "장면";
+"hist.sceneBefore" = "장면 %1$@ 편집 전";
+"hist.sceneEmpty" = "장면의 텍스트를 편집하면 그 버전이 여기에 표시됩니다.";
 "hist.opened" = "열었을 때";
 "hist.now" = "현재";
 "hist.restore" = "이 버전으로 복원";
@@ -87,9 +91,6 @@
 "ai.ask" = "AI에게 질문…";
 "ai.send" = "보내기";
 "ai.thinking" = "생각 중…";
-"ai.mock" = "(모의 응답 — Ollama가 실행 중이 아니므로 미리 준비된 답변입니다)";
-"ai.offline" = "모의 · Ollama 오프라인";
-"ai.settings" = "제공자 설정(Apple, Ollama, OpenAI, Gemini, Claude)은 Swift 앱에서 제공됩니다.";
 "ap.mode" = "화면 모드";
 "ap.system" = "시스템";
 "ap.light" = "라이트";
@@ -116,7 +117,7 @@
 "oPolish" = "다듬기";
 "oTranslate" = "태국어↔영어 번역";
 "chars" = "%1$@자 · ≈ %2$@초";
-"aiHelp" = "이 Mac의 Ollama가 이 장면만 다시 씁니다. 기록에서 되돌릴 수 있습니다.";
+"aiHelp" = "AI 에이전트가 이 장면만 다시 씁니다. 기록에서 되돌릴 수 있습니다.";
 "preview" = "미리 듣기";
 "stop" = "중단";
 "generate" = "생성";
@@ -133,7 +134,7 @@
 "needKey" = "먼저 AI 제공자에서 Google(Gemini API 키)을 연결하세요.";
 "getStarted" = "시작하기";
 "stepGoogle" = "Google 연결 · Gemini TTS(음성 생성에 필요)";
-"stepOllama" = "이 Mac의 Ollama(선택 사항, AI 에이전트용)";
+"stepAgent" = "AI 에이전트 선택 (선택 사항: 채팅, 다듬기, 쉼 넣기)";
 "stepProject" = "첫 프로젝트 만들기";
 "connected" = "연결됨";
 "notConnected" = "연결 안 됨";
@@ -183,9 +184,7 @@
 "thaiUnknown" = "태국어 지원 여부가 문서화되지 않음";
 "saved" = "결과에 저장됨";
 "deleted" = "테이크 삭제됨";
-"ollamaOff" = "Ollama가 실행 중이 아닙니다. 실행(ollama serve)한 다음 버튼을 다시 누르세요.";
-"ollamaFailed" = "Ollama가 응답하지 않았습니다. 실행 중인지 확인한 다음 다시 시도하세요.";
-"ai.model" = "모델";
+"ollamaFailed" = "AI 에이전트가 응답하지 않았습니다. AI 제공자 › AI 에이전트를 확인한 뒤 다시 시도하세요.";
 "nothing" = "모든 장면이 음소거되어 생성할 내용이 없습니다.";
 "rawTitle" = "원본 미리보기 · 앱이 보내는 요청";
 "rawNote" = "타임라인을 음성 구간으로 병합하고, 태그를 인라인으로 넣고, 음소거된 장면은 제외했습니다. Swift GeminiTTS 서비스가 만드는 것과 같은 본문입니다(Interactions API).";
@@ -299,14 +298,14 @@
 "hist.ai" = "✦ %1$@";
 "hist.take" = "테이크 %1$@의 타임라인";
 "about.desc" = "보이스오버 프로젝트를 장면별로 작성하고, 원하는 장면을 미리 들은 다음 Gemini TTS로 프로젝트 전체를 생성하세요. 모든 테이크가 보관됩니다.";
-"ai.intro" = "프로젝트에 대해 Ollama에게 질문하세요. 이 Mac에서 실행되며 로그인이 필요 없습니다. Ollama에는 음성이 없으며, 문구만 도와줍니다.";
+"ai.intro" = "프로젝트에 대해 AI 에이전트에게 물어보세요. 질문할 때마다 대본이 함께 전송됩니다. AI는 답만 하고, 무엇을 바꿀지는 직접 정합니다.";
 "q.hook" = "더 강렬한 첫 문장을 써 줘";
 "q.short" = "15초에 맞춰 줘";
 "q.pauses" = "어디에 쉼을 넣으면 좋을까?";
 "q.en" = "프로젝트를 영어로 번역해 줘";
 "q.style" = "장면마다 말투를 제안해 줘";
 "h.providers.t" = "AI 제공자";
-"h.providers.d" = "왼쪽, 막대 맨 아래(오른쪽의 화면 모드와 같은 위치). Google을 연결하고(Gemini API 키는 테스트 후 모든 프로젝트에 사용됨) Ollama를 확인합니다. Apple 음성으로 각 장면을 무료로 빠르게 미리 들을 수 있습니다. Google이 연결될 때까지 자동으로 열립니다.";
+"h.providers.d" = "왼쪽, 막대 맨 아래(오른쪽의 화면 모드와 같은 위치). 탭은 두 개입니다. 음성: Google을 연결합니다(Gemini API 키는 테스트 후 모든 프로젝트에 사용됨). Apple 음성으로 각 장면을 무료로 빠르게 미리 들을 수 있습니다. AI 에이전트: 채팅에 답하고 장면을 다시 쓰는 AI를 고릅니다 — Apple, Ollama, OpenAI, Gemini 또는 Claude. Google이 연결될 때까지 자동으로 열립니다.";
 "h.projects.t" = "최근 프로젝트";
 "h.projects.d" = "왼쪽: 이전에 연 프로젝트. 이름으로 검색하고 클릭하여 엽니다. 프로젝트 열기…로 다른 Mac에서 내보낸 프로젝트를 가져옵니다. 프로젝트는 자동으로 저장되며, 프로젝트 내보내기(도구 막대)로 가져갈 파일을 만듭니다.";
 "h.model.t" = "모델";
@@ -318,13 +317,13 @@
 "h.exprs.t" = "소리·쉼 보관함";
 "h.exprs.d" = "오른쪽. 숨소리, 쉼, 웃음, 한숨, 놀라 숨 들이켜기, 기침. 타임라인으로 드래그하면 삽입, 현재 장면으로 드래그하면 변경되며, 적용 버튼을 눌러도 됩니다.";
 "h.history.t" = "기록";
-"h.history.d" = "오른쪽 맨 위. 열려 있는 프로젝트의 최근 편집 30개가 최신순으로 표시됩니다. 단계를 더블 클릭하거나 ↩를 누르면 되돌아갑니다. 되돌리기도 새 단계로 기록되므로 아무것도 잃지 않습니다. {pin.fill}로 버전을 고정할 수 있으며, 열었을 때의 프로젝트는 자동으로 고정됩니다. 프로젝트마다 고유한 기록이 있습니다.";
+"h.history.d" = "오른쪽 맨 위. 탭은 두 개이며 각각 최근 30개입니다. 대본: 열려 있는 프로젝트의 편집이 최신순으로 표시됩니다. {pin.fill}로 버전을 고정할 수 있으며, 열었을 때의 프로젝트는 자동으로 고정됩니다. 장면: 장면 텍스트의 버전입니다. 되돌리면 그 장면만 바뀝니다. 항목을 더블 클릭하거나 ↩를 누르면 되돌아갑니다. 되돌리기도 새 단계로 기록되므로 아무것도 잃지 않습니다. 프로젝트마다 고유한 기록이 있습니다.";
 "h.gen.t" = "음성 생성";
 "h.gen.d" = "오른쪽. 프로젝트 전체 미리 듣기(음소거되지 않은 모든 장면), 모델, Gemini로 생성(⌘↵). 그다음 각 결과를 재생, 다운로드 또는 삭제할 수 있습니다.";
 "h.voices.t" = "음성 보관함";
 "h.voices.d" = "Gemini TTS 음성 30개. 검색하고, 음성을 장면으로 드래그하거나 적용 버튼을 누르세요.";
 "h.ai.t" = "AI 에이전트";
-"h.ai.d" = "더 나은 첫 문장, 쉼을 넣을 위치, 번역 등 프로젝트에 대해 Ollama에게 질문하세요. Ollama는 답변만 하며, 장면은 직접 수정합니다.";
+"h.ai.d" = "더 나은 첫 문장, 쉼을 넣을 위치, 번역 등 프로젝트에 대해 AI 에이전트에게 질문하세요. 답하는 AI(Apple, Ollama, OpenAI, Gemini, Claude)는 ⚙ 또는 AI 제공자 › AI 에이전트에서 고릅니다. AI는 답변만 하며, 장면은 직접 수정합니다.";
 
 /* Style presets: what the user reads (Gemini gets the English name) */
 "style.friendly" = "따뜻하고 친근하게";
@@ -339,3 +338,23 @@
 "style.whisper" = "아주 부드럽게, 마이크 가까이";
 "style.serious" = "무겁고 웃음기 없이";
 "style.sad" = "낮고 무겁게";
+
+/* AI Agent: Hosts Manager's AI settings + chat (keys and translations shared), then AVM's own */
+"settings.title" = "AI API 설정";
+"settings.provider" = "제공자";
+"settings.apiKey" = "API 키";
+"settings.model" = "모델";
+"settings.noModels" = "모델을 찾을 수 없습니다.";
+"settings.recommended" = "추천";
+"settings.appleNote" = "Apple Intelligence로 기기에서 실행됩니다(macOS 26 이상). API 키나 모델이 필요하지 않습니다.";
+"settings.keychainNote" = "API 키는 macOS Keychain에 저장됩니다.";
+"chat.setUp" = "AI 제공자 설정…";
+"chat.step.waiting" = "%@ 대기 중";
+"chat.step.thinking" = "생각 중";
+"chat.step.writing" = "답변 작성 중";
+"chat.thought" = "%ld초 동안 생각함";
+"chat.seconds" = "%ld초";
+"ai.notConfigured" = "설정 안 됨";
+"agentPrivacy" = "질문에는 이 프로젝트의 대본이 포함되어 이 제공자에게 전송됩니다.";
+"agentGeminiKey" = "음성 탭의 Google 키를 사용합니다.";
+"chat.step.attached" = "프로젝트 첨부 · 장면 %ld개";
