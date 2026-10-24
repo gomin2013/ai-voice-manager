@@ -59,6 +59,7 @@
 "panel.about" = "เกี่ยวกับ";
 "panel.inbox" = "AI Inbox";
 "panel.projects" = "โปรเจกต์ล่าสุด";
+"shortcut" = "%1$@ (%2$@)";
 "hide" = "ซ่อน";
 "cancel" = "ยกเลิก";
 "save" = "บันทึก";
