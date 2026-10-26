@@ -1,5 +1,42 @@
 # Changelog
 
+## v1.1.0 — 2026-10-26
+
+### Added
+
+- **12 languages** — the app now also speaks Japanese, Korean, Vietnamese, Indonesian, Malay, Filipino, Simplified
+  and Traditional Chinese, Spanish and Russian; search and switch in the Language panel.
+- **AI Agent: five providers** — AI Providers has two tabs. **Voices**: Gemini TTS and Apple's Quick preview.
+  **AI Agent**: Apple Foundation Models or Ollama on your Mac, or OpenAI, Gemini (your Google key) or Claude with
+  your key. The chat shows a step checklist and the model's thinking, renders Markdown with Copy as it streams, and
+  has Stop; ⚙ opens its settings. Polish and Add pauses use the chosen provider (not shown with Apple).
+- **History › Scene** — History has two tabs of 30: **Script** (the project's steps and pins) and **Scene** (each
+  scene's text versions, recorded when you pause typing, with the text it started from). Going back to a Scene row
+  changes only that scene, so deleted words come back without undoing later timeline edits.
+
+### Changed
+
+- **History like Hosts Manager** — the pin sits in the header, Pinned / Recent sections, a Now badge, right-click
+  Restore / Rename / Unpin / Pin This Version / Remove, and earlier days show their date.
+- **Prices in Traditional Chinese** — the Taiwan dollar shows as NT$ next to US$, never a bare $.
+
+### Fixed
+
+- **Choosing a language** always uses that language's own text (Japanese on a Thai Mac used to stay Thai).
+
+### Privacy
+
+- With OpenAI, Gemini or Claude as the AI Agent, your question and the project's script go to that provider with
+  your key; with Apple or Ollama nothing leaves your Mac. The Privacy Policy and Terms of Use say so.
+
+### Installation
+
+Download `AIVoiceManager-1.1.0.dmg` (and `SHA256SUMS.txt`), drag **AI Voice Manager** to **Applications** (replace
+the old copy) and allow the first launch in **System Settings → Privacy & Security → Open Anyway** (or
+`xattr -dr com.apple.quarantine "/Applications/AIVoiceManager.app"`). Then paste a Gemini API key from
+[Google AI Studio](https://aistudio.google.com/apikey) in **AI Providers**. Requires an Apple silicon Mac with
+macOS 14 or later and an internet connection; an AI Agent provider is optional.
+
 ## v1.0.1 — 2026-10-24
 
 ### Changed
