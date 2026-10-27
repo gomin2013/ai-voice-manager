@@ -305,12 +305,11 @@ struct ChevronLabel: View {
 struct GenderPill: View {
     let gender: Gender
 
+    /// The symbol only; the word is the tooltip and the VoiceOver label.
     var body: some View {
-        switch gender {
-        case .female: Pill(text: "♀ " + localized("female"), color: Self.color(.female))
-        case .male: Pill(text: "♂ " + localized("male"), color: Self.color(.male))
-        case .neutral: Pill(text: localized("neutral"), color: Self.color(.neutral))
-        }
+        let word = localized(gender.rawValue)
+        Pill(text: gender == .female ? "♀" : gender == .male ? "♂" : "○", color: Self.color(gender))
+            .help(word).accessibilityLabel(word)
     }
 
     static func color(_ gender: Gender) -> Color {
