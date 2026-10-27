@@ -226,7 +226,12 @@ private struct LibraryRow<Icon: View, Title: View>: View {
                 .buttonStyle(.borderless).help(hint).accessibilityLabel(hint)
                 .accessibilityAddTraits(favorite.isOn ? .isSelected : [])
             }
-            if inUse { InUse() } else { Button(applyTitle, action: apply).controlSize(.small).help(applyHint) }
+            // Apply and "✓ in use" share one slot as wide as the wider of the two, so ♥ lines up in every row
+            ZStack {
+                Button(applyTitle, action: apply).controlSize(.small).help(applyHint)
+                    .opacity(inUse ? 0 : 1).disabled(inUse).accessibilityHidden(inUse)
+                InUse().opacity(inUse ? 1 : 0).accessibilityHidden(!inUse)
+            }
         }
         .padding(.vertical, 3)
         .contentShape(Rectangle())

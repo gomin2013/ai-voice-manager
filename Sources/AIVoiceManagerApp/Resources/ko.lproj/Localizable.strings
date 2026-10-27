@@ -122,7 +122,7 @@
 "stop" = "중단";
 "generate" = "생성";
 "generateDots" = "생성";
-"generating" = "생성 중… (모의 — 실제 API 호출 없음)";
+"generating" = "생성 중…";
 "tierFree" = "무료 등급";
 "tierPaid" = "결제 사용";
 "keyNote" = "키는 macOS 키체인에 보관되며 Google에만 전송됩니다. 무료 등급은 요금이 없지만 할당량이 제한되며, Google이 텍스트와 오디오를 제품 개선에 사용할 수 있습니다.";

@@ -169,7 +169,7 @@ private struct CurrencyList: View {
         let language = LanguageService.shared.current.rawValue
         let matched = CurrencyRates.currency(forLanguage: language)
         List {
-            row("auto", title: localized("curAuto"), flag: "🌐", detail: rate(matched, language))
+            row("auto", title: localized("curAuto"), flag: nil, detail: rate(matched, language))
             ForEach(LanguageService.Language.allCases) { option in
                 let code = CurrencyRates.currency(forLanguage: option.rawValue)
                 row(code, title: Locale(identifier: language).localizedString(forCurrencyCode: code) ?? code,
@@ -188,10 +188,15 @@ private struct CurrencyList: View {
         return "\(code) · 1 US$ ≈ \(Money.format(perUSD, currency: code, language: language))"
     }
 
-    private func row(_ code: String, title: String, flag: String, detail: String) -> some View {
+    /// `flag` nil = Match language: a globe symbol (flags stay emoji — SF Symbols has none).
+    private func row(_ code: String, title: String, flag: String?, detail: String) -> some View {
         let isCurrent = code == saved
         return HStack(spacing: 10) {
-            Text(flag).accessibilityHidden(true)
+            if let flag {
+                Text(flag).accessibilityHidden(true)
+            } else {
+                Image(systemName: "globe").foregroundStyle(.secondary).accessibilityHidden(true)
+            }
             VStack(alignment: .leading, spacing: 1) {
                 Text(title).fontWeight(isCurrent ? .semibold : .regular)
                 Text(detail).font(.caption).foregroundStyle(.secondary)

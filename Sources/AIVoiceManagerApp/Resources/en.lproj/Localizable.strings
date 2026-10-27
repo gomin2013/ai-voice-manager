@@ -122,7 +122,7 @@
 "stop" = "Stop";
 "generate" = "Generate";
 "generateDots" = "Generate";
-"generating" = "Generating… (mock — no real API call)";
+"generating" = "Generating…";
 "tierFree" = "Free tier";
 "tierPaid" = "Billing on";
 "keyNote" = "The key stays in your macOS Keychain and goes only to Google. Free tier = no charge, limited quota, and Google may use your text and audio to improve its products.";

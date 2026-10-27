@@ -122,7 +122,7 @@
 "stop" = "停止";
 "generate" = "生成";
 "generateDots" = "生成";
-"generating" = "生成中…(ダミー — 実際のAPIは呼び出していません)";
+"generating" = "生成中…";
 "tierFree" = "無料枠";
 "tierPaid" = "課金有効";
 "keyNote" = "キーはmacOSのキーチェーンに保存され、Googleにのみ送信されます。無料枠は料金がかかりませんが、割り当て量に制限があり、Googleがテキストと音声を製品の改善に使用する場合があります。";

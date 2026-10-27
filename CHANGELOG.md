@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.1.3 — 2026-10-27
+
+### Fixed
+
+- **Two-voice takes generate again** — Google's API stopped accepting a setting the app sent for conversations, so
+  Generate (and a scene preview with two voices) failed with "Unknown parameter 'mode'". One-voice projects were not
+  affected.
+- **"Generating…"** no longer says "(mock — no real API call)": the app does call Gemini.
+
+### Changed
+
+- **Libraries line up** — in Voice, Style and Expression Library, Apply and "✓ in use" share one slot, so ♥ sits in
+  the same place on every row.
+- **Currency › Match language** shows a globe icon instead of an emoji.
+- **Website: a full demo video** — the home page now has a six-minute walkthrough from install to a finished WAV,
+  narrated in Thai by Gemini TTS, with Thai and English subtitles.
+
+### Installation
+
+Download `AIVoiceManager-1.1.3.dmg` (and `SHA256SUMS.txt`), drag **AI Voice Manager** to **Applications** (replace
+the old copy) and allow the first launch in **System Settings → Privacy & Security → Open Anyway** (or
+`xattr -dr com.apple.quarantine "/Applications/AIVoiceManager.app"`). Then paste a Gemini API key from
+[Google AI Studio](https://aistudio.google.com/apikey) in **AI Providers**. Requires an Apple silicon Mac with
+macOS 14 or later and an internet connection; an AI Agent provider is optional.
+
 ## v1.1.2 — 2026-10-27
 
 ### Added

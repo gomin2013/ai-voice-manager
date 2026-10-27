@@ -122,7 +122,7 @@
 "stop" = "Detener";
 "generate" = "Generar";
 "generateDots" = "Generar";
-"generating" = "Generando… (simulación, sin llamada real a la API)";
+"generating" = "Generando…";
 "tierFree" = "Nivel gratuito";
 "tierPaid" = "Facturación activada";
 "keyNote" = "La clave se queda en el Llavero de macOS y solo se envía a Google. Nivel gratuito = sin coste, cuota limitada, y Google puede usar tu texto y audio para mejorar sus productos.";

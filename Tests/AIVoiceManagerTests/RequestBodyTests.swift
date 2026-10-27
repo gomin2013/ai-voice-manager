@@ -22,7 +22,7 @@ final class RequestBodyTests: XCTestCase {
             "style":"Cheerful and friendly","speaker":"Joe"}]},\
             {"type":"text","text":"Not too bad. Ready to hide some files from git? <sigh>","annotations":[\
             {"type":"speech_metadata","style":"Calm and relaxed","speaker":"Jane"}]}]}],\
-            "response_format":{"type":"audio"},"generation_config":{"speech_config":{"mode":"conversational",\
+            "response_format":{"type":"audio"},"generation_config":{"speech_config":{\
             "speakers":[{"speaker":"Joe","voice":"Puck"},{"speaker":"Jane","voice":"Kore"}]}}}
             """
         let body = try JSONEncoder().encode(InteractionRequest(draft: Fixtures.two))

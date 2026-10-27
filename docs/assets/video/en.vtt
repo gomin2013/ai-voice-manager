@@ -1,0 +1,218 @@
+WEBVTT
+
+1
+00:00:01.000 --> 00:00:06.595
+The voice you're hearing is Gemini TTS, and you can make this yourself on a Mac with this free app.
+
+2
+00:00:06.645 --> 00:00:13.390
+This video walks through every part of AI Voice Manager, from installing it to your own finished voice-over.
+
+3
+00:00:17.000 --> 00:00:23.262
+Start by installing it: open the AI Voice Manager website and press Download to get one DMG file.
+
+4
+00:00:23.312 --> 00:00:27.457
+Open the file and drag AI Voice Manager into your Applications folder.
+
+5
+00:00:27.507 --> 00:00:32.898
+The first time you open it, macOS won't let it open yet, because the app isn't notarized by Apple.
+
+6
+00:00:32.948 --> 00:00:40.403
+Go to System Settings, choose Privacy & Security and press Open Anyway; after that it opens as usual.
+
+7
+00:00:40.453 --> 00:00:44.870
+The app runs on Apple silicon Macs with macOS 14 or later.
+
+8
+00:00:48.000 --> 00:00:54.425
+When the app opens for the first time, AI Providers opens by itself at the bottom left, with a list of what to do first.
+
+9
+00:00:54.475 --> 00:01:02.365
+The only thing you need is a Gemini API key: create one in Google AI Studio, press Create API key and copy it.
+
+10
+00:01:02.415 --> 00:01:07.214
+Back in the app, paste the key, press Save, then Test connection; when it says connected, you're ready.
+
+11
+00:01:07.264 --> 00:01:13.697
+The key is kept only in your Mac's Keychain — never in a project file, and never in an export.
+
+12
+00:01:13.747 --> 00:01:19.308
+Then tell the app whether this key is on the Free tier or has Billing on.
+
+13
+00:01:19.358 --> 00:01:23.330
+The Free tier costs nothing, but Google may use the data to improve its services.
+
+14
+00:01:23.380 --> 00:01:29.670
+With Billing on, the app shows prices in US dollars next to your currency, and asks every time before spending.
+
+15
+00:01:33.000 --> 00:01:37.404
+Next, create a project: press New Project in Recent Projects on the left.
+
+16
+00:01:37.454 --> 00:01:45.942
+Pick a model first: Gemini 3.8 Flash TTS reads Thai; Flash-Lite is cheaper but can't read Thai, and the app warns you under the project name.
+
+17
+00:01:45.992 --> 00:01:50.106
+Change the model later with Change — your scripts and takes stay.
+
+18
+00:01:50.156 --> 00:01:57.150
+Projects save themselves on every edit, no Save button, and you rename one with a double-click.
+
+19
+00:02:00.000 --> 00:02:05.234
+The heart of the app is the Script Timeline: every line and every pause is one scene.
+
+20
+00:02:05.284 --> 00:02:16.200
+Press Script to add a line, then type it in Current Scene; below it you see the character count and the estimated time.
+
+21
+00:02:16.250 --> 00:02:23.804
+Between lines, add one of seven Expressions: breath, short pause, long pause, laugh, sigh, gasp and cough.
+
+22
+00:02:23.854 --> 00:02:30.217
+Each can repeat up to ten times — laugh twice, or a long pause three times.
+
+23
+00:02:30.267 --> 00:02:34.665
+To reorder, grab the handle at the front of a scene and drag it.
+
+24
+00:02:34.715 --> 00:02:41.881
+Mute a scene you don't want yet: it's left out of the take but stays in the script.
+
+25
+00:02:41.931 --> 00:02:49.590
+Under the timeline you always see the number of scenes, muted scenes and the total length.
+
+26
+00:02:52.000 --> 00:03:01.463
+Each scene has its own voice: open Voice Library on the right — over two thousand voices from Google, the same set as AI Studio.
+
+27
+00:03:01.513 --> 00:03:13.430
+Search by name, or filter with the male, female, favourites and in-this-project tabs, and narrow by language and pitch.
+
+28
+00:03:13.480 --> 00:03:20.416
+Drag a voice onto the scene or press Apply; the voice in use shows “in use”.
+
+29
+00:03:20.466 --> 00:03:29.504
+The Styles tab has twelve styles — friendly, news anchor, whisper — or type your own.
+
+30
+00:03:29.554 --> 00:03:38.070
+A project can use two voices, so two people can talk; pick a third and the app tells you which two are in use.
+
+31
+00:03:41.000 --> 00:03:43.996
+Before generating for real, you can listen in three steps.
+
+32
+00:03:44.046 --> 00:03:52.231
+One, Quick preview: the Mac's own voices, free and offline, to check the wording and rhythm — not the real voice yet.
+
+33
+00:03:52.281 --> 00:03:58.279
+Two, generate a preview of just this scene with Gemini, and hear the real voice one scene at a time.
+
+34
+00:03:58.329 --> 00:04:05.943
+Three, when you're happy, open Generate on the right: one summary line with scenes, length, your key's tier and the price.
+
+35
+00:04:05.993 --> 00:04:12.774
+Press Generate or Command-Return and the whole project is made in one take.
+
+36
+00:04:12.824 --> 00:04:20.515
+Every take is kept in Results with its waveform: play it, download the WAV, or bring its timeline back to keep editing.
+
+37
+00:04:20.565 --> 00:04:24.870
+Delete a take you don't need — it goes to the Trash, and Undo brings it back.
+
+38
+00:04:28.000 --> 00:04:32.973
+Want AI to help you write? In AI Providers, the AI Agent tab offers five choices.
+
+39
+00:04:33.023 --> 00:04:39.821
+Apple Foundation Models or Ollama run on your Mac; nothing leaves it.
+
+40
+00:04:39.871 --> 00:04:47.707
+Or OpenAI, Gemini and Claude with your own key — then your question and script go to that provider.
+
+41
+00:04:47.757 --> 00:04:56.585
+Ask about your project in the AI Agent panel: you see its steps, the model's thinking, the answer as it streams, and Stop any time.
+
+42
+00:04:56.635 --> 00:05:02.327
+In the script box, Polish refines a line and Add pauses puts in the pauses, one scene at a time.
+
+43
+00:05:02.377 --> 00:05:09.830
+Each is one step in History, so you can go back; both buttons are hidden when Apple is selected.
+
+44
+00:05:13.000 --> 00:05:20.288
+Every edit lands in History: the Script tab keeps the project's last thirty steps, and you can pin a version you like.
+
+45
+00:05:20.338 --> 00:05:24.380
+Going back to any step becomes a new step, so nothing is lost.
+
+46
+00:05:24.430 --> 00:05:30.756
+The Scene tab keeps each scene's text versions, every time you pause typing.
+
+47
+00:05:30.806 --> 00:05:37.390
+Deleted a line by mistake? Pick the version before the edit — only that scene comes back, and everything else stays.
+
+48
+00:05:40.000 --> 00:05:45.802
+To carry on on another Mac, press Export Project for one zip file with every take.
+
+49
+00:05:45.852 --> 00:05:52.110
+On the new Mac, press Open Project and choose the file; the app checks every field before opening it.
+
+50
+00:05:55.000 --> 00:05:59.574
+The app speaks twelve languages — search and switch in the Language panel.
+
+51
+00:05:59.624 --> 00:06:04.225
+The Currency tab shows prices in dollars next to the currency you choose.
+
+52
+00:06:04.275 --> 00:06:11.350
+And the Appearance panel picks light or dark, sixteen accent colours and eight gradient backgrounds.
+
+53
+00:06:14.000 --> 00:06:20.259
+AI Voice Manager is free and open source; the download link and GitHub are in the description below.
+
+54
+00:06:20.309 --> 00:06:26.830
+Try the other Gomin apps too, like Hosts Manager and Git Exclude Manager. Thanks for watching to the end.
+

@@ -122,7 +122,7 @@
 "stop" = "หยุด";
 "generate" = "สร้างเสียง";
 "generateDots" = "สร้างเสียง";
-"generating" = "กำลังสร้าง… (mock ไม่ได้เรียก API จริง)";
+"generating" = "กำลังสร้าง…";
 "tierFree" = "Free tier";
 "tierPaid" = "เปิด billing";
 "keyNote" = "key อยู่ใน Keychain ของ macOS และส่งไปที่ Google เท่านั้น · Free tier ไม่เสียเงิน แต่มี quota และ Google อาจนำข้อความและเสียงไปพัฒนาผลิตภัณฑ์";
