@@ -9,6 +9,13 @@ final class MoneyTests: XCTestCase {
         XCTAssertEqual(Money.format(33, currency: "THB", language: "en"), "฿33")
     }
 
+    /// Traditional Chinese writes TWD as a bare "$" and USD as "US$": next to a USD price that's ambiguous → NT$.
+    func testBareDollarNextToUSDGetsItsPrefix() {
+        XCTAssertEqual(Money.usdWithLocal(1.85, currency: "TWD", language: "zh-Hant"), "US$1.85 (NT$59.2)")
+        XCTAssertEqual(Money.format(150, currency: "JPY", language: "ja"), "¥150", "own currency, no clash: as is")
+        XCTAssertEqual(Money.format(4.4, currency: "MYR", language: "ja"), "RM\u{00A0}4.4", "letter symbols: no clash")
+    }
+
     /// English shows 2026 even on a Mac set to the Buddhist calendar; Thai shows 2569 like the prototype.
     @MainActor
     func testDatesUseTheAppLanguagesCalendar() {

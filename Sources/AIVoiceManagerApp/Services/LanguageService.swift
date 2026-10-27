@@ -131,8 +131,13 @@ final class LanguageService {
         // The .app ships the .lproj folders in Contents/Resources. Under `swift run` / `swift test` there is no app
         // bundle, so use SwiftPM's resource bundle (never touched from a .app: Bundle.module traps if it's missing).
         let resources = Bundle.main.bundleURL.pathExtension == "app" ? Bundle.main : Bundle.module
-        guard let path = resources.path(forResource: language.rawValue, ofType: "lproj"),
-              let bundle = Bundle(path: path) else { return .main }
+        // A language without its own .lproj (only en + th ship) reads English. Never `.main`: macOS resolves that
+        // by the system's language list, so Japanese on a Thai Mac stayed Thai.
+        // SwiftPM's native build system lowercases folder names (zh-Hans.lproj → zh-hans.lproj); the .app keeps case.
+        let path = resources.path(forResource: language.rawValue, ofType: "lproj")
+            ?? resources.path(forResource: language.rawValue.lowercased(), ofType: "lproj")
+        guard let path,
+              let bundle = Bundle(path: path) else { return language == .english ? .main : Self.bundle(for: .english) }
         return bundle
     }
 }

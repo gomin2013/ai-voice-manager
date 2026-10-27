@@ -60,11 +60,12 @@ extension RecentProjectsPanel {
     }
 }
 
-/// AI Providers (left rail, bottom): getting started, Google (Keychain + Test), Ollama (status, model, Check
-/// again), Apple.
+/// AI Providers (left rail, bottom): getting started, then two tabs by job — Voices (Google · Gemini TTS with Keychain
+/// + Test, Apple for Quick preview) and AI Agent (Hosts Manager's five providers, `AgentProviderCard`).
 struct AIProvidersPanel: View {
-    @Environment(OllamaStatus.self) private var ollama
+    @Environment(AgentSettings.self) private var agent
     @Environment(EditorViewModel.self) private var vm
+    @AppStorage("ui.providersTab") private var tab = "voices"
     @Environment(ConnectionMonitor.self) private var net
     @AppStorage("gemini.tier") private var tier = "free"
     @State private var keyField = ""
@@ -75,8 +76,8 @@ struct AIProvidersPanel: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 Text(localized("getStarted")).font(.app(12, .semibold)).foregroundStyle(.secondary)
-                let done = [vm.hasGeminiKey, ollama.isRunning, vm.hasGeminiKey]   // the prototype's three checks
-                ForEach(Array(["stepGoogle", "stepOllama", "stepProject"].enumerated()), id: \.offset) { index, key in
+                let done = [vm.hasGeminiKey, agent.isConfigured, vm.hasGeminiKey]   // the prototype's three checks
+                ForEach(Array(["stepGoogle", "stepAgent", "stepProject"].enumerated()), id: \.offset) { index, key in
                     HStack(alignment: .top, spacing: 8) {
                         if done[index] {
                             Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
@@ -86,78 +87,71 @@ struct AIProvidersPanel: View {
                         Text(localized(key))
                     }
                 }
-                card(title: "✦ Google · Gemini TTS",
-                     status: localized(vm.hasGeminiKey ? "connected" : "notConnected"), ok: vm.hasGeminiKey) {
-                    Text(localized("googleUse"))
-                    HStack {
-                        // Never shows the saved key: typing a new one replaces it
-                        SecureField(text: $keyField, prompt: Text(verbatim: vm.hasGeminiKey ? "••••••••" : "AIza…")) {
-                            Text(verbatim: "Gemini API key")
-                        }
-                        .textFieldStyle(.roundedBorder)
-                        .onSubmit(save)
-                        Button(localized("save"), action: save)
-                            .disabled(keyField.trimmingCharacters(in: .whitespaces).isEmpty)
-                    }
-                    Picker(localized("tierFree"), selection: $tier) {
-                        Text(localized("tierFree")).tag("free")
-                        Text(localized("tierPaid")).tag("paid")
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    HStack {
-                        Button(localized("testConn")) {
-                            isTesting = true
-                            testResult = localized("testing")
-                            Task {
-                                testResult = await vm.testGeminiKey()
-                                isTesting = false
-                            }
-                        }
-                        .disabled(!vm.hasGeminiKey || isTesting || !net.isOnline)
-                        .help(net.isOnline ? "" : localized("netNeeds"))
-                        if vm.hasGeminiKey {
-                            Button(localized("removeKey")) {
-                                vm.removeGeminiKey()
-                                testResult = ""
-                            }
-                        }
-                    }
-                    HStack {   // own row: with Test + Remove the 300 pt card truncated every button
-                        Link(localized("getKey"), destination: URL(string: "https://aistudio.google.com/apikey")!)
-                        Link(localized("pricing"), destination: URL(string: "https://ai.google.dev/gemini-api/docs/pricing")!)
-                    }
-                    if !testResult.isEmpty {
-                        Text(testResult).foregroundStyle(.secondary).textSelection(.enabled)
-                    }
-                    Text(localized("keyNote")).foregroundStyle(.secondary)
+                Picker(localized("panel.providers"), selection: $tab) {
+                    Text(localized("tabVoices")).tag("voices")
+                    Text(localized("panel.agent")).tag("agent")
                 }
-                card(title: "Ollama · " + localized("onThisMac"), symbol: "desktopcomputer",
-                     status: localized(ollama.isRunning ? "connected" : "notRunning"), ok: ollama.isRunning) {
-                    Text(localized("ollamaUse"))
-                    if ollama.isRunning {
-                        @Bindable var ollama = ollama
-                        Picker(localized("ai.model"), selection: $ollama.model) {
-                            ForEach(ollama.models, id: \.self) { Text($0).tag($0) }
-                        }
-                        .labelsHidden()
-                    } else {
-                        Text(localized("ollamaHow")).foregroundStyle(.secondary)
-                    }
-                    HStack {
-                        Text(verbatim: "localhost:11434").font(.data(11)).foregroundStyle(.secondary)
-                        Spacer()
-                        Button(localized("checkAgain")) { Task { await ollama.probe() } }
-                    }
-                }
-                card(title: " Apple · " + localized("onThisMac"), status: localized("quickPreview"), ok: true) {
-                    Text(localized("appleUse"))
-                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                if tab == "agent" { AgentProviderCard() } else { voices }
             }
             .font(.app(12))
             .controlSize(.small)
             .padding(.horizontal, 14)
             .padding(.bottom, 14)
+        }
+    }
+
+    @ViewBuilder
+    private var voices: some View {
+        card(title: "✦ Google · Gemini TTS",
+             status: localized(vm.hasGeminiKey ? "connected" : "notConnected"), ok: vm.hasGeminiKey) {
+            Text(localized("googleUse"))
+            HStack {
+                // Never shows the saved key: typing a new one replaces it
+                SecureField(text: $keyField, prompt: Text(verbatim: vm.hasGeminiKey ? "••••••••" : "AIza…")) {
+                    Text(verbatim: "Gemini API key")
+                }
+                .textFieldStyle(.roundedBorder)
+                .onSubmit(save)
+                Button(localized("save"), action: save)
+                    .disabled(keyField.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+            Picker(localized("tierFree"), selection: $tier) {
+                Text(localized("tierFree")).tag("free")
+                Text(localized("tierPaid")).tag("paid")
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            HStack {
+                Button(localized("testConn")) {
+                    isTesting = true
+                    testResult = localized("testing")
+                    Task {
+                        testResult = await vm.testGeminiKey()
+                        isTesting = false
+                    }
+                }
+                .disabled(!vm.hasGeminiKey || isTesting || !net.isOnline)
+                .help(net.isOnline ? "" : localized("netNeeds"))
+                if vm.hasGeminiKey {
+                    Button(localized("removeKey")) {
+                        vm.removeGeminiKey()
+                        testResult = ""
+                    }
+                }
+            }
+            HStack {   // own row: with Test + Remove the 300 pt card truncated every button
+                Link(localized("getKey"), destination: URL(string: "https://aistudio.google.com/apikey")!)
+                Link(localized("pricing"), destination: URL(string: "https://ai.google.dev/gemini-api/docs/pricing")!)
+            }
+            if !testResult.isEmpty {
+                Text(testResult).foregroundStyle(.secondary).textSelection(.enabled)
+            }
+            Text(localized("keyNote")).foregroundStyle(.secondary)
+        }
+        card(title: " Apple · " + localized("onThisMac"), status: localized("quickPreview"), ok: true) {
+            Text(localized("appleUse"))
         }
     }
 

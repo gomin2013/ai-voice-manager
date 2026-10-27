@@ -88,7 +88,7 @@ a > .btn { color: var(--text); }
 .panel.closed { display: none; }
 .panel-h { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; font-weight: 600; border-bottom: 1px solid var(--line); }
 .panel-b { flex: 1; overflow: auto; padding: 10px 12px; }
-.panel-b h3 { font-size: 12px; color: var(--text2); margin: 14px 0 6px; text-transform: uppercase; letter-spacing: .04em; }
+.panel-b h3 { font-size: 12px; color: var(--text2); margin: 14px 0 6px; }   /* title case, like Hosts Manager's sidebar sections */
 .prow { display: flex; align-items: center; gap: 8px; padding: 6px 6px; border-radius: 7px; cursor: pointer; }
 .prow:hover { background: var(--bg3); }
 .prow .grow { flex: 1; min-width: 0; }

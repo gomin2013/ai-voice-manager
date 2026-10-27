@@ -162,6 +162,11 @@ const SYM = {
   'face.smiling': '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0M9 9.5v.5M15 9.5v.5"/>',
   desktopcomputer: '<rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 21h8M12 16.5V21"/>',
   waveform: '<path d="M3 10.5v3M7 7v10M11 3.5v17M15 7.5v9M19 5v14M23 10.5v3"/>',
+  'text.alignleft': '<path d="M4 6h16M4 12h10M4 18h13"/>',
+  timer: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>',
+  'pause.circle': '<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>',
+  'character.bubble': '<path d="M4 5h16v11H9l-5 4z"/><path d="m9 13 2.5-6 2.5 6M10 11h3"/>',
+  'exclamationmark.shield': '<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M12 8v5M12 16v.01"/>',
 };
 const sf = (name, cls = 'sym') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${SYM[name]}</svg>`;
 /** Escaped text whose {sf.name} tokens become icons — the strings stay the same as Localizable.strings. */
@@ -220,12 +225,17 @@ const CURRENCIES = { USD: ['en', '🇺🇸', 1], THB: ['th', '🇹🇭', 33], JP
 const currency = () => { const c = load('currency', 'auto');   // 'auto' = follow the app language
   return CURRENCIES[c] ? c : Object.keys(CURRENCIES).find(k => CURRENCIES[k][0] === Shell.lang) ?? 'USD'; };
 // Short symbol (฿ not THB) unless another listed currency shares it ($ = USD / TWD, ¥ = JPY / CNY) → NT$, CN¥.
-const sym = (code, display) => new Intl.NumberFormat(Shell.lang, { style: 'currency', currency: code, currencyDisplay: display })
+// "US$" and "$" share it too (Traditional Chinese): a still-bare standard symbol takes the English one (NT$).
+const sym = (code, display, lang = Shell.lang) => new Intl.NumberFormat(lang, { style: 'currency', currency: code, currencyDisplay: display })
   .formatToParts(1).find(x => x.type === 'currency').value;
+const bare = s => /^\p{L}+$/u.test(s) ? s : s.replace(/\p{L}/gu, '');   // "US$" → "$"; RM, Rp, 元 stay themselves
 const fmtMoney = (v, code) => {
-  const clash = Object.keys(CURRENCIES).some(c => c !== code && sym(c, 'narrowSymbol') === sym(code, 'narrowSymbol'));
-  return new Intl.NumberFormat(Shell.lang, { style: 'currency', currency: code, currencyDisplay: clash ? 'symbol' : 'narrowSymbol',
+  const mine = bare(sym(code, 'narrowSymbol'));
+  const clash = Object.keys(CURRENCIES).some(c => c !== code && bare(sym(c, 'narrowSymbol')) === mine);
+  const text = new Intl.NumberFormat(Shell.lang, { style: 'currency', currency: code, currencyDisplay: clash ? 'symbol' : 'narrowSymbol',
     maximumSignificantDigits: 3 }).format(v);
+  const standard = sym(code, 'symbol');
+  return clash && !/\p{L}/u.test(standard) ? text.replace(standard, sym(code, 'symbol', 'en')) : text;
 };
 const money = usd => currency() === 'USD' ? fmtMoney(usd, 'USD')
   : `${fmtMoney(usd, 'USD')} (${fmtMoney(usd * CURRENCIES[currency()][2], currency())})`;   // costPaid already says ≈
@@ -237,13 +247,18 @@ const STRINGS = {
     untitled: 'Untitled project', rename: 'Rename project (or double-click the name)', titleEmpty: 'Project name can’t be empty.',
     thaiWarn: '⚠ This model does not support Thai. Switch to Gemini 3.8 Flash TTS.', bTier: 'FREE TIER', bPaid: 'PAID', bMock: 'MOCK',
     oTags: 'Add pauses', oPolish: 'Polish', oTranslate: 'TH↔EN', chars: '{0} characters · ≈ {1} s',
-    aiHelp: 'Ollama on this Mac rewrites this scene only. Undo in History.',
+    aiHelp: 'The AI Agent rewrites this scene only. Undo in History.',
     preview: 'Preview', stop: 'Stop', generate: 'Generate', generateDots: 'Generate', generating: 'Generating… (mock — no real API call)',
     tierFree: 'Free tier', tierPaid: 'Billing on',
     keyNote: 'The real app stores the key in the macOS Keychain. Free tier = no charge, limited quota, and Google may use your text and audio to improve its products.',
     getKey: 'Get API key ↗', pricing: 'Pricing ↗', done: 'Done', cancel: 'Cancel', undo: 'Undo',
     paidTitle: 'This take costs money', needKey: 'Connect Google (Gemini API key) in AI Providers first.',
-    getStarted: 'Getting started', stepGoogle: 'Connect Google · Gemini TTS (needed to make voices)', stepOllama: 'Ollama on this Mac (optional, AI Agent)',
+    getStarted: 'Getting started', stepGoogle: 'Connect Google · Gemini TTS (needed to make voices)', stepAgent: 'Choose an AI Agent (optional: chat, Polish, Add pauses)',
+    'settings.provider': 'Provider', 'settings.apiKey': 'API Key', 'settings.model': 'Model',
+    'settings.appleNote': 'Runs on-device with Apple Intelligence (macOS 26+). No API key or model needed.',
+    'settings.keychainNote': 'The API key is stored in your macOS Keychain.',
+    agentPrivacy: 'Your questions include this project\'s script, which is sent to this provider.',
+    agentGeminiKey: 'Uses your Google key from the Voices tab.',
     stepProject: 'Create your first project', connected: 'Connected', notConnected: 'Not connected', notRunning: 'Not running',
     onThisMac: 'on this Mac', save: 'Save', testConn: 'Test connection', removeKey: 'Remove key', testing: 'Testing…', testOk: 'Google accepted the key.',
     testFail: 'Google refused the key', testOffline: 'Couldn’t reach Google (offline?).', keySaved: 'Key saved for every project', keyRemoved: 'Key removed',
@@ -295,36 +310,43 @@ const STRINGS = {
     favEmpty: 'No favorites yet — press ♡ on a voice to keep it here.',
     vSearch: 'Search voices…', gVoices: 'Gemini TTS · voices', apply: 'Apply', dragVoice: 'Drag onto Current Scene, or press Apply', inUse: 'in use',
     'panel.providers': 'AI Providers', 'panel.projects': 'Recent Projects', 'panel.generate': 'Generate', 'panel.voices': 'Voice Library', 'panel.expressions': 'Expression Library',
+    'hist.tabScene': 'Scene', 'hist.sceneBefore': 'Scene {0} before editing',
+    'hist.sceneEmpty': 'Edit a scene’s text and its versions appear here.',
     'hist.edit': 'Edited scene {0}', 'hist.style': 'Scene {0} style: {1}', 'hist.addScript': 'Added script',
     'hist.addExpr': 'Added {0}', 'hist.remove': 'Deleted scene {0}', 'hist.move': 'Moved scene', 'hist.mute': 'Muted scene {0}', 'hist.unmute': 'Unmuted scene {0}',
     'hist.expr': 'Expression: {0}', 'hist.times': '{0} ×{1}', 'hist.title': 'Renamed project', 'hist.model': 'Model: {0}', 'hist.voice': 'Voice: {0}', 'hist.ai': '✦ {0}', 'hist.take': 'Timeline from take {0}',
     'about.desc': 'Write a voice-over project scene by scene, preview any scene, then generate the whole project with Gemini TTS. Every take is kept.',
-    'ai.intro': 'Ask Ollama about your project. It runs on this Mac, no login. Ollama has no voices: it only helps with the words.',
+    'ai.intro': 'Ask the AI Agent about your project. The script goes along with each question; the AI only answers — you decide what to change.',
     'q.hook': 'Write a stronger opening line', 'q.short': 'Make it fit 15 seconds', 'q.pauses': 'Where should I add pauses?',
     'q.en': 'Translate the project to English', 'q.style': 'Suggest a style for each scene',
-    'h.providers.t': 'AI Providers', 'h.providers.d': 'Left side, bottom of the rail (like Appearance on the right). Connect Google (Gemini API key, tested and kept for every project), check Ollama, Apple voices give each scene a free Quick preview. Opens by itself until Google is connected.',
+    'h.providers.t': 'AI Providers', 'h.providers.d': 'Left side, bottom of the rail (like Appearance on the right). Two tabs. Voices: connect Google (Gemini API key, tested and kept for every project); Apple voices give each scene a free Quick preview. AI Agent: who answers the chat and rewrites scenes — Apple, Ollama, OpenAI, Gemini or Claude. Opens by itself until Google is connected.',
     'h.projects.t': 'Recent Projects', 'h.projects.d': 'Left side: projects you opened before. Search by name, click to open. Open Project… brings in a project exported from another Mac. Projects save automatically; Export Project (toolbar) makes the file to take with you.',
     'h.model.t': 'Model', 'h.model.d': 'Every project uses one Gemini TTS model, chosen when you create it and shown under the name. Change says what changes: scene previews need generating again, Thai support and price follow; scenes, voices and old takes stay.',
     'h.timeline.t': 'Script Timeline', 'h.timeline.d': 'Every line (Script) and every breath or pause (Expression) is a scene. Drag ⋮⋮ to reorder, {speaker.slash} to leave a scene out of the take, click to edit it on the right.',
     'h.scene.t': 'Current Scene', 'h.scene.d': 'Script: the voice (drag from Voice Library), the style (drag from its Styles tab or type), the text, and the preview of this scene only (Generate preview → Ready → Play). Expression: the current one; change it from Expression Library.',
     'h.exprs.t': 'Expression Library', 'h.exprs.d': 'Right side. Breath, pauses, laugh, sigh, gasp, cough. Drag onto the timeline to insert, onto the Current Scene to change, or press Apply.',
-    'h.history.t': 'History', 'h.history.d': 'Right side, top. The last 30 edits of the open project, newest first. Double-click a step or press ↩ to go back — going back is a new step too, so nothing is lost. {pin.fill} pins a version; the project as opened is pinned for you. Each project keeps its own History.',
+    'h.history.t': 'History', 'h.history.d': 'Right side, top. Two tabs of 30. Script: the open project\'s last edits, newest first; {pin.fill} pins a version, and the project as opened is pinned for you. Scene: the last versions of the scenes\' text — going back changes only that scene. Double-click a row or press ↩ to go back — going back is a new step too, so nothing is lost. Each project keeps its own History.',
     'h.gen.t': 'Generate', 'h.gen.d': 'Right side. Preview of the whole project (every scene that isn’t muted), model, Generate with Gemini (⌘↵), then play, download or delete each result.',
     'h.voices.t': 'Voice Library', 'h.voices.d': 'The 30 Gemini TTS voices. Search, drag a voice onto the scene or press Apply.',
-    'h.ai.t': 'AI Agent', 'h.ai.d': 'Ask Ollama about the project: a better opening line, where to pause, a translation. It answers; you change the scenes yourself.',
+    'h.ai.t': 'AI Agent', 'h.ai.d': 'Ask the AI Agent about the project: a better opening line, where to pause, a translation. Choose who answers — Apple, Ollama, OpenAI, Gemini or Claude — with ⚙ or in AI Providers › AI Agent. It answers; you change the scenes yourself.',
   },
   th: { newProject: 'โปรเจกต์ใหม่', openProject: 'เปิดโปรเจกต์…', exportProject: 'ส่งออกโปรเจกต์',
     exportTip: 'โปรเจกต์บันทึกอัตโนมัติ ส่งออกเพื่อไปเปิดที่เครื่องอื่น', openTip: 'เปิดโปรเจกต์ที่ส่งออกมาจากเครื่องอื่น',
     untitled: 'โปรเจกต์ไม่มีชื่อ', rename: 'เปลี่ยนชื่อโปรเจกต์ (หรือดับเบิลคลิกที่ชื่อ)', titleEmpty: 'ชื่อโปรเจกต์ต้องไม่ว่าง',
     thaiWarn: '⚠ model นี้ไม่รองรับภาษาไทย ให้เปลี่ยนเป็น Gemini 3.8 Flash TTS', bTier: 'FREE TIER', bPaid: 'เสียเงิน', bMock: 'MOCK',
     oTags: 'ใส่จังหวะหายใจ', oPolish: 'เกลาคำ', oTranslate: 'แปล ไทย↔อังกฤษ', chars: '{0} ตัวอักษร · ≈ {1} วิ',
-    aiHelp: 'Ollama ในเครื่องเขียนใหม่เฉพาะฉากนี้ · ย้อนได้ใน History',
+    aiHelp: 'AI Agent เขียนใหม่เฉพาะฉากนี้ · ย้อนได้ในประวัติ',
     preview: 'ลองฟัง', stop: 'หยุด', generate: 'สร้างเสียง', generateDots: 'สร้างเสียง', generating: 'กำลังสร้าง… (mock ไม่ได้เรียก API จริง)',
     tierFree: 'Free tier', tierPaid: 'เปิด billing',
     keyNote: 'แอปจริงเก็บ key ใน Keychain ของ macOS · Free tier ไม่เสียเงิน แต่มี quota และ Google อาจนำข้อความและเสียงไปพัฒนาผลิตภัณฑ์',
     getKey: 'ขอ API key ↗', pricing: 'ราคา ↗', done: 'เสร็จ', cancel: 'ยกเลิก', undo: 'เลิกทำ',
     paidTitle: 'take นี้เสียเงิน', needKey: 'เชื่อม Google (Gemini API key) ใน ผู้ให้บริการ AI ก่อน',
-    getStarted: 'เริ่มต้นใช้งาน', stepGoogle: 'เชื่อม Google · Gemini TTS (จำเป็นสำหรับสร้างเสียง)', stepOllama: 'Ollama ในเครื่องนี้ (ไม่บังคับ, ใช้กับ AI Agent)',
+    getStarted: 'เริ่มต้นใช้งาน', stepGoogle: 'เชื่อม Google · Gemini TTS (จำเป็นสำหรับสร้างเสียง)', stepAgent: 'เลือก AI Agent (ไม่บังคับ: แชต, Polish, เพิ่มจังหวะ)',
+    'settings.provider': 'ผู้ให้บริการ', 'settings.apiKey': 'API Key', 'settings.model': 'โมเดล',
+    'settings.appleNote': 'ทำงานบนเครื่องด้วย Apple Intelligence (macOS 26 ขึ้นไป) ไม่ต้องใช้ API key หรือเลือกโมเดล',
+    'settings.keychainNote': 'API key ถูกเก็บไว้ใน Keychain ของ macOS',
+    agentPrivacy: 'คำถามของคุณจะแนบบทของโปรเจกต์นี้ไปยังผู้ให้บริการนี้ด้วย',
+    agentGeminiKey: 'ใช้ Google key เดียวกับแท็บเสียง',
     stepProject: 'สร้างโปรเจกต์แรก', connected: 'เชื่อมแล้ว', notConnected: 'ยังไม่เชื่อม', notRunning: 'ไม่ได้เปิด',
     onThisMac: 'ในเครื่องนี้', save: 'บันทึก', testConn: 'ทดสอบการเชื่อมต่อ', removeKey: 'ลบ key', testing: 'กำลังทดสอบ…', testOk: 'Google รับ key นี้แล้ว',
     testFail: 'Google ไม่รับ key นี้', testOffline: 'ติดต่อ Google ไม่ได้ (ไม่ได้ต่อเน็ต?)', keySaved: 'บันทึก key แล้ว ใช้ได้ทุกโปรเจกต์', keyRemoved: 'ลบ key แล้ว',
@@ -372,23 +394,25 @@ const STRINGS = {
     favEmpty: 'ยังไม่มีรายการโปรด — กด ♡ ที่เสียงที่ชอบเพื่อเก็บไว้ที่นี่',
     vSearch: 'ค้นหาเสียง…', gVoices: 'Gemini TTS · เสียง', apply: 'Apply', dragVoice: 'ลากไปวางที่ฉากปัจจุบัน หรือกด Apply', inUse: 'ใช้อยู่',
     'panel.providers': 'ผู้ให้บริการ AI', 'panel.projects': 'โปรเจกต์ล่าสุด', 'panel.generate': 'สร้างเสียง', 'panel.voices': 'คลังเสียง', 'panel.expressions': 'คลัง Expression',
+    'hist.tabScene': 'ฉาก', 'hist.sceneBefore': 'ฉาก {0} ก่อนแก้',
+    'hist.sceneEmpty': 'แก้ข้อความในฉาก แล้วเวอร์ชันของข้อความจะมาอยู่ตรงนี้',
     'hist.edit': 'แก้ฉาก {0}', 'hist.style': 'ฉาก {0} style: {1}', 'hist.addScript': 'เพิ่มบท',
     'hist.addExpr': 'เพิ่ม {0}', 'hist.remove': 'ลบฉาก {0}', 'hist.move': 'ย้ายฉาก', 'hist.mute': 'ปิดเสียงฉาก {0}', 'hist.unmute': 'เปิดเสียงฉาก {0}',
     'hist.expr': 'Expression: {0}', 'hist.times': '{0} ×{1}', 'hist.title': 'เปลี่ยนชื่อ', 'hist.model': 'Model: {0}', 'hist.voice': 'เสียง: {0}', 'hist.ai': '✦ {0}', 'hist.take': 'ไทม์ไลน์จาก take {0}',
     'about.desc': 'เขียนบทพากย์ทีละฉาก ลองฟังทีละฉาก แล้วสร้างเสียงทั้งโปรเจกต์ด้วย Gemini TTS ทุก take เก็บไว้ให้',
-    'ai.intro': 'ถาม Ollama เรื่องโปรเจกต์ของคุณ ทำงานในเครื่อง ไม่ต้อง login · Ollama ไม่มีเสียง ช่วยได้แค่เรื่องถ้อยคำ',
+    'ai.intro': 'ถาม AI Agent เรื่องโปรเจกต์ของคุณ บทจะถูกส่งไปพร้อมทุกคำถาม AI แค่ตอบ คุณเป็นคนตัดสินใจว่าจะแก้อะไร',
     'q.hook': 'เขียนประโยคเปิดให้ดึงดูดกว่านี้', 'q.short': 'ย่อให้พอดี 15 วินาที', 'q.pauses': 'ควรเว้นจังหวะตรงไหน',
     'q.en': 'แปลโปรเจกต์เป็นภาษาอังกฤษ', 'q.style': 'แนะนำ style ของแต่ละฉาก',
-    'h.providers.t': 'ผู้ให้บริการ AI', 'h.providers.d': 'ด้านซ้าย ล่างสุดของแถบ (เหมือน Appearance ด้านขวา) เชื่อม Google (Gemini API key ทดสอบได้ และใช้ได้ทุกโปรเจกต์), ตรวจ Ollama, เสียง Apple ใช้ฟังด่วนในแต่ละฉาก (ฟรี) · เปิดเองจนกว่าจะเชื่อม Google',
+    'h.providers.t': 'ผู้ให้บริการ AI', 'h.providers.d': 'ด้านซ้าย ล่างสุดของแถบ (เหมือน Appearance ด้านขวา) มี 2 แท็บ · เสียง: เชื่อม Google (Gemini API key ทดสอบได้ และใช้ได้ทุกโปรเจกต์) และเสียง Apple ใช้ฟังด่วนในแต่ละฉาก (ฟรี) · AI Agent: เลือกว่าใครตอบแชตและเขียนฉากใหม่ — Apple, Ollama, OpenAI, Gemini หรือ Claude · เปิดเองจนกว่าจะเชื่อม Google',
     'h.projects.t': 'โปรเจกต์ล่าสุด', 'h.projects.d': 'ด้านซ้าย: โปรเจกต์ที่เคยเปิด ค้นหาด้วยชื่อ คลิกเพื่อเปิด · เปิดโปรเจกต์… ใช้นำเข้าโปรเจกต์ที่ส่งออกจากเครื่องอื่น · โปรเจกต์บันทึกอัตโนมัติ ส่งออกโปรเจกต์ (toolbar) ใช้ทำไฟล์ไปเปิดที่อื่น',
     'h.model.t': 'Model', 'h.model.d': 'ทุกโปรเจกต์ใช้ Gemini TTS หนึ่ง model เลือกตอนสร้างและแสดงใต้ชื่อ · เปลี่ยนได้ โดยบอกว่าอะไรเปลี่ยน: ต้องสร้างเสียงลองฟังใหม่ การรองรับไทยและราคาตาม model ใหม่ · ฉาก เสียง และ take เดิมไม่เปลี่ยน',
     'h.timeline.t': 'ไทม์ไลน์บท', 'h.timeline.d': 'ทุกประโยค (บท) และทุกเสียงหายใจหรือช่วงเว้น (Expression) คือหนึ่งฉาก ลาก ⋮⋮ เพื่อเปลี่ยนลำดับ {speaker.slash} เพื่อไม่ใส่ฉากนั้นใน take คลิกเพื่อแก้ทางขวา',
     'h.scene.t': 'ฉากปัจจุบัน', 'h.scene.d': 'บท: เสียง (ลากจากคลังเสียง), style (ลากจากแท็บ Style หรือพิมพ์), ข้อความ และลองฟังเฉพาะฉากนี้ (สร้างเสียงลองฟัง → พร้อม → เล่น) · Expression: อันปัจจุบัน เปลี่ยนได้จากคลัง Expression',
     'h.exprs.t': 'คลัง Expression', 'h.exprs.d': 'ด้านขวา หายใจ, เว้นจังหวะ, หัวเราะ, ถอนหายใจ, ตกใจ, ไอ ลากไปวางในไทม์ไลน์เพื่อแทรก วางที่ฉากปัจจุบันเพื่อเปลี่ยน หรือกด Apply',
-    'h.history.t': 'ประวัติ', 'h.history.d': 'ด้านขวาบนสุด แก้ 30 ครั้งล่าสุดของโปรเจกต์ที่เปิดอยู่ ใหม่สุดอยู่บน ดับเบิลคลิกหรือกด ↩ เพื่อย้อน (การย้อนเป็นขั้นใหม่ ไม่มีอะไรหาย) {pin.fill} ปักหมุดเวอร์ชันที่อยากเก็บ โปรเจกต์ตอนเปิดปักหมุดให้แล้ว แต่ละโปรเจกต์มีประวัติของตัวเอง',
+    'h.history.t': 'ประวัติ', 'h.history.d': 'ด้านขวาบนสุด มี 2 แท็บ แท็บละ 30 รายการ · บท: การแก้ล่าสุดของโปรเจกต์ที่เปิดอยู่ ใหม่สุดอยู่บน {pin.fill} ปักหมุดเวอร์ชันที่อยากเก็บ โปรเจกต์ตอนเปิดปักหมุดให้แล้ว · ฉาก: ข้อความของฉากแต่ละเวอร์ชัน ย้อนแล้วเปลี่ยนแค่ฉากนั้น · ดับเบิลคลิกหรือกด ↩ เพื่อย้อน (การย้อนเป็นขั้นใหม่ ไม่มีอะไรหาย) แต่ละโปรเจกต์มีประวัติของตัวเอง',
     'h.gen.t': 'สร้างเสียง', 'h.gen.d': 'ด้านขวา ลองฟังทั้งโปรเจกต์ (ทุกฉากที่ไม่ได้ปิดเสียง), เลือก model, สร้างเสียงด้วย Gemini (⌘↵) แล้วเล่น ดาวน์โหลด หรือลบผลลัพธ์แต่ละอัน',
     'h.voices.t': 'คลังเสียง', 'h.voices.d': '30 เสียงของ Gemini TTS ค้นหา ลากเสียงไปวางที่ฉาก หรือกด Apply',
-    'h.ai.t': 'AI Agent', 'h.ai.d': 'ถาม Ollama เรื่องโปรเจกต์ เช่น ประโยคเปิด, ควรเว้นจังหวะตรงไหน, แปล · AI ตอบเท่านั้น คุณแก้ฉากเอง',
+    'h.ai.t': 'AI Agent', 'h.ai.d': 'ถาม AI Agent เรื่องโปรเจกต์ เช่น ประโยคเปิด, ควรเว้นจังหวะตรงไหน, แปล · เลือกได้ว่าใครตอบ — Apple, Ollama, OpenAI, Gemini หรือ Claude — ที่ปุ่ม ⚙ หรือ ผู้ให้บริการ AI › AI Agent · AI ตอบเท่านั้น คุณแก้ฉากเอง',
   },
 };
 
@@ -431,9 +455,11 @@ const $ = id => document.getElementById(id);
 const S = {
   apiKey: load('key', ''), tier: load('tier', 'free'),
   projects: load('projects', null) || seedProjects(),
-  current: load('current', null), generating: false, pvBusy: null, drag: null, vg: 'all', vtab: 'voices', ltab: 'lang',
+  current: load('current', null), generating: false, pvBusy: null, drag: null, vg: 'all', vtab: 'voices', ltab: 'lang', ptab: 'voices',
+  agent: load('agent', 'ollama'), agentModels: load('agentModels', {}), agentKeys: load('agentKeys', {}),
   waveSeed: 7, pq: '', vq: '', favs: load('favVoices', []),   // favorites: app-wide, not per project, not in History
-  hists: {},   // project id → its History (30 states + pinned), kept while the app runs
+  hists: {},   // project id → its History (30 states + pinned + Scene History), kept while the app runs
+  sceneHist: [],
   get project() { return this.projects.find(p => p.id === this.current) || this.projects[0]; },
   get draft() { return this.project.draft; }, set draft(v) { this.project.draft = v; },
   get takes() { return this.project.takes; },
@@ -584,8 +610,8 @@ function renderScene() {
     <div class="ta-box"><button class="btn small ta-corner" onclick="applePreview(this)" aria-haspopup="dialog" title="${esc(t('applePrev'))}"> ${esc(t('quickPreview'))}</button>
       <textarea id="sceneText" aria-label="${esc(t('script'))}">${esc(it.text)}</textarea>
       <div class="ta-foot"><span id="charCount">${esc(charInfo(it.text))}</span><span class="spacer" style="flex:1"></span>
-        <span title="${esc(t('aiHelp'))}">✦ ${esc((Shell.model || 'qwen3.8').replace(/:latest$/, ''))}</span>${['polish', 'tags'].map(k =>
-          `<button class="btn small" onclick="ollamaRun('${k}', this)">${esc(t({ tags: 'oTags', polish: 'oPolish', translate: 'oTranslate' }[k]))}</button>`).join('')}</div></div>
+        ${S.agent === 'apple' ? '' /* Apple Foundation Models doesn't rewrite scenes */ : `<span title="${esc(t('aiHelp'))}">✦ ${esc(agentShort())}</span>${['polish', 'tags'].map(k =>
+          `<button class="btn small" onclick="ollamaRun('${k}', this)">${esc(t({ tags: 'oTags', polish: 'oPolish', translate: 'oTranslate' }[k]))}</button>`).join('')}`}</div></div>
     <h3 style="margin:4px 0 0;font-size:12px;color:var(--text2);text-transform:uppercase">✦ ${esc(t('previewScene'))} ${tierPill()}</h3>
     <div id="pv">${scenePreviewHtml(it)}</div></div>`;
   const ta = $('sceneText');
@@ -593,7 +619,9 @@ function renderScene() {
     it.text = ta.value; persistDraft(); renderPreview(); $('charCount').textContent = charInfo(ta.value);
     const lbl = $('lbl-' + it.id); if (lbl) lbl.textContent = ta.value.replace(/\s+/g, ' ').slice(0, 80) || t('empty');
   };
-  ta.onchange = () => { Shell.record(t('hist.edit', sceneNo(it))); renderTimeline(); };
+  // A pause in typing (1.5 s) or leaving the field is one History › Scene row — like the app's TextEditor
+  ta.onchange = () => { clearTimeout(ta._pause); recordSceneText(it); renderTimeline(); };
+  ta.addEventListener('input', () => { clearTimeout(ta._pause); ta._pause = setTimeout(() => recordSceneText(it), 1500); });
 }
 /**
  * The voice belongs to the scene now. Gemini allows two voices per request, kept as speakers S1/S2: the scene joins the
@@ -699,13 +727,13 @@ const projectsPanel = () => `<div class="toolbar" style="margin:0"><button class
 /** Each project keeps its own 30-step History while the app runs; switching swaps it in and out of the Shell. */
 function useHistoryOf(id) {
   const h = S.hists[id];
-  if (h) { Shell.hist = h.hist; Shell.pinned = h.pinned; return; }
-  Shell.resetHistory();
+  if (h) { Shell.hist = h.hist; Shell.pinned = h.pinned; S.sceneHist = h.sceneHist || []; return; }
+  Shell.resetHistory(); S.sceneHist = [];
 }
 function switchProject(id) {
   if (id === S.current) return;
   stopPlayback();
-  S.hists[S.current] = { hist: Shell.hist, pinned: Shell.pinned };
+  S.hists[S.current] = { hist: Shell.hist, pinned: Shell.pinned, sceneHist: S.sceneHist };
   S.current = id; store('current', id);
   S.project.opened = Date.now(); saveProjects();
   useHistoryOf(id);
@@ -1054,11 +1082,18 @@ function closeApplePop() { $('applePop')?.remove(); speechSynthesis.cancel(); do
 
 // ── Left tool window: AI Providers — connect each provider once, for every project (shown first until Google is set up) ──
 function providersPanel() {
-  const steps = [[!!S.apiKey, t('stepGoogle')], [Shell.online, t('stepOllama')], [S.projects.length > 0 && !!S.apiKey, t('stepProject')]];
-  const status = (ok, on, off) => `<span class="pill ${ok ? 'b-free' : 'b-mock'}">${esc(ok ? on : off)}</span>`;
+  const steps = [[!!S.apiKey, t('stepGoogle')], [agentReady(), t('stepAgent')], [S.projects.length > 0 && !!S.apiKey, t('stepProject')]];
   return `<h3 style="margin-top:0">${esc(t('getStarted'))}</h3>${steps.map(([ok, label], i) =>
       `<div class="prow" style="cursor:default"><span>${ok ? sf('checkmark.circle.fill', 'sym ok') : i + 1 + '.'}</span><div class="grow">${esc(label)}</div></div>`).join('')}
-    <div class="pcard"><div class="pcard-h">✦ Google · Gemini TTS ${status(!!S.apiKey, t('connected'), t('notConnected'))}</div>
+    <div class="seg" role="tablist" style="margin:10px 0 8px">${[['voices', t('tabVoices')], ['agent', t('panel.agent')]].map(([k, label]) =>
+      `<button type="button" role="tab" class="${S.ptab === k ? 'on' : ''}" aria-selected="${S.ptab === k}" onclick="S.ptab='${k}';Shell.renderPanel()">${esc(label)}</button>`).join('')}</div>
+    ${S.ptab === 'agent' ? agentTab() : voicesTab()}`;
+}
+const providerStatus = (ok, on, off) => `<span class="pill ${ok ? 'b-free' : 'b-mock'}">${esc(ok ? on : off)}</span>`;
+/** AI Providers › Voices: what makes the sound — Gemini TTS (takes, previews) and Apple (Quick preview). */
+function voicesTab() {
+  const status = providerStatus;
+  return `<div class="pcard"><div class="pcard-h">✦ Google · Gemini TTS ${status(!!S.apiKey, t('connected'), t('notConnected'))}</div>
       <div class="muted">${esc(t('googleUse'))}</div>
       <form class="prow-ctl" onsubmit="event.preventDefault();saveKey(this.key.value)"><input name="key" type="password" placeholder="AIza…" value="${esc(S.apiKey)}"
         aria-label="Gemini API key" autocomplete="off" style="flex:1;min-width:0"><button class="btn small primary">${esc(t('save'))}</button></form>
@@ -1069,15 +1104,68 @@ function providersPanel() {
         <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">${esc(t('getKey'))}</a>
         <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">${esc(t('pricing'))}</a></div>
       <div id="gTest" class="muted"></div><p class="muted">${esc(t('keyNote'))}</p></div>
-    <div class="pcard"><div class="pcard-h">${sf('desktopcomputer')} Ollama · ${esc(t('onThisMac'))} ${status(Shell.online, t('connected'), t('notRunning'))}</div>
-      <div class="muted">${esc(t('ollamaUse'))}</div>
+    <div class="pcard"><div class="pcard-h"> Apple · ${esc(t('onThisMac'))} ${status(true, t('quickPreview'), '')}</div>
+      <div class="muted">${esc(t('appleUse'))}</div></div>`;
+}
+// ── AI Providers › AI Agent: who answers the chat and rewrites scenes (Polish, Add pauses) — Hosts Manager's 5 ──
+const PROVIDERS = [['apple', 'Apple Foundation Models'], ['ollama', 'Ollama (local)'], ['openAI', 'OpenAI'], ['gemini', 'Gemini'], ['claude', 'Claude']];
+const agentName = () => PROVIDERS.find(([p]) => p === S.agent)[1];
+function agentReady() {
+  return { apple: true, ollama: Shell.online, gemini: !!S.apiKey }[S.agent] ?? !!S.agentKeys[S.agent];
+}
+function setAgent(p) { S.agent = p; store('agent', p); Shell.renderPanel(); renderScene(); }   // the scene's ✦ follows the provider
+// ── History › Scene (EditorViewModel+SceneHistory.swift): text versions of Script scenes, the last 30. Going back
+// changes only that scene's text — never the timeline edits made since. The first edit keeps the text it started from.
+function recordSceneText(it) {
+  const last = [...S.sceneHist].reverse().find(r => r.id === it.id);
+  const before = last ? last.text : Shell.hist.states.at(-1)?.snap.items?.find(x => x.id === it.id)?.text;
+  if (before === undefined || before === it.text) return;
+  const n = sceneNo(it), at = Date.now();
+  if (!last) S.sceneHist.push({ id: it.id, label: t('hist.sceneBefore', n), text: before, at });
+  S.sceneHist.push({ id: it.id, label: t('hist.edit', n), text: it.text, at });
+  if (S.sceneHist.length > 30) S.sceneHist.splice(0, S.sceneHist.length - 30);
+  persistDraft();
+  if (Shell.panel === 'history') Shell.renderPanel();
+}
+const sceneRowIsNow = i => !S.sceneHist.slice(i + 1).some(r => r.id === S.sceneHist[i].id);
+function restoreSceneEdit(i) {
+  const r = S.sceneHist[i], it = findItem(r.id);
+  if (!it || sceneRowIsNow(i)) return;
+  it.text = r.text;
+  S.sceneHist.push({ id: r.id, label: t('hist.restored', r.label), text: r.text, at: Date.now() });
+  if (S.sceneHist.length > 30) S.sceneHist.shift();
+  persistDraft(); renderTimeline(); renderScene(); Shell.renderPanel();
+}
+function removeSceneEdit(i) { if (!sceneRowIsNow(i)) { S.sceneHist.splice(i, 1); Shell.renderPanel(); } }
+/** The scene's ✦ label: the AI Agent's model without the `:latest` tag. */
+const agentShort = () => (S.agent === 'ollama' ? Shell.model || 'qwen3.8' : S.agentModels[S.agent] || agentName()).replace(/:latest$/, '');
+function setAgentField(field, value) {
+  const all = field === 'key' ? S.agentKeys : S.agentModels; all[S.agent] = value.trim();
+  store(field === 'key' ? 'agentKeys' : 'agentModels', all); Shell.renderPanel();
+}
+function agentTab() {
+  const p = S.agent, cloud = ['openAI', 'gemini', 'claude'].includes(p);
+  const picker = `<label class="prow-ctl"><span>${esc(t('settings.provider'))}</span><select aria-label="${esc(t('settings.provider'))}" onchange="setAgent(this.value)" style="flex:1">${
+    PROVIDERS.map(([k, name]) => `<option value="${k}" ${k === p ? 'selected' : ''}>${esc(name)}</option>`).join('')}</select></label>`;
+  const field = (kind, label, value, type) => `<form class="prow-ctl" onsubmit="event.preventDefault();setAgentField('${kind}', this.v.value)">
+      <input name="v" type="${type}" placeholder="${esc(label)}" aria-label="${esc(label)}" value="${esc(value || '')}" autocomplete="off" style="flex:1;min-width:0">
+      <button class="btn small primary">${esc(t('save'))}</button></form>`;
+  let body;
+  if (p === 'apple') body = `<p class="muted">${esc(t('settings.appleNote'))}</p>`;
+  else if (p === 'ollama') body = ollamaBody();
+  else body = (p === 'gemini' ? `<p class="muted">${sf('key')} ${esc(t('agentGeminiKey'))}</p>` : field('key', t('settings.apiKey'), S.agentKeys[p], 'password'))
+    + field('model', t('settings.model'), S.agentModels[p], 'text')
+    + (p === 'gemini' ? '' : `<p class="muted">${esc(t('settings.keychainNote'))}</p>`);
+  return `<div class="pcard"><div class="pcard-h">${sf('desktopcomputer')} ${esc(agentName())} ${providerStatus(agentReady(), t('connected'), t(p === 'ollama' ? 'notRunning' : 'notConnected'))}</div>
+    ${picker}${body}${cloud ? `<p style="color:var(--warn)">${sf('exclamationmark.shield')} ${esc(t('agentPrivacy'))}</p>` : ''}</div>`;
+}
+function ollamaBody() {
+  return `<div class="muted">${esc(t('ollamaUse'))}</div>
       ${Shell.online ? `<div class="prow-ctl"><select aria-label="Ollama model" onchange="Shell.model=this.value;store('model',this.value)">${Shell.models.map(m =>
         `<option ${m === Shell.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>`
         : `<p class="muted">${esc(t('ollamaHow'))}</p>`}
       <div class="toolbar" style="margin:6px 0 0"><span class="muted mono">localhost:11434</span><span class="spacer" style="flex:1"></span>
-        <button class="btn small" onclick="Shell.probeOllama().then(() => Shell.renderPanel())">${esc(t('checkAgain'))}</button></div></div>
-    <div class="pcard"><div class="pcard-h"> Apple · ${esc(t('onThisMac'))} ${status(true, t('quickPreview'), '')}</div>
-      <div class="muted">${esc(t('appleUse'))}</div></div>`;
+        <button class="btn small" onclick="Shell.probeOllama().then(() => Shell.renderPanel())">${esc(t('checkAgain'))}</button></div>`;
 }
 /** Anything that needs Gemini without a key brings the user here. */
 function openProviders() { if (Shell.leftPanel !== 'providers') Shell.toggle('providers'); else Shell.renderPanel(); }
@@ -1098,6 +1186,11 @@ async function testGoogle() {
 const App = {
   name: 'AI Voice Manager', icon: sf('waveform'), version: '0.1.0', intro: 'ai.intro', strings: STRINGS,
   quick: ['q.hook', 'q.short', 'q.pauses', 'q.en', 'q.style'],
+  quickIcon: k => sf({ 'q.hook': 'text.alignleft', 'q.short': 'timer', 'q.pauses': 'pause.circle', 'q.en': 'character.bubble',
+    'q.style': 'face.smiling' }[k] ?? 'text.alignleft'),
+  aiSettings: () => { S.ptab = 'agent'; openProviders(); },
+  sceneHistory: { rows: () => S.sceneHist, isNow: sceneRowIsNow, restore: 'restoreSceneEdit', remove: 'removeSceneEdit' },   // ⚙ in AI Agent (Hosts Manager opens a sheet; here it's a tab)
+  agentLabel: () => S.agent === 'ollama' ? null : S.agentModels[S.agent] || agentName(),
   help: [['h.projects.t', 'h.projects.d'], ['h.providers.t', 'h.providers.d'], ['h.model.t', 'h.model.d'], ['h.timeline.t', 'h.timeline.d'], ['h.scene.t', 'h.scene.d'], ['h.history.t', 'h.history.d'],
     ['h.voices.t', 'h.voices.d'], ['h.exprs.t', 'h.exprs.d'], ['h.gen.t', 'h.gen.d'], ['h.ai.t', 'h.ai.d']],
   left: ['projects'], leftBottom: ['providers'], leftDefault: load('key', '') ? 'projects' : 'providers',   // left edge: Recent Projects · AI Providers (opens first until Google is connected)

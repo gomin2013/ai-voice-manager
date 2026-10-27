@@ -26,9 +26,11 @@ const ICONS = {
   help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/>',
   appearance: '<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.5-.8 1.5-1.5 0-.9-.7-1.2-.7-2 0-.8.7-1.5 1.5-1.5H17a4 4 0 0 0 4-4c0-5-4-9-9-9z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/>',
   language: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>',
+  restore: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
   pin: '<path d="M9 3h6M10 3v6l-3 4h10l-3-4V3M12 13v8"/>',
   doc: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>',
   trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/>',
   about: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/>',
 };
 // Measured palette from swiftui-mac-skills `theming-accent-and-gradients` (all ≈ 0.16 luminance: one value, both modes).
@@ -176,7 +178,7 @@ const Shell = {
     const el = document.getElementById(id);
     el.classList.toggle('closed', !p);
     if (!p) return;
-    const pin = p === 'history' ? `<button class="icon-btn" onclick="Shell.pin()" title="${esc(t('hist.pin'))}" aria-label="${esc(t('hist.pin'))}">${ico('pin')}</button>` : '';
+    const pin = p === 'history' && load('htab', 'script') !== 'scene' ? `<button class="icon-btn" onclick="Shell.pin()" title="${esc(t('hist.pin'))}" aria-label="${esc(t('hist.pin'))}">${ico('pin')}</button>` : '';
     el.innerHTML = `<div class="panel-h"><span>${esc(t('panel.' + p))}</span><span>${pin}
       <button class="icon-btn" onclick="Shell.toggle('${p}')" title="${esc(t('hide'))}" aria-label="${esc(t('hide'))}">–</button></span></div>
       <div class="panel-b">${this.app.panels?.[p]?.() ?? this['panel_' + p]()}</div>`;
@@ -231,13 +233,23 @@ const Shell = {
   renamePin(i) { const n = prompt(t('hist.rename'), this.pinned[i].label)?.trim(); if (n) { this.pinned[i].label = n; this.renderPanel(); } },
   unpin(i) { this.pinned.splice(i, 1); this.renderPanel(); },
   panel_history() {
-    const now = JSON.stringify(this.app.snapshot()), last = this.hist.states.length - 1;
     const btn = (fn, ico, tip) => `<button class="icon-btn" onclick="event.stopPropagation();${fn}" title="${esc(t(tip))}" aria-label="${esc(t(tip))}">${ico}</button>`;
     // Current row: bold, tinted icon, "Now" instead of ↩ (pins keep Rename / Unpin)
-    const row = (s, cur, icon, back, extra = '') => `<div class="prow hrow ${cur ? 'cur' : ''}" ${cur ? '' : `ondblclick="${back}"`}>
+    const row = (s, cur, icon, back, extra = '', tip = '') => `<div class="prow hrow ${cur ? 'cur' : ''}" ${cur ? '' : `ondblclick="${back}"`}${tip ? ` title="${esc(tip)}"` : ''}>
       <span class="hico">${icon}</span><div class="grow">${esc(s.label)}<div class="sub">${histTime(s.at)}</div></div>
-      ${cur ? `<span class="now">${esc(t('hist.now'))}</span>` : btn(back, '↩', 'hist.restore')}${extra}</div>`;
-    return `<h3>${esc(t('hist.pinned'))}</h3>` +
+      ${cur ? `<span class="now">${esc(t('hist.now'))}</span>` : btn(back, ico('restore'), 'hist.restore')}${extra}</div>`;
+    // Script | Scene (apps with `sceneHistory`): project steps vs. one scene's text versions, 30 each
+    const scenes = this.app.sceneHistory, tab = scenes ? load('htab', 'script') : 'script';
+    const tabs = scenes ? `<div class="seg" role="tablist" style="margin-bottom:8px">${[['script', t('script')], ['scene', t('hist.tabScene')]].map(([k, label]) =>
+      `<button type="button" role="tab" class="${tab === k ? 'on' : ''}" aria-selected="${tab === k}" onclick="store('htab','${k}');Shell.render()">${esc(label)}</button>`).join('')}</div>` : '';
+    if (tab === 'scene') {
+      const rows = scenes.rows();
+      return tabs + (rows.length ? rows.map((r, i) => [r, i]).reverse().map(([r, i]) => scenes.isNow(i) ? row(r, true, '◉', '', '', r.text)
+        : row(r, false, '○', `${scenes.restore}(${i})`, btn(`${scenes.remove}(${i})`, ico('trash'), 'hist.remove'), r.text)).join('')
+        : `<p class="muted">${esc(t('hist.sceneEmpty'))}</p>`);
+    }
+    const now = JSON.stringify(this.app.snapshot()), last = this.hist.states.length - 1;
+    return tabs + `<h3>${esc(t('hist.pinned'))}</h3>` +
       this.pinned.map((s, i) => row(s, JSON.stringify(s.snap) === now, ico(s.opened ? 'doc' : 'pin'), `Shell.restorePinned(${i})`,
         s.opened ? '' : btn(`Shell.renamePin(${i})`, '✎', 'hist.rename') + btn(`Shell.unpin(${i})`, '✕', 'hist.unpin'))).join('') +
       `<h3>${esc(t('hist.recent'))}</h3>` +
@@ -273,17 +285,18 @@ const Shell = {
     this.busy = false; this.renderPanel();
   },
   panel_agent() {
-    const models = this.online
+    const label = this.app.agentLabel?.();
+    const models = label != null ? `<span class="mono">${esc(label)}</span>` : this.online
       ? `<select onchange="Shell.model=this.value;store('model',this.value)" aria-label="Model">${this.models.map(m =>
         `<option ${m === this.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>`
       : `<span class="muted"><span class="dot"></span>${esc(t('ai.offline'))}</span>`;
-    const intro = `<div class="chat-intro"><h2>✦ ${esc(t('panel.agent'))}</h2><p class="muted">${esc(t(this.app.intro))}</p>
+    const intro = `<div class="chat-intro"><h2><span style="color:var(--accent)">${ico('agent')}</span> ${esc(t('panel.agent'))}</h2><p class="muted">${esc(t(this.app.intro))}</p>
       <h3>${esc(t('ai.try'))}</h3>${this.app.quick.map((k, i) => `<div class="prow" onclick="Shell.ask(t(Shell.app.quick[${i}]))">
-      <div class="grow">${esc(t(k))}</div><span class="muted">›</span></div>`).join('')}</div>`;
+      <span style="color:var(--accent)">${this.app.quickIcon?.(k) ?? ''}</span><div class="grow">${esc(t(k))}</div><span class="muted">›</span></div>`).join('')}</div>`;
     const log = this.chat.map(m => `<div class="msg ${m.role === 'user' ? 'user' : 'ai'}">${md(m.content)}</div>`).join('') +
       (this.busy ? `<div class="msg ai muted">${esc(t('ai.thinking'))}</div>` : '');
-    return `<div class="chat"><div class="chat-top">${this.online ? '<span class="dot on"></span>' : ''}${models}
-      <button class="icon-btn" onclick="Shell.toast(t('ai.settings'))" aria-label="AI settings">⚙︎</button></div>
+    return `<div class="chat"><div class="chat-top">${models}
+      <button class="icon-btn" onclick="(Shell.app.aiSettings ?? (() => Shell.toast(t('ai.settings'))))()" aria-label="AI settings">${ico('gear')}</button></div>
       <div class="chat-log">${this.chat.length ? log : intro}</div>
       <form class="chat-in" onsubmit="event.preventDefault();Shell.ask(this.q.value)"><input name="q" placeholder="${esc(t('ai.ask'))}"
         aria-label="${esc(t('ai.ask'))}"><button class="btn primary small" ${this.busy ? 'disabled' : ''}>${esc(t('ai.send'))}</button></form></div>`;

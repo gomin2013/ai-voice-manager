@@ -73,6 +73,10 @@
 "hist.pinned" = "Pinned";
 "hist.recent" = "Recent";
 "hist.pin" = "Pin Current Version";
+"hist.pinThis" = "Pin This Version";
+"hist.tabScene" = "Scene";
+"hist.sceneBefore" = "Scene %1$@ before editing";
+"hist.sceneEmpty" = "Edit a scene’s text and its versions appear here.";
 "hist.opened" = "When Opened";
 "hist.now" = "Now";
 "hist.restore" = "Restore This Version";
@@ -87,9 +91,6 @@
 "ai.ask" = "Ask AI…";
 "ai.send" = "Send";
 "ai.thinking" = "Thinking…";
-"ai.mock" = "(MOCK — Ollama is not running, this is a canned answer)";
-"ai.offline" = "mock · Ollama offline";
-"ai.settings" = "Provider settings (Apple, Ollama, OpenAI, Gemini, Claude) come with the Swift app.";
 "ap.mode" = "Appearance";
 "ap.system" = "System";
 "ap.light" = "Light";
@@ -116,7 +117,7 @@
 "oPolish" = "Polish";
 "oTranslate" = "TH↔EN";
 "chars" = "%1$@ characters · ≈ %2$@ s";
-"aiHelp" = "Ollama on this Mac rewrites this scene only. Undo in History.";
+"aiHelp" = "The AI Agent rewrites this scene only. Undo in History.";
 "preview" = "Preview";
 "stop" = "Stop";
 "generate" = "Generate";
@@ -133,7 +134,7 @@
 "needKey" = "Connect Google (Gemini API key) in AI Providers first.";
 "getStarted" = "Getting started";
 "stepGoogle" = "Connect Google · Gemini TTS (needed to make voices)";
-"stepOllama" = "Ollama on this Mac (optional, AI Agent)";
+"stepAgent" = "Choose an AI Agent (optional: chat, Polish, Add pauses)";
 "stepProject" = "Create your first project";
 "connected" = "Connected";
 "notConnected" = "Not connected";
@@ -183,9 +184,7 @@
 "thaiUnknown" = "Thai support not documented";
 "saved" = "Saved to Results";
 "deleted" = "Take deleted";
-"ollamaOff" = "Ollama isn’t running — start it (ollama serve), then press the button again.";
-"ollamaFailed" = "Ollama didn’t answer — check it’s still running, then try again.";
-"ai.model" = "Model";
+"ollamaFailed" = "The AI Agent didn’t answer — check AI Providers › AI Agent, then try again.";
 "nothing" = "Every scene is muted — nothing to generate.";
 "rawTitle" = "Preview Raw · the request the app sends";
 "rawNote" = "The timeline merged into speech segments, tags inline, muted scenes left out. Same body the Swift GeminiTTS service builds (Interactions API).";
@@ -299,14 +298,14 @@
 "hist.ai" = "✦ %1$@";
 "hist.take" = "Timeline from take %1$@";
 "about.desc" = "Write a voice-over project scene by scene, preview any scene, then generate the whole project with Gemini TTS. Every take is kept.";
-"ai.intro" = "Ask Ollama about your project. It runs on this Mac, no login. Ollama has no voices: it only helps with the words.";
+"ai.intro" = "Ask the AI Agent about your project. The script goes along with each question; the AI only answers — you decide what to change.";
 "q.hook" = "Write a stronger opening line";
 "q.short" = "Make it fit 15 seconds";
 "q.pauses" = "Where should I add pauses?";
 "q.en" = "Translate the project to English";
 "q.style" = "Suggest a style for each scene";
 "h.providers.t" = "AI Providers";
-"h.providers.d" = "Left side, bottom of the rail (like Appearance on the right). Connect Google (Gemini API key, tested and kept for every project), check Ollama, Apple voices give each scene a free Quick preview. Opens by itself until Google is connected.";
+"h.providers.d" = "Left side, bottom of the rail (like Appearance on the right). Two tabs. Voices: connect Google (Gemini API key, tested and kept for every project); Apple voices give each scene a free Quick preview. AI Agent: who answers the chat and rewrites scenes — Apple, Ollama, OpenAI, Gemini or Claude. Opens by itself until Google is connected.";
 "h.projects.t" = "Recent Projects";
 "h.projects.d" = "Left side: projects you opened before. Search by name, click to open. Open Project… brings in a project exported from another Mac. Projects save automatically; Export Project (toolbar) makes the file to take with you.";
 "h.model.t" = "Model";
@@ -318,13 +317,13 @@
 "h.exprs.t" = "Expression Library";
 "h.exprs.d" = "Right side. Breath, pauses, laugh, sigh, gasp, cough. Drag onto the timeline to insert, onto the Current Scene to change, or press Apply.";
 "h.history.t" = "History";
-"h.history.d" = "Right side, top. The last 30 edits of the open project, newest first. Double-click a step or press ↩ to go back — going back is a new step too, so nothing is lost. {pin.fill} pins a version; the project as opened is pinned for you. Each project keeps its own History.";
+"h.history.d" = "Right side, top. Two tabs of 30. Script: the open project's last edits, newest first; {pin.fill} pins a version, and the project as opened is pinned for you. Scene: the last versions of the scenes' text — going back changes only that scene. Double-click a row or press ↩ to go back — going back is a new step too, so nothing is lost. Each project keeps its own History.";
 "h.gen.t" = "Generate";
 "h.gen.d" = "Right side. Preview of the whole project (every scene that isn’t muted), model, Generate with Gemini (⌘↵), then play, download or delete each result.";
 "h.voices.t" = "Voice Library";
 "h.voices.d" = "The 30 Gemini TTS voices. Search, drag a voice onto the scene or press Apply.";
 "h.ai.t" = "AI Agent";
-"h.ai.d" = "Ask Ollama about the project: a better opening line, where to pause, a translation. It answers; you change the scenes yourself.";
+"h.ai.d" = "Ask the AI Agent about the project: a better opening line, where to pause, a translation. Choose who answers — Apple, Ollama, OpenAI, Gemini or Claude — with ⚙ or in AI Providers › AI Agent. It answers; you change the scenes yourself.";
 
 /* Style presets: what the user reads (Gemini gets the English name) */
 "style.friendly" = "Warm and approachable";
@@ -339,3 +338,23 @@
 "style.whisper" = "Very soft, close to the mic";
 "style.serious" = "Grave, no smile";
 "style.sad" = "Low and heavy";
+
+/* AI Agent: Hosts Manager's AI settings + chat (keys and translations shared), then AVM's own */
+"settings.title" = "AI API Settings";
+"settings.provider" = "Provider";
+"settings.apiKey" = "API Key";
+"settings.model" = "Model";
+"settings.noModels" = "No models found.";
+"settings.recommended" = "Recommended";
+"settings.appleNote" = "Runs on-device with Apple Intelligence (macOS 26+). No API key or model needed.";
+"settings.keychainNote" = "The API key is stored in your macOS Keychain.";
+"chat.setUp" = "Set Up AI Provider…";
+"chat.step.waiting" = "Waiting for %@";
+"chat.step.thinking" = "Thinking";
+"chat.step.writing" = "Writing the answer";
+"chat.thought" = "Thought for %ld s";
+"chat.seconds" = "%ld s";
+"ai.notConfigured" = "Not Set";
+"agentPrivacy" = "Your questions include this project’s script, which is sent to this provider.";
+"agentGeminiKey" = "Uses your Google key from the Voices tab.";
+"chat.step.attached" = "Attached the project · %ld scenes";
