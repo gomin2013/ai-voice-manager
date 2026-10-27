@@ -122,7 +122,7 @@
 "stop" = "Henti";
 "generate" = "Jana";
 "generateDots" = "Jana";
-"generating" = "Menjana… (simulasi — tiada panggilan API sebenar)";
+"generating" = "Menjana…";
 "tierFree" = "Pelan percuma";
 "tierPaid" = "Pengebilan dihidupkan";
 "keyNote" = "Kunci kekal dalam Rantai Kunci macOS anda dan hanya dihantar kepada Google. Pelan percuma = tiada caj, kuota terhad, dan Google mungkin menggunakan teks dan audio anda untuk menambah baik produknya.";

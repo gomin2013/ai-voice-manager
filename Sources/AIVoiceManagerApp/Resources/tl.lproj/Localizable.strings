@@ -122,7 +122,7 @@
 "stop" = "Ihinto";
 "generate" = "I-generate";
 "generateDots" = "I-generate";
-"generating" = "Nagge-generate… (demo — walang totoong API call)";
+"generating" = "Nagge-generate…";
 "tierFree" = "Libreng plano";
 "tierPaid" = "Naka-on ang pagsingil";
 "keyNote" = "Nananatili ang key sa iyong macOS Keychain at sa Google lang ipinapadala. Libreng plano = walang bayad, limitado ang quota, at maaaring gamitin ng Google ang iyong text at audio para pagandahin ang mga produkto nito.";

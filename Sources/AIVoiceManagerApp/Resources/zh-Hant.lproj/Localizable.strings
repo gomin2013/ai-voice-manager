@@ -122,7 +122,7 @@
 "stop" = "停止";
 "generate" = "產生";
 "generateDots" = "產生";
-"generating" = "正在產生⋯（模擬 — 未實際呼叫 API）";
+"generating" = "正在產生⋯";
 "tierFree" = "免費額度";
 "tierPaid" = "已啟用計費";
 "keyNote" = "金鑰會保存在你的 macOS 鑰匙圈中，只會傳送給 Google。使用免費額度不收費，但用量有限，且 Google 可能會使用你的文字和音訊來改善其產品。";

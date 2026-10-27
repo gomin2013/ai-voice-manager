@@ -122,7 +122,7 @@
 "stop" = "Dừng";
 "generate" = "Tạo âm thanh";
 "generateDots" = "Tạo âm thanh";
-"generating" = "Đang tạo… (mô phỏng — không gọi API thật)";
+"generating" = "Đang tạo…";
 "tierFree" = "Gói miễn phí";
 "tierPaid" = "Đã bật thanh toán";
 "keyNote" = "Khóa được lưu trong Chuỗi khóa macOS của bạn và chỉ được gửi đến Google. Gói miễn phí = không tính phí, hạn mức có giới hạn, và Google có thể dùng văn bản và âm thanh của bạn để cải thiện sản phẩm.";

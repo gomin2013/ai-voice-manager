@@ -122,7 +122,7 @@
 "stop" = "Berhenti";
 "generate" = "Buat Audio";
 "generateDots" = "Buat Audio";
-"generating" = "Membuat… (simulasi — tanpa panggilan API sungguhan)";
+"generating" = "Membuat…";
 "tierFree" = "Paket gratis";
 "tierPaid" = "Penagihan aktif";
 "keyNote" = "Kunci tetap di Rantai Kunci macOS Anda dan hanya dikirim ke Google. Paket gratis = tanpa biaya, kuota terbatas, dan Google dapat menggunakan teks dan audio Anda untuk meningkatkan produknya.";
