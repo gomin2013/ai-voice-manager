@@ -14,7 +14,7 @@ func clean(imported object: Any?, fallbackTitle: String) -> ProjectDraft {
         let entry = given[id.rawValue] as? [String: Any] ?? [:]
         let voice = entry["voice"] as? String ?? ""
         speakers[id] = Speaker(name: text(entry["name"], 40).isEmpty ? defaultName : text(entry["name"], 40),
-                               voice: VoiceCatalog.contains(voice) ? voice : VoiceCatalog.all[0].name)
+                               voice: VoiceCatalog.isVoiceValue(voice) ? voice : VoiceCatalog.all[0].value)
     }
 
     var items: [TimelineItem]

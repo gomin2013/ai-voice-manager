@@ -179,8 +179,8 @@
 "tabCurrency" = "货币";
 "curAuto" = "跟随语言";
 "curNote" = "Google 以美元计费。本地货币金额仅供参考，按 %1$@ 设定的固定汇率换算。";
-"thaiOk" = "泰语 ✓ · 30 种声音 · 最多 2 位说话人";
-"thaiNo" = "不支持泰语 · 30 种声音 · 最多 2 位说话人";
+"thaiOk" = "泰语 ✓ · 2,000+ 种声音 · 最多 2 位说话人";
+"thaiNo" = "不支持泰语 · 2,000+ 种声音 · 最多 2 位说话人";
 "thaiUnknown" = "文档未说明是否支持泰语";
 "saved" = "已存储到结果";
 "deleted" = "已删除录音";
@@ -220,7 +220,7 @@
 "modelChange" = "更改";
 "modelTitleNew" = "为此项目选择模型";
 "modelTitleChange" = "更改项目的模型";
-"modelPhase" = "目前 App 仅支持 Gemini TTS。每个模型都有相同的 30 种声音，并提供免费额度。";
+"modelPhase" = "目前 App 仅支持 Gemini TTS。每个模型都有相同的 2,000+ 种声音，并提供免费额度。";
 "modelEffects" = "会改变的：每个场景的试听都需要重新生成，泰语支持和价格以新模型为准。不变的：你的场景、说话人及其声音。已生成的录音保留生成时所用的模型。";
 "thaiWarnPick" = "此项目包含泰语文本，而此模型无法读取泰语。";
 "createProject" = "创建项目";
@@ -271,6 +271,11 @@
 "male" = "男声";
 "all" = "全部";
 "fav" = "个人收藏";
+"neutral" = "中性";
+"pitch.low" = "低沉";
+"pitch.medium" = "中等";
+"pitch.high" = "高亢";
+"vRefresh" = "从 Google 刷新声音列表";
 "favAdd" = "添加到个人收藏";
 "favRemove" = "从个人收藏中移除";
 "favEmpty" = "还没有个人收藏 — 在声音上按 ♡ 即可将其保留在这里。";
@@ -321,7 +326,7 @@
 "h.gen.t" = "生成";
 "h.gen.d" = "右侧。试听整个项目（所有未静音的场景）、选择模型、用 Gemini 生成（⌘↵），然后播放、下载或删除每个结果。";
 "h.voices.t" = "声音库";
-"h.voices.d" = "30 种 Gemini TTS 声音。可搜索，将声音拖到场景上或按“应用”。";
+"h.voices.d" = "Google Gemini TTS 的完整声音库——超过 2,000 种声音，与 AI Studio 相同；带肖像的 30 种排在最前面。可搜索，并按 ♂ ♀、♥ 个人收藏或 ✓ 此项目使用中筛选，再将声音拖到场景上或按“应用”。";
 "h.ai.t" = "AI 助理";
 "h.ai.d" = "向 AI 助理询问项目：更好的开场白、在哪里停顿、翻译。可通过 ⚙ 或“AI 提供方 › AI 助理”选择由谁回答——Apple、Ollama、OpenAI、Gemini 或 Claude。它只负责回答；场景由你自己修改。";
 

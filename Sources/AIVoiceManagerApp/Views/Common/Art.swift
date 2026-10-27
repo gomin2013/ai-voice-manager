@@ -18,7 +18,7 @@ enum Art {
     }
 }
 
-/// A voice's portrait in a circle; nothing for a name outside the catalog.
+/// A built-in voice's portrait in a circle; any other voice gets its initial on a gender-coloured disc.
 struct VoicePortrait: View {
     let voice: String
     var size: CGFloat = 32
@@ -26,6 +26,13 @@ struct VoicePortrait: View {
     var body: some View {
         if let image = Art.image("Voices", voice.lowercased()) {
             Image(nsImage: image).resizable().scaledToFill().frame(width: size, height: size).clipShape(Circle())
+        } else {
+            let info = VoiceDirectory.shared.voice(voice)
+            Circle().fill(GenderPill.color(info?.gender ?? .neutral))
+                .frame(width: size, height: size)
+                .overlay { Text(String((info?.name ?? voice).prefix(1))).font(.system(size: size * 0.42, weight: .bold))
+                    .foregroundStyle(.white) }
+                .accessibilityHidden(true)
         }
     }
 }
@@ -43,9 +50,9 @@ struct VoiceWithStyle: View {
                     .background(Circle().fill(.background))
                     .offset(x: size * 0.15, y: size * 0.15)
             }
-            .help("\(voice) · \(style)")
+            .help("\(VoiceDirectory.shared.name(voice)) · \(style)")
             .accessibilityElement()
-            .accessibilityLabel("\(voice), \(style)")
+            .accessibilityLabel("\(VoiceDirectory.shared.name(voice)), \(style)")
     }
 }
 
@@ -122,7 +129,7 @@ enum DragPayload: Equatable {
         let parts = string.split(separator: ":", maxSplits: 1).map(String.init)
         guard parts.count == 2 else { return nil }
         switch parts[0] {
-        case "voice" where VoiceCatalog.contains(parts[1]): self = .voice(parts[1])
+        case "voice" where VoiceCatalog.isVoiceValue(parts[1]): self = .voice(parts[1])
         case "style": self = .style(parts[1])
         case "expr": guard let tag = ExpressionTag(rawValue: parts[1]) else { return nil }; self = .expression(tag)
         default: return nil

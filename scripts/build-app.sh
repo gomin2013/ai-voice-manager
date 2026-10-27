@@ -24,6 +24,7 @@ cp Sources/AIVoiceManagerApp/Info.plist "$APP/Contents/Info.plist"
 cp "$BIN/AIVoiceManager" "$APP/Contents/MacOS/"
 # .lproj at the bundle root, where Bundle.main looks (SwiftPM's resource bundle alone isn't found by a .app)
 cp -R Sources/AIVoiceManagerApp/Resources/*.lproj "$APP/Contents/Resources/"
+cp Sources/AIVoiceManagerApp/Resources/voices.json "$APP/Contents/Resources/"   # Voice Library snapshot
 # Icons (regenerate: swift scripts/make-icon.swift): Assets.car for macOS 26+, AppIcon.icns for 14–15
 cp Packaging/Assets.car Packaging/AppIcon.icns "$APP/Contents/Resources/"
 # Voice portraits, expression and style icons (cut from the prototype's sheets, .claude/docs/design/)

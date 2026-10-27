@@ -9,7 +9,7 @@ struct VoiceLibraryPanel: View {
     // ponytail: names joined by ","; voice names never contain one. App-wide, not per project, not in History.
     @AppStorage("voice.favorites") private var favoritesRaw = ""
 
-    private enum VoiceFilter: Hashable { case all, gender(Gender), favorites }
+    private enum VoiceFilter: Hashable { case all, gender(Gender), favorites, inUse }
 
     private var favorites: Set<String> { Set(favoritesRaw.split(separator: ",").map(String.init)) }
 
@@ -33,48 +33,74 @@ struct VoiceLibraryPanel: View {
     // MARK: Voices
 
     private var voices: some View {
-        let favorites = favorites
-        let matches = VoiceCatalog.all.filter { voice in
+        let favorites = favorites, directory = VoiceDirectory.shared, ui = LanguageService.shared.current.rawValue
+        let draft = vm.draft
+        let used = Set(draft.items.compactMap { item in
+            if case .script(let scene) = item { draft.speaker(scene.speaker).voice } else { nil }
+        })
+        let matches = directory.voices.filter { voice in
             let kept = switch filter {
             case .all: true
             case .gender(let gender): voice.gender == gender
-            case .favorites: favorites.contains(voice.name)
+            case .favorites: favorites.contains(voice.value)
+            case .inUse: used.contains(voice.value)
             }
-            return kept && (query.isEmpty
-                || [voice.name, voice.description, localized(voice.gender == .female ? "female" : "male")]
-                    .contains { $0.localizedCaseInsensitiveContains(query) })
+            let fields = [voice.name, voice.description, voice.persona, voice.accent, voice.language,
+                          Self.languageName(voice.language, in: ui)]
+            return kept && (query.isEmpty || fields.contains { $0.localizedCaseInsensitiveContains(query) })
         }
-        let female = VoiceCatalog.all.filter { $0.gender == .female }.count
-        let male = VoiceCatalog.all.count - female
         return VStack(alignment: .leading, spacing: 8) {
             Group {
                 TextField(localized("vSearch"), text: $query).textFieldStyle(.roundedBorder)
                 Picker(localized("gender"), selection: $filter) {
-                    Text(localized("all") + " \(VoiceCatalog.all.count)").tag(VoiceFilter.all)
-                    Text(localized("male") + " \(male)").tag(VoiceFilter.gender(.male))
-                    Text(localized("female") + " \(female)").tag(VoiceFilter.gender(.female))
-                    // ♥ only: a 4th worded segment outgrows the 320 pt panel (Thai) and pushes every panel under the rail
-                    Text("♥ \(favorites.count)").help(localized("fav")).accessibilityLabel(localized("fav"))
-                        .tag(VoiceFilter.favorites)
+                    // Counts live in the line below: 2,089 doesn't fit a 320 pt segment
+                    Text(localized("all")).tag(VoiceFilter.all)
+                    // Icons, not words (♂ ♀ as in GenderPill): five worded segments outgrow the 320 pt panel
+                    Text(verbatim: "♂").help(localized("male")).accessibilityLabel(localized("male"))
+                        .tag(VoiceFilter.gender(.male))
+                    Text(verbatim: "♀").help(localized("female")).accessibilityLabel(localized("female"))
+                        .tag(VoiceFilter.gender(.female))
+                    Text(verbatim: "♥ \(favorites.count)")   // text, not Image: a segment drops an inline SF Symbol
+                        .help(localized("fav")).accessibilityLabel(localized("fav")).tag(VoiceFilter.favorites)
+                    Text(verbatim: "✓ \(used.count)")
+                        .help(localized("inUse")).accessibilityLabel(localized("inUse")).tag(VoiceFilter.inUse)
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
                 HStack(spacing: 6) {
                     Text(localized("gVoices") + " · \(matches.count)").font(.app(11.5)).foregroundStyle(.secondary)
                     Pill(text: localized("bTier"))
+                    Spacer(minLength: 4)
+                    if directory.isRefreshing {
+                        ProgressView().controlSize(.mini)
+                    } else if vm.hasGeminiKey {
+                        Button { Task { await directory.refresh(key: vm.loadKey() ?? "") } } label: {
+                            Image(systemName: "arrow.clockwise")
+                        }
+                        .buttonStyle(.borderless)
+                        .help(localized("vRefresh"))
+                        .accessibilityLabel(localized("vRefresh"))
+                    }
                 }
             }
+            .controlSize(.small)
             .padding(.horizontal, 14)
             if matches.isEmpty {
                 Text(localized(filter == .favorites && favorites.isEmpty ? "favEmpty" : "noMatch"))
                     .foregroundStyle(.secondary).padding(.horizontal, 14)
             }
             List(matches) { voice in
-                VoiceRow(voice: voice, favorite: (favorites.contains(voice.name), { toggleFavorite(voice.name) }))
+                VoiceRow(voice: voice, language: Self.languageName(voice.language, in: ui),
+                         favorite: (favorites.contains(voice.value), { toggleFavorite(voice.value) }))
             }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
         }
+    }
+
+    /// "Japanese (Japan)" for ja-JP in an English UI, "ญี่ปุ่น (ญี่ปุ่น)" in Thai.
+    static func languageName(_ code: String, in ui: String) -> String {
+        code.isEmpty ? "" : Locale(identifier: ui).localizedString(forIdentifier: code) ?? code
     }
 
     // MARK: Styles
@@ -99,23 +125,28 @@ struct VoiceLibraryPanel: View {
 
 private struct VoiceRow: View {
     let voice: Voice
+    let language: String
     let favorite: (isOn: Bool, toggle: () -> Void)
     @Environment(EditorViewModel.self) private var vm
 
     var body: some View {
         let draft = vm.draft
         let here = if case .script(let scene) = vm.selectedItem {
-            draft.speaker(scene.speaker).voice == voice.name
+            draft.speaker(scene.speaker).voice == voice.value
         } else { false }
         let inProject = draft.items.contains { item in
-            if case .script(let scene) = item { draft.speaker(scene.speaker).voice == voice.name } else { false }
+            if case .script(let scene) = item { draft.speaker(scene.speaker).voice == voice.value } else { false }
         }
-        LibraryRow(payload: .voice(voice.name), hint: localized("dragVoice"),
-                   icon: VoicePortrait(voice: voice.name, size: 36),
+        let pitch = voice.pitch.isEmpty ? "" : localized("pitch." + voice.pitch)
+        let details = [voice.isBuiltin ? voice.description : "", language, voice.accent, pitch].filter { !$0.isEmpty }
+        LibraryRow(payload: .voice(voice.value), hint: localized("dragVoice"),
+                   icon: VoicePortrait(voice: voice.value, size: 36),
                    title: HStack { Text(voice.name).bold(); GenderPill(gender: voice.gender); if here { InUse() } },
-                   subtitle: voice.description + (inProject && !here ? " · " + localized("inProject") : ""),
+                   subtitle: details.joined(separator: " · ")
+                       + (inProject && !here ? " · " + localized("inProject") : ""),
                    applyTitle: localized("apply"), applyHint: localized("applyScene"),
-                   apply: { vm.useVoice(voice.name) }, favorite: favorite)
+                   apply: { vm.useVoice(voice.value) }, favorite: favorite)
+            .help(voice.isBuiltin ? "" : voice.description)
     }
 }
 

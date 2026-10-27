@@ -179,8 +179,8 @@
 "tabCurrency" = "Tiền tệ";
 "curAuto" = "Theo ngôn ngữ";
 "curNote" = "Google tính phí bằng đô la Mỹ. Số tiền nội tệ chỉ để tham khảo, theo tỷ giá cố định đặt vào %1$@.";
-"thaiOk" = "Tiếng Thái ✓ · 30 giọng · tối đa 2 người nói";
-"thaiNo" = "Không hỗ trợ tiếng Thái · 30 giọng · tối đa 2 người nói";
+"thaiOk" = "Tiếng Thái ✓ · 2000+ giọng · tối đa 2 người nói";
+"thaiNo" = "Không hỗ trợ tiếng Thái · 2000+ giọng · tối đa 2 người nói";
 "thaiUnknown" = "Chưa có tài liệu về hỗ trợ tiếng Thái";
 "saved" = "Đã lưu vào Kết quả";
 "deleted" = "Đã xóa bản thu";
@@ -220,7 +220,7 @@
 "modelChange" = "Đổi";
 "modelTitleNew" = "Chọn mô hình cho dự án này";
 "modelTitleChange" = "Đổi mô hình của dự án";
-"modelPhase" = "Hiện tại ứng dụng chỉ hỗ trợ Gemini TTS. Mọi mô hình đều có cùng 30 giọng và gói miễn phí.";
+"modelPhase" = "Hiện tại ứng dụng chỉ hỗ trợ Gemini TTS. Mọi mô hình đều có cùng 2000+ giọng và gói miễn phí.";
 "modelEffects" = "Những gì thay đổi: bản nghe thử của mỗi cảnh phải được tạo lại, hỗ trợ tiếng Thái và giá theo mô hình mới. Những gì giữ nguyên: các cảnh, người nói và giọng của họ. Các bản thu đã tạo vẫn giữ mô hình đã dùng để tạo.";
 "thaiWarnPick" = "Dự án này có văn bản tiếng Thái và mô hình này không đọc được tiếng Thái.";
 "createProject" = "Tạo dự án";
@@ -271,6 +271,11 @@
 "male" = "Nam";
 "all" = "Tất cả";
 "fav" = "Ưa thích";
+"neutral" = "Trung tính";
+"pitch.low" = "Trầm";
+"pitch.medium" = "Trung bình";
+"pitch.high" = "Cao";
+"vRefresh" = "Làm mới danh sách giọng từ Google";
 "favAdd" = "Thêm vào mục ưa thích";
 "favRemove" = "Xóa khỏi mục ưa thích";
 "favEmpty" = "Chưa có mục ưa thích — nhấn ♡ trên một giọng để giữ nó ở đây.";
@@ -321,7 +326,7 @@
 "h.gen.t" = "Tạo âm thanh";
 "h.gen.d" = "Bên phải. Nghe thử cả dự án (mọi cảnh không bị tắt tiếng), mô hình, Tạo âm thanh bằng Gemini (⌘↵), rồi phát, tải về hoặc xóa từng kết quả.";
 "h.voices.t" = "Thư viện giọng";
-"h.voices.d" = "30 giọng Gemini TTS. Tìm kiếm, kéo một giọng vào cảnh hoặc nhấn Áp dụng.";
+"h.voices.d" = "Toàn bộ thư viện Gemini TTS của Google — hơn 2.000 giọng, giống trong AI Studio; 30 giọng có ảnh chân dung hiện trước. Tìm kiếm, lọc ♂ ♀, ♥ yêu thích hoặc ✓ giọng trong dự án này, rồi kéo một giọng vào cảnh hoặc nhấn Áp dụng.";
 "h.ai.t" = "Trợ lý AI";
 "h.ai.d" = "Hỏi Trợ lý AI về dự án: câu mở đầu hay hơn, nên ngắt ở đâu, một bản dịch. Chọn AI trả lời — Apple, Ollama, OpenAI, Gemini hoặc Claude — bằng ⚙ hoặc trong Nhà cung cấp AI › Trợ lý AI. AI chỉ trả lời; bạn tự thay đổi các cảnh.";
 

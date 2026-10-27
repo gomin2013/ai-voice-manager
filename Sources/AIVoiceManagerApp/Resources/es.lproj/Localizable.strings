@@ -179,8 +179,8 @@
 "tabCurrency" = "Moneda";
 "curAuto" = "Según el idioma";
 "curNote" = "Google cobra en dólares estadounidenses. El importe local es solo orientativo, con un tipo de cambio fijo establecido el %1$@.";
-"thaiOk" = "Tailandés ✓ · 30 voces · hasta 2 locutores";
-"thaiNo" = "Sin tailandés · 30 voces · hasta 2 locutores";
+"thaiOk" = "Tailandés ✓ · 2000+ voces · hasta 2 locutores";
+"thaiNo" = "Sin tailandés · 2000+ voces · hasta 2 locutores";
 "thaiUnknown" = "Compatibilidad con tailandés no documentada";
 "saved" = "Guardado en Resultados";
 "deleted" = "Toma eliminada";
@@ -220,7 +220,7 @@
 "modelChange" = "Cambiar";
 "modelTitleNew" = "Elige un modelo para este proyecto";
 "modelTitleChange" = "Cambiar el modelo del proyecto";
-"modelPhase" = "Por ahora la app solo admite Gemini TTS. Todos los modelos tienen las mismas 30 voces y un nivel gratuito.";
+"modelPhase" = "Por ahora la app solo admite Gemini TTS. Todos los modelos tienen las mismas 2000+ voces y un nivel gratuito.";
 "modelEffects" = "Qué cambia: la vista previa de cada escena tiene que generarse de nuevo; la compatibilidad con tailandés y el precio dependen del nuevo modelo. Qué se mantiene: tus escenas, los locutores y sus voces. Las tomas ya generadas conservan el modelo con el que se hicieron.";
 "thaiWarnPick" = "Este proyecto tiene texto en tailandés y este modelo no puede leerlo.";
 "createProject" = "Crear proyecto";
@@ -271,6 +271,11 @@
 "male" = "Masculina";
 "all" = "Todas";
 "fav" = "Favoritos";
+"neutral" = "Neutra";
+"pitch.low" = "Grave";
+"pitch.medium" = "Media";
+"pitch.high" = "Aguda";
+"vRefresh" = "Actualizar la lista de voces desde Google";
 "favAdd" = "Añadir a Favoritos";
 "favRemove" = "Quitar de Favoritos";
 "favEmpty" = "Aún no hay favoritos: haz clic en ♡ en una voz para guardarla aquí.";
@@ -321,7 +326,7 @@
 "h.gen.t" = "Generar";
 "h.gen.d" = "Lado derecho. Vista previa del proyecto completo (todas las escenas no silenciadas), modelo, Generar con Gemini (⌘↵) y luego reproduce, descarga o elimina cada resultado.";
 "h.voices.t" = "Biblioteca de voces";
-"h.voices.d" = "Las 30 voces de Gemini TTS. Busca, arrastra una voz a la escena o haz clic en Aplicar.";
+"h.voices.d" = "Toda la biblioteca de Gemini TTS de Google: más de 2000 voces, las mismas que en AI Studio; primero las 30 con retrato. Busca, filtra por ♂ ♀, ♥ favoritas o ✓ las de este proyecto, y arrastra una voz a la escena o haz clic en Aplicar.";
 "h.ai.t" = "Agente de IA";
 "h.ai.d" = "Pregunta al Agente de IA sobre el proyecto: una frase inicial mejor, dónde hacer pausas, una traducción. Elige quién responde — Apple, Ollama, OpenAI, Gemini o Claude — con ⚙ o en Proveedores de IA › Agente de IA. Responde; tú cambias las escenas.";
 

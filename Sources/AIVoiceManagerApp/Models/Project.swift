@@ -123,7 +123,7 @@ struct ProjectDraft: Codable, Hashable, Sendable {
     var items: [TimelineItem]
 
     func speaker(_ id: SpeakerID) -> Speaker {
-        speakers[id] ?? Speaker(name: id.rawValue, voice: VoiceCatalog.all[0].name)
+        speakers[id] ?? Speaker(name: id.rawValue, voice: VoiceCatalog.all[0].value)
     }
 
     mutating func setVoice(_ voice: String, for id: SpeakerID) {

@@ -93,6 +93,23 @@ enum GeminiTTS {
         _ = try await send(request("models?pageSize=1", key: key), session: session)
     }
 
+    /// Voice Library: Google's whole voice list, page by page (`next_page_token`, snake_case — checked 2026-10-27).
+    static func listVoices(key: String, session: URLSession = .shared) async throws -> [VoiceDirectory.APIVoice] {
+        struct Page: Decodable {
+            let voices: [VoiceDirectory.APIVoice]?
+            let next_page_token: String?   // swiftlint:disable:this identifier_name
+        }
+        var voices: [VoiceDirectory.APIVoice] = [], token: String?
+        for _ in 0..<20 {   // 3 pages today; the cap stops a server that never ends the list
+            let path = "voices?pageSize=1000" + (token.map { "&pageToken=" + $0 } ?? "")
+            let page = try JSONDecoder().decode(Page.self, from: await send(request(path, key: key), session: session))
+            voices += page.voices ?? []
+            token = page.next_page_token
+            if token?.isEmpty ?? true { break }
+        }
+        return voices
+    }
+
     private static func send(_ request: URLRequest, session: URLSession) async throws -> Data {
         let (data, response): (Data, URLResponse)
         do {

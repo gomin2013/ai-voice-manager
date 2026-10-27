@@ -82,15 +82,17 @@ private struct ScriptSceneView: View {
 
     private var voiceBox: some View {
         let voice = vm.draft.speaker(scene.speaker).voice
-        let info = VoiceCatalog.all.first { $0.name == voice }
+        let info = VoiceDirectory.shared.voice(voice)
         return VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 10) {
                 VoiceWithStyle(voice: voice, style: scene.style, size: 48)
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(voice).bold().lineLimit(1).accessibilityLabel(localized("voice") + ": " + voice)
+                    Text(info?.name ?? voice).bold().lineLimit(1)
+                        .accessibilityLabel(localized("voice") + ": " + (info?.name ?? voice))
                     HStack(spacing: 6) {
                         if let info { GenderPill(gender: info.gender).fixedSize() }
-                        Text(info?.description ?? "").foregroundStyle(.secondary).lineLimit(1)
+                        Text(info.map { $0.isBuiltin ? $0.description : $0.persona } ?? "")
+                            .foregroundStyle(.secondary).lineLimit(1).help(info?.description ?? "")
                     }
                 }
                 Spacer(minLength: 4)
@@ -227,7 +229,8 @@ private struct ScenePreviewSection: View {
                         .disabled(!net.isOnline).help(net.isOnline ? "" : localized("netNeeds"))
                 }
                 let voice = vm.draft.speaker(scene.speaker).voice
-                Text(localized("sceneOnly", vm.model.name.replacingOccurrences(of: "Gemini ", with: ""), voice))
+                Text(localized("sceneOnly", vm.model.name.replacingOccurrences(of: "Gemini ", with: ""),
+                               VoiceDirectory.shared.name(voice)))
                     .font(.app(11.5)).foregroundStyle(.secondary)
             }
         }
@@ -303,8 +306,18 @@ struct GenderPill: View {
     let gender: Gender
 
     var body: some View {
-        gender == .female
-            ? Pill(text: "♀ " + localized("female"), color: Color(red: 0.95, green: 0.39, blue: 0.24))
-            : Pill(text: "♂ " + localized("male"), color: Color(red: 0.18, green: 0.66, blue: 1))
+        switch gender {
+        case .female: Pill(text: "♀ " + localized("female"), color: Self.color(.female))
+        case .male: Pill(text: "♂ " + localized("male"), color: Self.color(.male))
+        case .neutral: Pill(text: localized("neutral"), color: Self.color(.neutral))
+        }
+    }
+
+    static func color(_ gender: Gender) -> Color {
+        switch gender {
+        case .female: Color(red: 0.95, green: 0.39, blue: 0.24)
+        case .male: Color(red: 0.18, green: 0.66, blue: 1)
+        case .neutral: Color.gray
+        }
     }
 }

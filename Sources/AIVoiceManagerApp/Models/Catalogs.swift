@@ -34,15 +34,24 @@ enum ModelCatalog {
     }
 }
 
-enum Gender: Sendable { case female, male }
+enum Gender: String, Sendable { case female, male, neutral }
 
+/// A Gemini TTS voice. `value` is what a project stores and the request sends: a built-in's name ("Puck", kept so v1
+/// projects still work) or a library voice's API id ("en-us-rami"). `name` is what the user reads.
 struct Voice: Hashable, Sendable, Identifiable {
+    let value: String
     let name: String
-    let description: String   // Google's one-word description, not translated
+    let description: String   // built-in: Google's one word; library: Google's sentence — not translated
     let gender: Gender
-    var id: String { name }
+    var pitch = ""             // low · medium · high
+    var language = ""          // BCP 47, e.g. en-US
+    var accent = ""
+    var persona = ""
+    var isBuiltin = true
+    var id: String { value }
 }
 
+/// The 30 voices AVM shipped with (portraits in Art/Voices). The whole library is `VoiceDirectory`.
 enum VoiceCatalog {
     // Gender per voice: Google Cloud TTS "Chirp 3: HD" voice list (same 30 names), checked 2026-10-23 — 14 ♀, 16 ♂.
     private static let female: Set = ["Achernar", "Aoede", "Autonoe", "Callirrhoe", "Despina", "Erinome", "Gacrux",
@@ -56,10 +65,17 @@ enum VoiceCatalog {
         """
     static let all: [Voice] = list.split(separator: "|").map { pair in
         let parts = pair.split(separator: " ").map(String.init)
-        return Voice(name: parts[0], description: parts[1], gender: female.contains(parts[0]) ? .female : .male)
+        return Voice(value: parts[0], name: parts[0], description: parts[1],
+                     gender: female.contains(parts[0]) ? .female : .male)
     }
 
-    static func contains(_ name: String) -> Bool { all.contains { $0.name == name } }
+    static func contains(_ name: String) -> Bool { all.contains { $0.value == name } }
+
+    /// What a project file may name as a voice: a built-in, or a library id such as `en-us-rami` (opened files are
+    /// untrusted — anything else falls back to the first built-in).
+    static func isVoiceValue(_ value: String) -> Bool {
+        contains(value) || value.wholeMatch(of: /[a-z]{2,3}(-[a-z0-9]+){1,4}/) != nil
+    }
 }
 
 /// Gemini TTS tags. In the timeline each one is its own Expression scene; in the request they go inline.

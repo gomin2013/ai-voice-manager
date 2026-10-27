@@ -179,8 +179,8 @@
 "tabCurrency" = "Mata Uang";
 "curAuto" = "Ikuti bahasa";
 "curNote" = "Google menagih dalam dolar AS. Jumlah dalam mata uang lokal hanya perkiraan, dengan kurs tetap yang ditetapkan pada %1$@.";
-"thaiOk" = "Bahasa Thai ✓ · 30 suara · hingga 2 pembicara";
-"thaiNo" = "Tanpa bahasa Thai · 30 suara · hingga 2 pembicara";
+"thaiOk" = "Bahasa Thai ✓ · 2000+ suara · hingga 2 pembicara";
+"thaiNo" = "Tanpa bahasa Thai · 2000+ suara · hingga 2 pembicara";
 "thaiUnknown" = "Dukungan bahasa Thai tidak didokumentasikan";
 "saved" = "Disimpan ke Hasil";
 "deleted" = "Rekaman dihapus";
@@ -220,7 +220,7 @@
 "modelChange" = "Ubah";
 "modelTitleNew" = "Pilih model untuk proyek ini";
 "modelTitleChange" = "Ubah model proyek";
-"modelPhase" = "Untuk saat ini app hanya mendukung Gemini TTS. Setiap model memiliki 30 suara yang sama dan paket gratis.";
+"modelPhase" = "Untuk saat ini app hanya mendukung Gemini TTS. Setiap model memiliki 2000+ suara yang sama dan paket gratis.";
 "modelEffects" = "Yang berubah: pratinjau setiap adegan harus dibuat ulang, dukungan bahasa Thai dan harga mengikuti model baru. Yang tetap: adegan, pembicara, dan suara mereka. Rekaman yang sudah dibuat tetap memakai model saat dibuat.";
 "thaiWarnPick" = "Proyek ini berisi teks bahasa Thai dan model ini tidak dapat membaca bahasa Thai.";
 "createProject" = "Buat Proyek";
@@ -271,6 +271,11 @@
 "male" = "Laki-laki";
 "all" = "Semua";
 "fav" = "Favorit";
+"neutral" = "Netral";
+"pitch.low" = "Rendah";
+"pitch.medium" = "Sedang";
+"pitch.high" = "Tinggi";
+"vRefresh" = "Muat ulang daftar suara dari Google";
 "favAdd" = "Tambahkan ke Favorit";
 "favRemove" = "Hapus dari Favorit";
 "favEmpty" = "Belum ada favorit — tekan ♡ pada suara untuk menyimpannya di sini.";
@@ -321,7 +326,7 @@
 "h.gen.t" = "Buat Audio";
 "h.gen.d" = "Sisi kanan. Pratinjau seluruh proyek (setiap adegan yang tidak dibisukan), model, Buat Audio dengan Gemini (⌘↵), lalu putar, unduh, atau hapus setiap hasil.";
 "h.voices.t" = "Pustaka Suara";
-"h.voices.d" = "30 suara Gemini TTS. Cari, seret suara ke adegan, atau tekan Terapkan.";
+"h.voices.d" = "Seluruh pustaka Gemini TTS dari Google — lebih dari 2.000 suara, sama seperti di AI Studio; 30 suara bergambar tampil lebih dulu. Cari, saring ♂ ♀, ♥ favorit, atau ✓ suara di proyek ini, lalu seret suara ke adegan atau tekan Terapkan.";
 "h.ai.t" = "Agen AI";
 "h.ai.d" = "Tanyakan Agen AI tentang proyek: kalimat pembuka yang lebih baik, di mana perlu jeda, terjemahan. Pilih AI yang menjawab — Apple, Ollama, OpenAI, Gemini, atau Claude — lewat ⚙ atau di Penyedia AI › Agen AI. AI menjawab; Anda sendiri yang mengubah adegan.";
 

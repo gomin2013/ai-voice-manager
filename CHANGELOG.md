@@ -1,5 +1,27 @@
 # Changelog
 
+## v1.1.1 — 2026-10-27
+
+### Added
+
+- **The whole voice library** — Voice Library now has Google's entire Gemini TTS library, 2,000+ voices (the same as
+  Google AI Studio, e.g. Rami), with the 30 portrait voices first. Search by name, description, accent or language;
+  tabs All · ♂ · ♀ · ♥ favourites · ✓ voices in this project. The list ships with the app (works offline and before a
+  key) and refreshes from Google about once a week with your key — listing voices is free.
+
+### Changed
+
+- Voice names everywhere (timeline, Current Scene, History, previews) show the library's name, and older projects keep
+  their voices exactly as they were.
+
+### Installation
+
+Download `AIVoiceManager-1.1.1.dmg` (and `SHA256SUMS.txt`), drag **AI Voice Manager** to **Applications** (replace
+the old copy) and allow the first launch in **System Settings → Privacy & Security → Open Anyway** (or
+`xattr -dr com.apple.quarantine "/Applications/AIVoiceManager.app"`). Then paste a Gemini API key from
+[Google AI Studio](https://aistudio.google.com/apikey) in **AI Providers**. Requires an Apple silicon Mac with
+macOS 14 or later and an internet connection; an AI Agent provider is optional.
+
 ## v1.1.0 — 2026-10-27
 
 ### Added

@@ -147,6 +147,7 @@ kbd { font: 11px var(--mono); opacity: .8; }
 </div>
 <input type="file" id="projFile" accept=".json,application/json" hidden onchange="openProjectFile(this)">
 <script src="shell.js"></script>
+<script src="voices.js"></script>
 <script>
 // ── Static data (Phase 3: ModelCatalog.swift) ── checked 2026-10-22, ai.google.dev pricing
 // Phase 1 = Gemini TTS models with a free tier only (2.5 Pro TTS, paid-only, taken out 2026-10-23).
@@ -164,6 +165,8 @@ const SYM = {
   waveform: '<path d="M3 10.5v3M7 7v10M11 3.5v17M15 7.5v9M19 5v14M23 10.5v3"/>',
   'text.alignleft': '<path d="M4 6h16M4 12h10M4 18h13"/>',
   timer: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>',
+  'heart.fill': '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" fill="currentColor"/>',
+  checkmark: '<path d="m5 12.5 4.5 4.5L19 7"/>',
   'pause.circle': '<circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/>',
   'character.bubble': '<path d="M4 5h16v11H9l-5 4z"/><path d="m9 13 2.5-6 2.5 6M10 11h3"/>',
   'exclamationmark.shield': '<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M12 8v5M12 16v.01"/>',
@@ -181,11 +184,28 @@ const VOICES = 'Zephyr Bright|Puck Upbeat|Charon Informative|Kore Firm|Fenrir Ex
   .split('|').map(s => s.split(' '));
 // Gender per voice: Google Cloud TTS "Chirp 3: HD" voice list (same 30 names), checked 2026-10-23 — 14 female, 16 male.
 const FEMALE = new Set('Achernar Aoede Autonoe Callirrhoe Despina Erinome Gacrux Kore Laomedeia Leda Pulcherrima Sulafat Vindemiatrix Zephyr'.split(' '));
-const genderOf = v => FEMALE.has(v) ? 'f' : 'm';
+// Voice Library: the 30 voices we drew portraits for + Google's whole library — voices.json is a snapshot of
+// GET /v1beta/voices (2,089 voices, 30 languages; the app refreshes it with your key). A built-in keeps its old value
+// ("Puck") so saved projects still work; every other voice is stored as its API id ("en-us-rami").
+let LIB = VOICES.map(([n, d]) => ({ value: n, name: n, desc: d, g: FEMALE.has(n) ? 'f' : 'm', pitch: '', lang: '', accent: '', persona: '', builtin: true }));
+if (window.VOICE_SNAPSHOT) {   // voices.js (a <script>, so file:// works too); missing → the built-in 30
+  const builtin = new Map(VOICES.map(([n, d]) => [n.toLowerCase(), [n, d]]));
+  LIB = VOICE_SNAPSHOT.voices.map(v => { const b = builtin.get(v.id);
+    return { value: b ? b[0] : v.id, name: v.display_name, desc: b ? b[1] : v.description, g: v.gender[0], pitch: v.pitch,
+      lang: v.language_code, accent: v.accent, persona: v.persona, builtin: !!b }; });
+  LIB.sort((x, y) => (y.builtin - x.builtin) || (x.builtin ? VOICES.findIndex(([n]) => n === x.value) - VOICES.findIndex(([n]) => n === y.value) : 0));   // the 30 first, old order
+}
+const voiceInfo = v => LIB.find(x => x.value === v);
+const voiceName = v => voiceInfo(v)?.name || v;
+const isVoiceValue = v => typeof v === 'string' && (VOICES.some(([n]) => n === v) || /^[a-z]{2,3}(-[a-z0-9]+){1,4}$/.test(v));
+const genderOf = v => voiceInfo(v)?.g || (FEMALE.has(v) ? 'f' : 'm');
+const langName = code => { try { return new Intl.DisplayNames([Shell.lang], { type: 'language' }).of(code); } catch { return code; } };
 // Portraits: one image of all 30 (.claude/docs/design/voice-avatars.md) cut into img/voices/<name>.png. Catalog names only.
 const avatar = (v, size = 32) => VOICES.some(([n]) => n === v)
-  ? `<img class="av" src="img/voices/${v.toLowerCase()}.png" alt="" width="${size}" height="${size}">` : '';
-const genderPill = v => `<span class="pill b-${genderOf(v)}">${genderOf(v) === 'f' ? '♀' : '♂'} ${esc(t(genderOf(v) === 'f' ? 'female' : 'male'))}</span>`;
+  ? `<img class="av" src="img/voices/${v.toLowerCase()}.png" alt="" width="${size}" height="${size}">`
+  : `<span class="av initials g-${genderOf(v)}" style="width:${size}px;height:${size}px;line-height:${size}px;text-align:center;font-size:${Math.round(size * 0.42)}px" aria-hidden="true">${esc(voiceName(v).slice(0, 1))}</span>`;
+const genderPill = v => { const g = genderOf(v);
+  return `<span class="pill b-${g}">${g === 'f' ? '♀' : g === 'm' ? '♂' : '○'} ${esc(t(g === 'f' ? 'female' : g === 'm' ? 'male' : 'neutral'))}</span>`; };
 // Voice styles: the `style` annotation Gemini reads before a line. English on purpose (that's what the model gets);
 // the description is what the user reads. Any other text still works: the scene's Style box accepts free text.
 const STYLE_DESC = {
@@ -204,7 +224,7 @@ const styleIcon = (name, size = 28) => STYLES.some(([n]) => n === name)
   ? `<img class="xi" src="img/styles/${styleSlug(name)}.png" alt="" width="${size}" height="${size}">`
   : `<span style="font-size:${Math.round(size * 0.7)}px;width:${size}px;text-align:center;flex:none;color:var(--text2)">${sf('face.smiling')}</span>`;
 /** The scene at a glance: who speaks (voice portrait) and how (style icon badged on its bottom-right corner). */
-const voiceWithStyle = (voice, style, size) => `<span class="avwrap" style="width:${size}px;height:${size}px" title="${esc(voice)} · ${esc(style)}">${avatar(voice, size)}
+const voiceWithStyle = (voice, style, size) => `<span class="avwrap" style="width:${size}px;height:${size}px" title="${esc(voiceName(voice))} · ${esc(style)}">${avatar(voice, size)}
   <span class="avbadge">${styleIcon(style, Math.round(size * 0.5))}</span></span>`;
 /** Gemini TTS tags. In the timeline each one is its own Expression item. */
 const EXPRS = ['<breath>', '<short pause>', '<long pause>', '<laugh>', '<sigh>', '<gasp>', '<cough>'];
@@ -270,7 +290,7 @@ const STRINGS = {
     appleNone: 'No voice for this language on this Mac. Add one in System Settings → Accessibility → Spoken Content.',
     costFree: '$0 (quota applies)', summary: '{0} scenes · ≈ {1}', costPaid: '≈ {usd} per take', 'panel.language': 'Language & Currency', tabLang: 'Language', tabCurrency: 'Currency', curAuto: 'Match language',
     curNote: 'Google bills in US dollars. The local amount is only a hint, at a fixed rate set on {0}.',
-    thaiOk: 'Thai ✓ · 30 voices · up to 2 speakers', thaiNo: 'No Thai · 30 voices · up to 2 speakers', thaiUnknown: 'Thai support not documented',
+    thaiOk: 'Thai ✓ · 2,000+ voices · up to 2 speakers', thaiNo: 'No Thai · 2,000+ voices · up to 2 speakers', thaiUnknown: 'Thai support not documented',
     saved: 'Saved to Results', deleted: 'Take deleted', ollamaOff: 'Ollama is not running — “Add pauses” uses the offline rule, the others do nothing.',
     nothing: 'Every scene is muted — nothing to generate.',
     rawTitle: 'Preview Raw · the request the app sends', rawNote: 'The timeline merged into speech segments, tags inline, muted scenes left out. Same body the Swift GeminiTTS service builds (Interactions API).',
@@ -287,7 +307,7 @@ const STRINGS = {
     exprDrop: 'Drag an expression here from Expression Library, or press Apply there.',
     exprLibHint: 'Drag onto the timeline to insert, or onto the Current Scene to change it. Apply changes the selected expression; with a script selected it inserts one after it.',
     dragExpr: 'Drag onto the timeline or the Current Scene', insert: 'Insert', applyExprTip: 'Change the selected expression', insertExprTip: 'Insert after the selected scene', modelChange: 'Change', modelTitleNew: 'Choose a model for this project', modelTitleChange: 'Change the project’s model',
-    modelPhase: 'For now the app supports Gemini TTS only. Every model has the same 30 voices and a free tier.',
+    modelPhase: 'For now the app supports Gemini TTS only. Every model has the same 2,000+ voices and a free tier.',
     modelEffects: 'What changes: each scene’s preview has to be generated again, Thai support and price follow the new model. What stays: your scenes, speakers and their voices. Takes you already generated keep the model they were made with.',
     thaiWarnPick: 'This project has Thai text and this model can’t read Thai.', createProject: 'Create project', useModel: 'Use this model',
     previewScene: 'Preview this scene with Gemini TTS', sceneOnly: 'Only this scene · {0} · {1}',
@@ -310,6 +330,8 @@ const STRINGS = {
     favEmpty: 'No favorites yet — press ♡ on a voice to keep it here.',
     vSearch: 'Search voices…', gVoices: 'Gemini TTS · voices', apply: 'Apply', dragVoice: 'Drag onto Current Scene, or press Apply', inUse: 'in use',
     'panel.providers': 'AI Providers', 'panel.projects': 'Recent Projects', 'panel.generate': 'Generate', 'panel.voices': 'Voice Library', 'panel.expressions': 'Expression Library',
+    'pitch.low': 'Low', 'pitch.medium': 'Medium', 'pitch.high': 'High', neutral: 'Neutral',
+    vMore: '{0} more — search or filter to narrow the list',
     'hist.tabScene': 'Scene', 'hist.sceneBefore': 'Scene {0} before editing',
     'hist.sceneEmpty': 'Edit a scene’s text and its versions appear here.',
     'hist.edit': 'Edited scene {0}', 'hist.style': 'Scene {0} style: {1}', 'hist.addScript': 'Added script',
@@ -327,7 +349,7 @@ const STRINGS = {
     'h.exprs.t': 'Expression Library', 'h.exprs.d': 'Right side. Breath, pauses, laugh, sigh, gasp, cough. Drag onto the timeline to insert, onto the Current Scene to change, or press Apply.',
     'h.history.t': 'History', 'h.history.d': 'Right side, top. Two tabs of 30. Script: the open project\'s last edits, newest first; {pin.fill} pins a version, and the project as opened is pinned for you. Scene: the last versions of the scenes\' text — going back changes only that scene. Double-click a row or press ↩ to go back — going back is a new step too, so nothing is lost. Each project keeps its own History.',
     'h.gen.t': 'Generate', 'h.gen.d': 'Right side. Preview of the whole project (every scene that isn’t muted), model, Generate with Gemini (⌘↵), then play, download or delete each result.',
-    'h.voices.t': 'Voice Library', 'h.voices.d': 'The 30 Gemini TTS voices. Search, drag a voice onto the scene or press Apply.',
+    'h.voices.t': 'Voice Library', 'h.voices.d': 'Google\'s whole Gemini TTS library — 2,000+ voices, the same as AI Studio; the 30 with portraits come first. Search, filter ♂ ♀, ♥ favourites or ✓ voices in this project, then drag a voice onto the scene or press Apply.',
     'h.ai.t': 'AI Agent', 'h.ai.d': 'Ask the AI Agent about the project: a better opening line, where to pause, a translation. Choose who answers — Apple, Ollama, OpenAI, Gemini or Claude — with ⚙ or in AI Providers › AI Agent. It answers; you change the scenes yourself.',
   },
   th: { newProject: 'โปรเจกต์ใหม่', openProject: 'เปิดโปรเจกต์…', exportProject: 'ส่งออกโปรเจกต์',
@@ -358,7 +380,7 @@ const STRINGS = {
     appleNone: 'เครื่องนี้ไม่มีเสียงภาษานี้ เพิ่มได้ที่ System Settings → Accessibility → Spoken Content',
     costFree: '$0 (มี quota)', summary: '{0} ฉาก · ≈ {1}', costPaid: '≈ {usd} ต่อ take', 'panel.language': 'ภาษาและสกุลเงิน', tabLang: 'ภาษา', tabCurrency: 'สกุลเงิน', curAuto: 'ตามภาษาของแอป',
     curNote: 'Google เก็บเงินเป็นดอลลาร์สหรัฐ ยอดสกุลเงินท้องถิ่นเป็นค่าประมาณ ใช้อัตราคงที่ที่ตั้งไว้เมื่อ {0}',
-    thaiOk: 'ไทย ✓ · 30 เสียง · สูงสุด 2 ผู้พูด', thaiNo: 'ไม่รองรับไทย · 30 เสียง · สูงสุด 2 ผู้พูด', thaiUnknown: 'เอกสารไม่ได้ระบุว่ารองรับไทย',
+    thaiOk: 'ไทย ✓ · 2,000+ เสียง · สูงสุด 2 ผู้พูด', thaiNo: 'ไม่รองรับไทย · 2,000+ เสียง · สูงสุด 2 ผู้พูด', thaiUnknown: 'เอกสารไม่ได้ระบุว่ารองรับไทย',
     saved: 'เก็บไว้ในผลลัพธ์แล้ว', deleted: 'ลบ take แล้ว', ollamaOff: 'Ollama ไม่ได้เปิด: “ใส่จังหวะหายใจ” ใช้กฎในเครื่องแทน ปุ่มอื่นไม่ทำอะไร',
     nothing: 'ทุกฉากถูกปิดเสียง ไม่มีอะไรให้สร้าง',
     rawTitle: 'ดู request ที่แอปจะส่ง', rawNote: 'รวมไทม์ไลน์เป็นช่วงเสียงพูด ใส่ tag ในบรรทัด ข้ามฉากที่ปิดเสียง · body เดียวกับที่ GeminiTTS ใน Swift สร้าง (Interactions API)',
@@ -374,7 +396,7 @@ const STRINGS = {
     exprDrop: 'ลาก Expression จากคลัง Expression มาวางที่นี่ หรือกด Apply ในคลัง',
     exprLibHint: 'ลากไปวางในไทม์ไลน์เพื่อแทรก หรือวางที่ฉากปัจจุบันเพื่อเปลี่ยน · Apply เปลี่ยน Expression ที่เลือกอยู่ ถ้าเลือกบทอยู่จะแทรกต่อจากบทนั้น',
     dragExpr: 'ลากไปวางในไทม์ไลน์หรือฉากปัจจุบัน', insert: 'แทรก', applyExprTip: 'เปลี่ยน Expression ที่เลือกอยู่', insertExprTip: 'แทรกต่อจากฉากที่เลือก', modelChange: 'เปลี่ยน', modelTitleNew: 'เลือก model ให้โปรเจกต์นี้', modelTitleChange: 'เปลี่ยน model ของโปรเจกต์',
-    modelPhase: 'ตอนนี้แอปรองรับ Gemini TTS อย่างเดียว ทุก model มี 30 เสียงเหมือนกันและมี free tier',
+    modelPhase: 'ตอนนี้แอปรองรับ Gemini TTS อย่างเดียว ทุก model มี 2,000+ เสียงเหมือนกันและมี free tier',
     modelEffects: 'สิ่งที่เปลี่ยน: ต้องสร้างเสียงลองฟังของแต่ละฉากใหม่, การรองรับภาษาไทยและราคาเป็นไปตาม model ใหม่ · สิ่งที่ไม่เปลี่ยน: ฉาก ผู้พูด และเสียงของผู้พูด · take ที่สร้างไปแล้วยังเป็น model เดิม',
     thaiWarnPick: 'โปรเจกต์นี้มีข้อความภาษาไทย แต่ model นี้อ่านภาษาไทยไม่ได้', createProject: 'สร้างโปรเจกต์', useModel: 'ใช้ model นี้',
     previewScene: 'ลองฟังฉากนี้ด้วย Gemini TTS', sceneOnly: 'เฉพาะฉากนี้ · {0} · {1}',
@@ -394,6 +416,8 @@ const STRINGS = {
     favEmpty: 'ยังไม่มีรายการโปรด — กด ♡ ที่เสียงที่ชอบเพื่อเก็บไว้ที่นี่',
     vSearch: 'ค้นหาเสียง…', gVoices: 'Gemini TTS · เสียง', apply: 'Apply', dragVoice: 'ลากไปวางที่ฉากปัจจุบัน หรือกด Apply', inUse: 'ใช้อยู่',
     'panel.providers': 'ผู้ให้บริการ AI', 'panel.projects': 'โปรเจกต์ล่าสุด', 'panel.generate': 'สร้างเสียง', 'panel.voices': 'คลังเสียง', 'panel.expressions': 'คลัง Expression',
+    'pitch.low': 'ต่ำ', 'pitch.medium': 'กลาง', 'pitch.high': 'สูง', neutral: 'เป็นกลาง',
+    vMore: 'อีก {0} เสียง — ค้นหาหรือกรองให้แคบลง',
     'hist.tabScene': 'ฉาก', 'hist.sceneBefore': 'ฉาก {0} ก่อนแก้',
     'hist.sceneEmpty': 'แก้ข้อความในฉาก แล้วเวอร์ชันของข้อความจะมาอยู่ตรงนี้',
     'hist.edit': 'แก้ฉาก {0}', 'hist.style': 'ฉาก {0} style: {1}', 'hist.addScript': 'เพิ่มบท',
@@ -411,7 +435,7 @@ const STRINGS = {
     'h.exprs.t': 'คลัง Expression', 'h.exprs.d': 'ด้านขวา หายใจ, เว้นจังหวะ, หัวเราะ, ถอนหายใจ, ตกใจ, ไอ ลากไปวางในไทม์ไลน์เพื่อแทรก วางที่ฉากปัจจุบันเพื่อเปลี่ยน หรือกด Apply',
     'h.history.t': 'ประวัติ', 'h.history.d': 'ด้านขวาบนสุด มี 2 แท็บ แท็บละ 30 รายการ · บท: การแก้ล่าสุดของโปรเจกต์ที่เปิดอยู่ ใหม่สุดอยู่บน {pin.fill} ปักหมุดเวอร์ชันที่อยากเก็บ โปรเจกต์ตอนเปิดปักหมุดให้แล้ว · ฉาก: ข้อความของฉากแต่ละเวอร์ชัน ย้อนแล้วเปลี่ยนแค่ฉากนั้น · ดับเบิลคลิกหรือกด ↩ เพื่อย้อน (การย้อนเป็นขั้นใหม่ ไม่มีอะไรหาย) แต่ละโปรเจกต์มีประวัติของตัวเอง',
     'h.gen.t': 'สร้างเสียง', 'h.gen.d': 'ด้านขวา ลองฟังทั้งโปรเจกต์ (ทุกฉากที่ไม่ได้ปิดเสียง), เลือก model, สร้างเสียงด้วย Gemini (⌘↵) แล้วเล่น ดาวน์โหลด หรือลบผลลัพธ์แต่ละอัน',
-    'h.voices.t': 'คลังเสียง', 'h.voices.d': '30 เสียงของ Gemini TTS ค้นหา ลากเสียงไปวางที่ฉาก หรือกด Apply',
+    'h.voices.t': 'คลังเสียง', 'h.voices.d': 'คลังเสียง Gemini TTS ทั้งหมดของ Google — กว่า 2,000 เสียง ชุดเดียวกับ AI Studio · 30 เสียงที่มีรูปอยู่ด้านบนก่อน ค้นหา กรอง ♂ ♀, ♥ รายการโปรด หรือ ✓ เสียงที่ใช้ในโปรเจกต์นี้ แล้วลากเสียงไปวางที่ฉาก หรือกด Apply',
     'h.ai.t': 'AI Agent', 'h.ai.d': 'ถาม AI Agent เรื่องโปรเจกต์ เช่น ประโยคเปิด, ควรเว้นจังหวะตรงไหน, แปล · เลือกได้ว่าใครตอบ — Apple, Ollama, OpenAI, Gemini หรือ Claude — ที่ปุ่ม ⚙ หรือ ผู้ให้บริการ AI › AI Agent · AI ตอบเท่านั้น คุณแก้ฉากเอง',
   },
 };
@@ -532,7 +556,7 @@ function renderTimeline() {
   $('tlList').innerHTML = list.map(it => {
     const label = it.type === 'expr' ? `${exIcon(it.tag, 22)} <span title="${esc(exprText(it))}">&lt;${esc(exLabel(it.tag))}&gt;</span>${
         it.times > 1 ? ` <span class="times">×${it.times}</span>` : ''}`
-      : `<b>${esc(S.draft.speakers[it.speaker].voice)}</b> — <span id="lbl-${it.id}">${esc(it.text.replace(/\s+/g, ' ').slice(0, 80) || t('empty'))}</span>`;
+      : `<b>${esc(voiceName(S.draft.speakers[it.speaker].voice))}</b> — <span id="lbl-${it.id}">${esc(it.text.replace(/\s+/g, ' ').slice(0, 80) || t('empty'))}</span>`;
     return `<div class="tl-item ${it.type} ${it === sel ? 'sel' : ''} ${it.muted ? 'muted' : ''}" draggable="true" onclick="selectItem('${it.id}')"
       ondragstart="S.drag='${it.id}'" ondragover="event.preventDefault();this.classList.add('drop')" ondragleave="this.classList.remove('drop')" ondrop="dropItem(event,'${it.id}')">
       <span class="grip" aria-hidden="true">⋮⋮</span>${it.type === 'script' ? voiceWithStyle(S.draft.speakers[it.speaker].voice, it.style, 28) : ''}
@@ -595,10 +619,10 @@ function renderScene() {
         <div class="muted" style="flex-basis:100%;font-size:11.5px">${esc(t('exprDrop'))}</div></div></div>`;
     return;
   }
-  const sp = S.draft.speakers[it.speaker], vd = VOICES.find(([v]) => v === sp.voice)?.[1] || '';
+  const sp = S.draft.speakers[it.speaker], vi = voiceInfo(sp.voice), vd = vi ? (vi.builtin ? vi.desc : vi.persona) : '';
   box.innerHTML = `<div class="col-h">${sf('movieclapper')} ${esc(t('currentScene'))} · ${esc(t('script'))} #${sceneNo(it)}</div><div class="scene-b">
     <div class="dropzone" id="voiceDrop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropVoice(event)">
-      ${voiceWithStyle(sp.voice, it.style, 48)} ${esc(t('voice'))}: <b>${esc(sp.voice)}</b> ${genderPill(sp.voice)} <span class="muted">${esc(vd)}</span>
+      ${voiceWithStyle(sp.voice, it.style, 48)} ${esc(t('voice'))}: <b>${esc(voiceName(sp.voice))}</b> ${genderPill(sp.voice)} <span class="muted">${esc(vd)}</span>
       <span class="spacer" style="flex:1"></span><button class="btn small to-right" onclick="S.vtab='voices';openPanel('voices')">${esc(t('panel.voices'))}</button>
       <div class="muted" style="flex-basis:100%;font-size:11.5px">${esc(t('voiceHint'))}</div></div>
     <div class="dropzone" id="styleDrop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropStyle(event)">
@@ -635,7 +659,7 @@ function setSceneVoice(it, v) {
   else if (!usedByOthers(it.speaker)) sp[it.speaker].voice = v;
   else if (!usedByOthers(other)) { sp[other].voice = v; it.speaker = other; }
   else { Shell.toast(t('twoVoices', sp.S1.voice, sp.S2.voice)); return; }
-  persistDraft(); Shell.record(t('hist.voice', v)); renderTimeline(); renderScene(); Shell.renderPanel();
+  persistDraft(); Shell.record(t('hist.voice', voiceName(v))); renderTimeline(); renderScene(); Shell.renderPanel();
 }
 /** Apply in Voice Library: the selected Script scene gets this voice. */
 function useVoice(v) {
@@ -685,7 +709,7 @@ function scenePreviewHtml(it) {
     <div class="wave" id="sWave">${waveBars(seedOf(it.id))}</div><span class="time" id="sTime">0:00 / ${fmt(dur)}</span>
     <span class="pill b-mock">${esc(t('bMock'))}</span></div>
   <div class="vrow" style="margin-top:8px">${action}
-    <span class="muted">${esc(t('sceneOnly', model().name.replace('Gemini ', ''), S.draft.speakers[it.speaker].voice))}</span></div>`;
+    <span class="muted">${esc(t('sceneOnly', model().name.replace('Gemini ', ''), voiceName(S.draft.speakers[it.speaker].voice)))}</span></div>`;
 }
 function renderPreview() { const el = $('pv'), it = selItem(); if (el && it?.type === 'script') el.innerHTML = scenePreviewHtml(it); }
 function genScenePreview(id) {
@@ -789,7 +813,7 @@ function exportProject() {
 function cleanScript(d, fallbackTitle) {
   const str = (v, max) => typeof v === 'string' ? v.slice(0, max) : '';
   const spk = v => v === 'S2' ? 'S2' : 'S1';
-  const voice = v => VOICES.some(([n]) => n === v) ? v : VOICES[0][0];
+  const voice = v => isVoiceValue(v) ? v : VOICES[0][0];   // a built-in name or an API id like en-us-rami
   const speakers = Object.fromEntries(['S1', 'S2'].map((s, i) => [s, {
     name: str(d?.speakers?.[s]?.name, 40) || ['Rami', 'Mali'][i], voice: voice(d?.speakers?.[s]?.voice) }]));
   const items = Array.isArray(d?.items)
@@ -940,18 +964,25 @@ function voiceRow(name, sub, actions, inUse, drag = '', tag = '') {
   return `<div class="prow vitem" ${drag}>${avatar(name, 36)}<div class="grow"><b>${esc(name)}</b> ${tag}${inUse ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}
     <div class="sub">${esc(sub)}</div></div>${actions}</div>`;
 }
-/** Voice Library = the 30 Gemini TTS voices only (Phase 1). Drag one onto the Current Scene or press Apply. */
+/** Voice Library: search + All · Male · Female · ♥ favourites · ✓ in this project. Drag a voice onto the Current Scene or press Apply.
+ *  Up to 120 rows at once: past that the list says how many more and asks for a narrower search (2,089 voices). */
+const usedVoices = () => new Set(items().filter(x => x.type === 'script').map(x => S.draft.speakers[x.speaker].voice));
+const voiceMatches = () => {
+  const q = S.vq.trim().toLowerCase(), used = usedVoices();
+  return LIB.filter(v => (S.vg === 'all' || (S.vg === 'fav' ? S.favs.includes(v.value) : S.vg === 'use' ? used.has(v.value) : v.g === S.vg))
+    && (!q || `${v.name} ${v.desc} ${v.persona} ${v.accent} ${v.lang} ${langName(v.lang)}`.toLowerCase().includes(q)));
+};
 function voiceList() {
-  const q = S.vq.trim().toLowerCase();
-  const rows = VOICES.filter(([v, d]) => (S.vg === 'all' || (S.vg === 'fav' ? S.favs.includes(v) : genderOf(v) === S.vg))
-    && (!q || `${v} ${d} ${t(genderOf(v) === 'f' ? 'female' : 'male')}`.toLowerCase().includes(q))).map(([v, d]) => {
-    const here = selItem()?.type === 'script' && S.draft.speakers[selItem().speaker].voice === v;
+  const all = voiceMatches(), rows = all.slice(0, 120).map(vi => {
+    const v = vi.value, here = selItem()?.type === 'script' && S.draft.speakers[selItem().speaker].voice === v;
     const inProject = items().some(x => x.type === 'script' && S.draft.speakers[x.speaker].voice === v);
-    return voiceRow(v, d + (inProject && !here ? ' · ' + t('inProject') : ''),
+    const sub = [vi.builtin ? vi.desc : '', vi.lang && langName(vi.lang), vi.accent, vi.pitch && t('pitch.' + vi.pitch)].filter(Boolean).join(' · ');
+    return `<div title="${esc(vi.builtin ? '' : vi.desc)}">` + voiceRow(vi.name, sub + (inProject && !here ? ' · ' + t('inProject') : ''),
       favBtn(v) + `<button class="btn small" title="${esc(t('applyScene'))}" onclick="useVoice('${v}')">${esc(t('apply'))}</button>`, here,
-      `draggable="true" title="${esc(t('dragVoice'))}" ondragstart="event.dataTransfer.setData('text/x-gemini-voice','${v}')"`, genderPill(v));
+      `draggable="true" title="${esc(t('dragVoice'))}" ondragstart="event.dataTransfer.setData('text/x-gemini-voice','${v}')"`, genderPill(v)) + '</div>';
   });
-  return rows.length ? `<p class="muted">${esc(t('gVoices'))} · ${rows.length} <span class="pill b-tier">${esc(t('bTier'))}</span></p>${rows.join('')}`
+  return rows.length ? `<p class="muted">${esc(t('gVoices'))} · ${all.length} <span class="pill b-tier">${esc(t('bTier'))}</span></p>${rows.join('')}`
+      + (all.length > rows.length ? `<p class="muted">${esc(t('vMore', all.length - rows.length))}</p>` : '')
     : `<p class="muted">${esc(t(S.vg === 'fav' && !S.favs.length ? 'favEmpty' : 'noMatch'))}</p>`;
 }
 function favBtn(v) {
@@ -990,10 +1021,11 @@ const voicesPanel = () => `<div class="seg" role="tablist" style="margin-bottom:
     `<button type="button" role="tab" class="${S.vtab === k ? 'on' : ''}" aria-selected="${S.vtab === k}" onclick="S.vtab='${k}';Shell.renderPanel()">${esc(label)}</button>`).join('')}</div>
   ${S.vtab === 'styles' ? stylesList() : `<div class="search" style="margin:0 0 6px"><input placeholder="${esc(t('vSearch'))}" aria-label="${esc(t('vSearch'))}"
   value="${esc(S.vq)}" oninput="S.vq=this.value;$('vlist').innerHTML=voiceList()"></div>
-  <div class="seg" role="group" aria-label="${esc(t('gender'))}" style="margin-bottom:6px">${[['all', t('all'), VOICES.length], ['m', t('male'), VOICES.length - FEMALE.size],
-    ['f', t('female'), FEMALE.size], ['fav', '♥', S.favs.length]].map(([g, label, n]) =>   // ♥ only: a worded 4th tab wraps in the narrow panel
-    `<button type="button" class="${S.vg === g ? 'on' : ''}" aria-pressed="${S.vg === g}" onclick="S.vg='${g}';Shell.renderPanel()"${g === 'fav'
-      ? ` title="${esc(t('fav'))}" aria-label="${esc(t('fav'))} ${n}"` : ''}>${esc(label)} ${n}</button>`).join('')}</div>
+  <div class="seg" role="group" aria-label="${esc(t('gender'))}" style="margin-bottom:6px">${[['all', esc(t('all'))], ['m', '♂', t('male')],
+    ['f', '♀', t('female')], ['fav', '♥ ' + S.favs.length, t('fav')], ['use', '✓ ' + usedVoices().size, t('inUse')]]
+    .map(([g, label, tip]) =>   // icons, not words (♂ ♀ like the gender pill): five worded tabs wrap in the narrow panel; counts are in the header
+    `<button type="button" class="${S.vg === g ? 'on' : ''}" aria-pressed="${S.vg === g}" onclick="S.vg='${g}';Shell.renderPanel()"${tip
+      ? ` title="${esc(tip)}" aria-label="${esc(tip)}"` : ''}>${label}</button>`).join('')}</div>
   <div id="vlist">${voiceList()}</div>`}`;
 function setModel(id) { S.draft.model = id; persistDraft(); Shell.record(t('hist.model', model().name.replace('Gemini ', ''))); renderScene(); Shell.renderPanel(); }
 // Mirrors the Interactions API request the Swift GeminiTTS service will build.
