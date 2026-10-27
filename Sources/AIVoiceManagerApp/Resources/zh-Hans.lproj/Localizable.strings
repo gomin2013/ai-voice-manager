@@ -179,8 +179,8 @@
 "tabCurrency" = "货币";
 "curAuto" = "跟随语言";
 "curNote" = "Google 以美元计费。本地货币金额仅供参考，按 %1$@ 设定的固定汇率换算。";
-"thaiOk" = "泰语 ✓ · 30 种声音 · 最多 2 位说话人";
-"thaiNo" = "不支持泰语 · 30 种声音 · 最多 2 位说话人";
+"thaiOk" = "泰语 ✓ · 2,000+ 种声音 · 最多 2 位说话人";
+"thaiNo" = "不支持泰语 · 2,000+ 种声音 · 最多 2 位说话人";
 "thaiUnknown" = "文档未说明是否支持泰语";
 "saved" = "已存储到结果";
 "deleted" = "已删除录音";
@@ -220,7 +220,7 @@
 "modelChange" = "更改";
 "modelTitleNew" = "为此项目选择模型";
 "modelTitleChange" = "更改项目的模型";
-"modelPhase" = "目前 App 仅支持 Gemini TTS。每个模型都有相同的 30 种声音，并提供免费额度。";
+"modelPhase" = "目前 App 仅支持 Gemini TTS。每个模型都有相同的 2,000+ 种声音，并提供免费额度。";
 "modelEffects" = "会改变的：每个场景的试听都需要重新生成，泰语支持和价格以新模型为准。不变的：你的场景、说话人及其声音。已生成的录音保留生成时所用的模型。";
 "thaiWarnPick" = "此项目包含泰语文本，而此模型无法读取泰语。";
 "createProject" = "创建项目";

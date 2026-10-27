@@ -179,8 +179,8 @@
 "tabCurrency" = "Currency";
 "curAuto" = "Ayon sa wika";
 "curNote" = "Naniningil ang Google sa US dollar. Pantantiya lang ang lokal na halaga, sa fixed rate na itinakda noong %1$@.";
-"thaiOk" = "Thai ✓ · 30 boses · hanggang 2 speaker";
-"thaiNo" = "Walang Thai · 30 boses · hanggang 2 speaker";
+"thaiOk" = "Thai ✓ · 2,000+ boses · hanggang 2 speaker";
+"thaiNo" = "Walang Thai · 2,000+ boses · hanggang 2 speaker";
 "thaiUnknown" = "Hindi dokumentado ang suporta sa Thai";
 "saved" = "Na-save sa Mga Resulta";
 "deleted" = "Nabura ang rekording";
@@ -220,7 +220,7 @@
 "modelChange" = "Palitan";
 "modelTitleNew" = "Pumili ng model para sa project na ito";
 "modelTitleChange" = "Palitan ang model ng project";
-"modelPhase" = "Sa ngayon, Gemini TTS lang ang suportado ng app. Pare-pareho ang 30 boses ng bawat model at may libreng plano ang lahat.";
+"modelPhase" = "Sa ngayon, Gemini TTS lang ang suportado ng app. Pare-pareho ang 2,000+ boses ng bawat model at may libreng plano ang lahat.";
 "modelEffects" = "Ano ang magbabago: kailangang i-generate ulit ang preview ng bawat eksena, at susunod sa bagong model ang suporta sa Thai at presyo. Ano ang mananatili: ang iyong mga eksena, speaker at ang kanilang mga boses. Mananatili sa dating model ang mga rekording na nagawa na.";
 "thaiWarnPick" = "May Thai text ang project na ito at hindi kayang basahin ng model na ito ang Thai.";
 "createProject" = "Gumawa ng project";

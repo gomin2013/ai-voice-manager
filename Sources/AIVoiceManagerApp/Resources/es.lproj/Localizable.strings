@@ -179,8 +179,8 @@
 "tabCurrency" = "Moneda";
 "curAuto" = "Según el idioma";
 "curNote" = "Google cobra en dólares estadounidenses. El importe local es solo orientativo, con un tipo de cambio fijo establecido el %1$@.";
-"thaiOk" = "Tailandés ✓ · 30 voces · hasta 2 locutores";
-"thaiNo" = "Sin tailandés · 30 voces · hasta 2 locutores";
+"thaiOk" = "Tailandés ✓ · 2000+ voces · hasta 2 locutores";
+"thaiNo" = "Sin tailandés · 2000+ voces · hasta 2 locutores";
 "thaiUnknown" = "Compatibilidad con tailandés no documentada";
 "saved" = "Guardado en Resultados";
 "deleted" = "Toma eliminada";
@@ -220,7 +220,7 @@
 "modelChange" = "Cambiar";
 "modelTitleNew" = "Elige un modelo para este proyecto";
 "modelTitleChange" = "Cambiar el modelo del proyecto";
-"modelPhase" = "Por ahora la app solo admite Gemini TTS. Todos los modelos tienen las mismas 30 voces y un nivel gratuito.";
+"modelPhase" = "Por ahora la app solo admite Gemini TTS. Todos los modelos tienen las mismas 2000+ voces y un nivel gratuito.";
 "modelEffects" = "Qué cambia: la vista previa de cada escena tiene que generarse de nuevo; la compatibilidad con tailandés y el precio dependen del nuevo modelo. Qué se mantiene: tus escenas, los locutores y sus voces. Las tomas ya generadas conservan el modelo con el que se hicieron.";
 "thaiWarnPick" = "Este proyecto tiene texto en tailandés y este modelo no puede leerlo.";
 "createProject" = "Crear proyecto";

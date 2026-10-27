@@ -179,8 +179,8 @@
 "tabCurrency" = "Mata Wang";
 "curAuto" = "Ikut bahasa";
 "curNote" = "Google mengebil dalam dolar AS. Jumlah tempatan hanya anggaran, pada kadar tetap yang ditetapkan pada %1$@.";
-"thaiOk" = "Thai ✓ · 30 suara · hingga 2 penutur";
-"thaiNo" = "Tiada Thai · 30 suara · hingga 2 penutur";
+"thaiOk" = "Thai ✓ · 2,000+ suara · hingga 2 penutur";
+"thaiNo" = "Tiada Thai · 2,000+ suara · hingga 2 penutur";
 "thaiUnknown" = "Sokongan Thai tidak didokumenkan";
 "saved" = "Disimpan ke Hasil";
 "deleted" = "Rakaman dipadam";
@@ -220,7 +220,7 @@
 "modelChange" = "Tukar";
 "modelTitleNew" = "Pilih model untuk projek ini";
 "modelTitleChange" = "Tukar model projek";
-"modelPhase" = "Buat masa ini app menyokong Gemini TTS sahaja. Setiap model ada 30 suara yang sama dan pelan percuma.";
+"modelPhase" = "Buat masa ini app menyokong Gemini TTS sahaja. Setiap model ada 2,000+ suara yang sama dan pelan percuma.";
 "modelEffects" = "Apa yang berubah: pratonton setiap babak perlu dijana semula, sokongan Thai dan harga mengikut model baharu. Apa yang kekal: babak, penutur dan suara mereka. Rakaman yang sudah dijana kekal dengan model asalnya.";
 "thaiWarnPick" = "Projek ini ada teks Thai dan model ini tidak dapat membaca bahasa Thai.";
 "createProject" = "Cipta projek";

@@ -179,8 +179,8 @@
 "tabCurrency" = "Tiền tệ";
 "curAuto" = "Theo ngôn ngữ";
 "curNote" = "Google tính phí bằng đô la Mỹ. Số tiền nội tệ chỉ để tham khảo, theo tỷ giá cố định đặt vào %1$@.";
-"thaiOk" = "Tiếng Thái ✓ · 30 giọng · tối đa 2 người nói";
-"thaiNo" = "Không hỗ trợ tiếng Thái · 30 giọng · tối đa 2 người nói";
+"thaiOk" = "Tiếng Thái ✓ · 2000+ giọng · tối đa 2 người nói";
+"thaiNo" = "Không hỗ trợ tiếng Thái · 2000+ giọng · tối đa 2 người nói";
 "thaiUnknown" = "Chưa có tài liệu về hỗ trợ tiếng Thái";
 "saved" = "Đã lưu vào Kết quả";
 "deleted" = "Đã xóa bản thu";
@@ -220,7 +220,7 @@
 "modelChange" = "Đổi";
 "modelTitleNew" = "Chọn mô hình cho dự án này";
 "modelTitleChange" = "Đổi mô hình của dự án";
-"modelPhase" = "Hiện tại ứng dụng chỉ hỗ trợ Gemini TTS. Mọi mô hình đều có cùng 30 giọng và gói miễn phí.";
+"modelPhase" = "Hiện tại ứng dụng chỉ hỗ trợ Gemini TTS. Mọi mô hình đều có cùng 2000+ giọng và gói miễn phí.";
 "modelEffects" = "Những gì thay đổi: bản nghe thử của mỗi cảnh phải được tạo lại, hỗ trợ tiếng Thái và giá theo mô hình mới. Những gì giữ nguyên: các cảnh, người nói và giọng của họ. Các bản thu đã tạo vẫn giữ mô hình đã dùng để tạo.";
 "thaiWarnPick" = "Dự án này có văn bản tiếng Thái và mô hình này không đọc được tiếng Thái.";
 "createProject" = "Tạo dự án";

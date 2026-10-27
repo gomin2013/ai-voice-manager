@@ -179,8 +179,8 @@
 "tabCurrency" = "Currency";
 "curAuto" = "Match language";
 "curNote" = "Google bills in US dollars. The local amount is only a hint, at a fixed rate set on %1$@.";
-"thaiOk" = "Thai ✓ · 30 voices · up to 2 speakers";
-"thaiNo" = "No Thai · 30 voices · up to 2 speakers";
+"thaiOk" = "Thai ✓ · 2,000+ voices · up to 2 speakers";
+"thaiNo" = "No Thai · 2,000+ voices · up to 2 speakers";
 "thaiUnknown" = "Thai support not documented";
 "saved" = "Saved to Results";
 "deleted" = "Take deleted";
@@ -220,7 +220,7 @@
 "modelChange" = "Change";
 "modelTitleNew" = "Choose a model for this project";
 "modelTitleChange" = "Change the project’s model";
-"modelPhase" = "For now the app supports Gemini TTS only. Every model has the same 30 voices and a free tier.";
+"modelPhase" = "For now the app supports Gemini TTS only. Every model has the same 2,000+ voices and a free tier.";
 "modelEffects" = "What changes: each scene’s preview has to be generated again, Thai support and price follow the new model. What stays: your scenes, speakers and their voices. Takes you already generated keep the model they were made with.";
 "thaiWarnPick" = "This project has Thai text and this model can’t read Thai.";
 "createProject" = "Create project";
