@@ -20,12 +20,13 @@ struct InteractionRequest: Encodable, Sendable {
     struct VoiceName: Encodable, Sendable { let voice: String }
     struct SpeakerVoice: Encodable, Sendable { let speaker: String; let voice: String }
 
-    /// One voice → `[{voice}]`; two → `{mode: "conversational", speakers: [{speaker, voice}]}`.
+    /// One voice → `[{voice}]`; two → `{speakers: [{speaker, voice}]}`. No `mode`: since 2026-10 the API rejects it
+    /// ("Unknown parameter 'mode' at 'generation_config.structured_speech_config'") although the docs still show it.
     enum SpeechConfig: Encodable, Sendable {
         case single(String)
         case conversational([SpeakerVoice])
 
-        private enum CodingKeys: String, CodingKey { case mode, speakers }
+        private enum CodingKeys: String, CodingKey { case speakers }
 
         func encode(to encoder: Encoder) throws {
             switch self {
@@ -34,7 +35,6 @@ struct InteractionRequest: Encodable, Sendable {
                 try container.encode([VoiceName(voice: voice)])
             case .conversational(let speakers):
                 var container = encoder.container(keyedBy: CodingKeys.self)
-                try container.encode("conversational", forKey: .mode)
                 try container.encode(speakers, forKey: .speakers)
             }
         }
