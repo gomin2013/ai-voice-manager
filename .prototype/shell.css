@@ -165,3 +165,6 @@ pre.raw .chg { background: color-mix(in srgb, var(--accent) 22%, transparent); d
 /* Inline icons in text (instead of colour emoji) */
 .sym { width: 1.15em; height: 1.15em; vertical-align: -0.22em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .sym.ok { color: var(--ok); }
+.av.initials { display: inline-grid; place-items: center; border-radius: 50%; font-weight: 700; color: #fff; flex: none; }
+.av.initials.g-f { background: #e8573f; } .av.initials.g-m { background: #2e8fe0; } .av.initials.g-n { background: #8a8a8e; }
+.pill.b-n { background: color-mix(in srgb, #8a8a8e 18%, transparent); color: #8a8a8e; }
