@@ -56,7 +56,7 @@ struct VoiceWithStyle: View {
     }
 }
 
-/// A style preset's Paper Collage disc (opaque: same in light and dark); a style the user typed gets 🎭.
+/// A style preset's Paper Collage disc (opaque: same in light and dark); a style the user typed gets `face.smiling`.
 struct StyleIcon: View {
     let style: String
     var size: CGFloat = 28
