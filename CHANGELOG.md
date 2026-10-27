@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.1.2 — 2026-10-27
+
+### Added
+
+- **Language and Pitch filters** — Voice Library has Language | Pitch pickers under the tabs again, so 2,000+ voices
+  narrow down quickly (for example, every low-pitched British English voice).
+- **Demo mode for recordings** — `open AIVoiceManager.app --args -demo` opens sample projects from a temporary folder,
+  so screenshots and screen recordings never touch your real projects.
+
+### Changed
+
+- **"✓ in use" replaces Apply** — in Voice Library, Style Library and Expression Library, the item already applied to
+  the scene shows "✓ in use" where its Apply button was.
+- **Gender shown as ♀ / ♂** — the gender label is the symbol alone (the word is in the tooltip and read by VoiceOver),
+  so voice rows stay on one line.
+
+### Installation
+
+Download `AIVoiceManager-1.1.2.dmg` (and `SHA256SUMS.txt`), drag **AI Voice Manager** to **Applications** (replace
+the old copy) and allow the first launch in **System Settings → Privacy & Security → Open Anyway** (or
+`xattr -dr com.apple.quarantine "/Applications/AIVoiceManager.app"`). Then paste a Gemini API key from
+[Google AI Studio](https://aistudio.google.com/apikey) in **AI Providers**. Requires an Apple silicon Mac with
+macOS 14 or later and an internet connection; an AI Agent provider is optional.
+
 ## v1.1.1 — 2026-10-27
 
 ### Added
