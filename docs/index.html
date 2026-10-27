@@ -26,6 +26,9 @@
   <link rel="apple-touch-icon" href="assets/img/avm-icon.png">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="assets/site.css">
+  <style>
+    .demo video { width: 100%; height: auto; aspect-ratio: 16 / 9; display: block; border-radius: var(--radius-img); border: 1px solid var(--line); background: #0a0d12; }
+  </style>
   <script>try{var d=document.documentElement,n=(navigator.language||"").toLowerCase(),l=localStorage.getItem("avm.lang")||(/^zh-(hant|tw|hk|mo)/.test(n)?"zh-Hant":/^zh/.test(n)?"zh-Hans":/^fil/.test(n)?"tl":n.slice(0,2));if("en th ja ko vi id ms tl zh-Hans zh-Hant es ru".split(" ").indexOf(l)<0)l="en";d.lang=l;if(l==="th"){d.classList.add("th");document.querySelectorAll("[data-th]").forEach(function(e){e.tagName==="TITLE"?e.textContent=e.dataset.th:e.content=e.dataset.th})}else if(l!=="en")d.classList.add("i18n-wait")}catch(e){}</script>
   <script type="application/ld+json">
   {
@@ -98,6 +101,20 @@
           <li class="reveal" data-d="2"><i class="ph ph-key" aria-hidden="true"></i><span><strong><span class="en">Your key, your Mac</span><span class="th">key ของคุณ เครื่องของคุณ</span></strong><span class="en">No account with us; projects are plain files</span><span class="th">ไม่ต้องสมัครกับเรา โปรเจกต์เป็นไฟล์ธรรมดา</span></span></li>
           <li class="reveal" data-d="3"><i class="ph ph-translate" aria-hidden="true"></i><span><strong><span class="en">12 languages</span><span class="th">12 ภาษา</span></strong><span class="en">Search and switch in the Language panel</span><span class="th">ค้นหาและสลับภาษาได้ในแผง Language</span></span></li>
         </ul>
+      </div>
+    </section>
+
+    <!-- Demo: the full walkthrough (build/youtube/v1.1.2), Thai narration by Gemini TTS + TH / EN subtitles -->
+    <section id="demo" class="demo">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2><span class="en">See every feature in six minutes</span><span class="th">ดูทุกฟีเจอร์ใน 6 นาที</span></h2>
+          <p><span class="en">From install to a finished WAV: key, project, timeline, voices, free listening, Generate, AI Agent and History. Narrated in Thai by Gemini TTS, with Thai and English subtitles.</span><span class="th">ตั้งแต่ติดตั้งจนได้ไฟล์ WAV: คีย์ โปรเจกต์ ไทม์ไลน์ เสียง ฟังฟรี สร้างเสียง AI Agent และ History พากย์ไทยด้วย Gemini TTS พร้อมคำบรรยายไทยและอังกฤษ</span></p>
+        </div>
+        <video class="reveal" src="assets/video/ai-voice-manager-demo-16x9.mp4" poster="assets/video/poster.jpg" controls preload="metadata" playsinline width="1920" height="1080">
+          <track kind="subtitles" srclang="en" label="English" src="assets/video/en.vtt" default>
+          <track kind="subtitles" srclang="th" label="ไทย" src="assets/video/th.vtt">
+        </video>
       </div>
     </section>
 
