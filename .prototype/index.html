@@ -111,7 +111,7 @@ kbd { font: 11px var(--mono); opacity: .8; }
 .avbadge .xi { padding: 1px; }
 .av { border-radius: 50%; object-fit: cover; flex: none; background: var(--bg3); }
 .vitem .grow b { font-weight: 600; }
-.vitem .sel { color: var(--accent); font-weight: 700; }
+.vitem .sel { color: var(--accent); font-weight: 700; white-space: nowrap; }
 .vitem[draggable=true] { cursor: grab; }
 </style>
 </head>
@@ -205,7 +205,8 @@ const avatar = (v, size = 32) => VOICES.some(([n]) => n === v)
   ? `<img class="av" src="img/voices/${v.toLowerCase()}.png" alt="" width="${size}" height="${size}">`
   : `<span class="av initials g-${genderOf(v)}" style="width:${size}px;height:${size}px;line-height:${size}px;text-align:center;font-size:${Math.round(size * 0.42)}px" aria-hidden="true">${esc(voiceName(v).slice(0, 1))}</span>`;
 const genderPill = v => { const g = genderOf(v);
-  return `<span class="pill b-${g}">${g === 'f' ? '♀' : g === 'm' ? '♂' : '○'} ${esc(t(g === 'f' ? 'female' : g === 'm' ? 'male' : 'neutral'))}</span>`; };
+  const word = esc(t(g === 'f' ? 'female' : g === 'm' ? 'male' : 'neutral'));
+  return `<span class="pill b-${g}" title="${word}" aria-label="${word}">${g === 'f' ? '♀' : g === 'm' ? '♂' : '○'}</span>`; };
 // Voice styles: the `style` annotation Gemini reads before a line. English on purpose (that's what the model gets);
 // the description is what the user reads. Any other text still works: the scene's Style box accepts free text.
 const STYLE_DESC = {
@@ -960,8 +961,10 @@ function deleteTake(id) {
 }
 
 // ── Right panel: Voice Library — every voice / model, by provider, searchable; Gemini voices drag onto the scene ──
-function voiceRow(name, sub, actions, inUse, drag = '', tag = '') {
-  return `<div class="prow vitem" ${drag}>${avatar(name, 36)}<div class="grow"><b>${esc(name)}</b> ${tag}${inUse ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}
+/** A library row's action: the Apply button, or "✓ in use" in its place once it's applied. */
+const applyOr = (inUse, button) => inUse ? `<span class="sel">✓ ${esc(t('inUse'))}</span>` : button;
+function voiceRow(name, sub, actions, drag = '', tag = '') {
+  return `<div class="prow vitem" ${drag}>${avatar(name, 36)}<div class="grow"><b>${esc(name)}</b> ${tag}
     <div class="sub">${esc(sub)}</div></div>${actions}</div>`;
 }
 /** Voice Library: search + All · ♂ · ♀ · ♥ favourites · ✓ in this project, then Language | Pitch. Drag a voice onto the Current Scene or press Apply.
@@ -979,7 +982,7 @@ function voiceList() {
     const inProject = items().some(x => x.type === 'script' && S.draft.speakers[x.speaker].voice === v);
     const sub = [vi.builtin ? vi.desc : '', vi.lang && langName(vi.lang), vi.accent, vi.pitch && t('pitch.' + vi.pitch)].filter(Boolean).join(' · ');
     return `<div title="${esc(vi.builtin ? '' : vi.desc)}">` + voiceRow(vi.name, sub + (inProject && !here ? ' · ' + t('inProject') : ''),
-      favBtn(v) + `<button class="btn small" title="${esc(t('applyScene'))}" onclick="useVoice('${v}')">${esc(t('apply'))}</button>`, here,
+      favBtn(v) + applyOr(here, `<button class="btn small" title="${esc(t('applyScene'))}" onclick="useVoice('${v}')">${esc(t('apply'))}</button>`),
       `draggable="true" title="${esc(t('dragVoice'))}" ondragstart="event.dataTransfer.setData('text/x-gemini-voice','${v}')"`, genderPill(v)) + '</div>';
   });
   return rows.length ? `<p class="muted">${esc(t('gVoices'))} · ${all.length} <span class="pill b-tier">${esc(t('bTier'))}</span></p>${rows.join('')}`
@@ -999,9 +1002,9 @@ function expressionsPanel() {
   const sel = selItem(), onExpr = sel?.type === 'expr';
   return `<p class="muted">${esc(t('exprLibHint'))}</p>` + EXPRS.map(tag => `<div class="prow vitem" draggable="true" title="${esc(t('dragExpr'))} · ${esc(tag)}"
       ondragstart="event.dataTransfer.setData('text/x-expr','${tag}')"><span class="grip muted" aria-hidden="true">⋮⋮</span>${exIcon(tag, 40)}
-    <div class="grow"><b>&lt;${esc(exLabel(tag))}&gt;</b>${onExpr && sel.tag === tag ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}
+    <div class="grow"><b>&lt;${esc(exLabel(tag))}&gt;</b>
       <div class="sub">${esc(t('exd.' + exKey(tag)))}</div></div>
-    <button class="btn small" title="${esc(t(onExpr ? 'applyExprTip' : 'insertExprTip'))}" onclick="applyExpr('${tag}')">${esc(t(onExpr ? 'apply' : 'insert'))}</button></div>`).join('');
+    ${applyOr(onExpr && sel.tag === tag, `<button class="btn small" title="${esc(t(onExpr ? 'applyExprTip' : 'insertExprTip'))}" onclick="applyExpr('${tag}')">${esc(t(onExpr ? 'apply' : 'insert'))}</button>`)}</div>`).join('');
 }
 /** Apply: changes the selected Expression scene; with a Script selected, inserts the expression right after it. */
 function applyExpr(tag) {
@@ -1015,8 +1018,8 @@ function stylesList() {
   const cur = selItem()?.type === 'script' ? selItem().style : null, d = STYLE_DESC[Shell.lang] || STYLE_DESC.en;
   return `<p class="muted">${esc(t('styleLibHint'))}</p>` + STYLES.map(([name], i) => `<div class="prow vitem" draggable="true" title="${esc(t('dragStyle'))}"
       ondragstart="event.dataTransfer.setData('text/x-style','${i}')">${styleIcon(name, 40)}
-    <div class="grow"><b>${esc(name)}</b>${name === cur ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}<div class="sub">${esc(d[i])}</div></div>
-    <button class="btn small" title="${esc(t('applyScene'))}" onclick="useStyle(${i})">${esc(t('apply'))}</button></div>`).join('');
+    <div class="grow"><b>${esc(name)}</b><div class="sub">${esc(d[i])}</div></div>
+    ${applyOr(name === cur, `<button class="btn small" title="${esc(t('applyScene'))}" onclick="useStyle(${i})">${esc(t('apply'))}</button>`)}</div>`).join('');
 }
 const voicesPanel = () => `<div class="seg" role="tablist" style="margin-bottom:8px">${[['voices', t('tabVoices')], ['styles', t('tabStyles')]].map(([k, label]) =>
     `<button type="button" role="tab" class="${S.vtab === k ? 'on' : ''}" aria-selected="${S.vtab === k}" onclick="S.vtab='${k}';Shell.renderPanel()">${esc(label)}</button>`).join('')}</div>
