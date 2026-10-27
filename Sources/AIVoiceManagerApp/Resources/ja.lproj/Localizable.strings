@@ -271,6 +271,8 @@
 "male" = "男性";
 "all" = "すべて";
 "fav" = "お気に入り";
+"language" = "言語";
+"pitch" = "声の高さ";
 "neutral" = "ニュートラル";
 "pitch.low" = "低め";
 "pitch.medium" = "普通";

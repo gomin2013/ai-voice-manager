@@ -271,6 +271,8 @@
 "male" = "Lelaki";
 "all" = "Semua";
 "fav" = "Kegemaran";
+"language" = "Bahasa";
+"pitch" = "Nada";
 "neutral" = "Neutral";
 "pitch.low" = "Rendah";
 "pitch.medium" = "Sederhana";

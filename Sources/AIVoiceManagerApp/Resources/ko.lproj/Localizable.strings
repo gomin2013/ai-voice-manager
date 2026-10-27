@@ -271,6 +271,8 @@
 "male" = "남성";
 "all" = "전체";
 "fav" = "즐겨찾기";
+"language" = "언어";
+"pitch" = "음높이";
 "neutral" = "중성";
 "pitch.low" = "낮음";
 "pitch.medium" = "보통";

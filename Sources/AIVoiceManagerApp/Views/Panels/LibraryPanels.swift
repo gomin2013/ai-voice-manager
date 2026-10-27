@@ -6,6 +6,8 @@ struct VoiceLibraryPanel: View {
     @AppStorage("ui.voiceTab") private var tab = "voices"
     @State private var query = ""
     @State private var filter = VoiceFilter.all
+    @State private var language = ""
+    @State private var pitch = ""
     // ponytail: names joined by ","; voice names never contain one. App-wide, not per project, not in History.
     @AppStorage("voice.favorites") private var favoritesRaw = ""
 
@@ -47,7 +49,8 @@ struct VoiceLibraryPanel: View {
             }
             let fields = [voice.name, voice.description, voice.persona, voice.accent, voice.language,
                           Self.languageName(voice.language, in: ui)]
-            return kept && (query.isEmpty || fields.contains { $0.localizedCaseInsensitiveContains(query) })
+            return kept && (language.isEmpty || voice.language == language) && (pitch.isEmpty || voice.pitch == pitch)
+                && (query.isEmpty || fields.contains { $0.localizedCaseInsensitiveContains(query) })
         }
         return VStack(alignment: .leading, spacing: 8) {
             Group {
@@ -67,6 +70,19 @@ struct VoiceLibraryPanel: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+                HStack(spacing: 6) {   // Language | Pitch
+                    Picker(localized("language"), selection: $language) {
+                        Text(localized("language") + ": " + localized("all")).tag("")
+                        ForEach(Self.languages(directory.voices, in: ui), id: \.code) { Text($0.name).tag($0.code) }
+                    }
+                    .labelsHidden()
+                    Picker(localized("pitch"), selection: $pitch) {
+                        Text(localized("pitch") + ": " + localized("all")).tag("")
+                        ForEach(["low", "medium", "high"], id: \.self) { Text(localized("pitch." + $0)).tag($0) }
+                    }
+                    .labelsHidden()
+                    .fixedSize()
+                }
                 HStack(spacing: 6) {
                     Text(localized("gVoices") + " · \(matches.count)").font(.app(11.5)).foregroundStyle(.secondary)
                     Pill(text: localized("bTier"))
@@ -96,6 +112,12 @@ struct VoiceLibraryPanel: View {
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
         }
+    }
+
+    private static func languages(_ voices: [Voice], in ui: String) -> [(code: String, name: String)] {
+        Set(voices.map(\.language)).filter { !$0.isEmpty }
+            .map { (code: $0, name: languageName($0, in: ui)) }
+            .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }
 
     /// "Japanese (Japan)" for ja-JP in an English UI, "ญี่ปุ่น (ญี่ปุ่น)" in Thai.
