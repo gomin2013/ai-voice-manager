@@ -271,6 +271,11 @@
 "male" = "男聲";
 "all" = "全部";
 "fav" = "喜好項目";
+"neutral" = "中性";
+"pitch.low" = "低沉";
+"pitch.medium" = "中等";
+"pitch.high" = "高亢";
+"vRefresh" = "從 Google 重新整理聲音列表";
 "favAdd" = "加入喜好項目";
 "favRemove" = "從喜好項目中移除";
 "favEmpty" = "尚無喜好項目 — 在聲音上按 ♡ 即可保留在這裡。";
@@ -321,7 +326,7 @@
 "h.gen.t" = "產生";
 "h.gen.d" = "右側。試聽整個專案（所有未靜音的場景）、選擇模型、以 Gemini 產生（⌘↵），然後播放、下載或刪除每個結果。";
 "h.voices.t" = "聲音庫";
-"h.voices.d" = "30 種 Gemini TTS 聲音。可搜尋、將聲音拖移到場景上，或按「套用」。";
+"h.voices.d" = "Google Gemini TTS 的完整聲音庫——超過 2,000 種聲音，與 AI Studio 相同；附肖像的 30 種排在最前面。可搜尋，並以 ♂ ♀、♥ 喜好項目或 ✓ 此專案使用中篩選，再將聲音拖移到場景上，或按「套用」。";
 "h.ai.t" = "AI 助理";
 "h.ai.d" = "向 AI 助理詢問專案：更好的開場白、在哪裡停頓、翻譯。可透過 ⚙ 或「AI 提供者 › AI 助理」選擇由誰回答——Apple、Ollama、OpenAI、Gemini 或 Claude。它只負責回答；場景由你自行修改。";
 

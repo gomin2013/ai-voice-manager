@@ -86,8 +86,10 @@ extension EditorViewModel {
         guard case .script(let scene) = selectedItem else { notice = Notice(text: localized("pickScript")); return }
         switch assignVoice(voice, to: scene.id, in: &draft) {
         case .unchanged: break
-        case .assigned: record(localized("hist.voice", voice))
-        case .refused(let inUse): notice = Notice(text: localized("twoVoices", inUse[0], inUse[1]))
+        case .assigned: record(localized("hist.voice", VoiceDirectory.shared.name(voice)))
+        case .refused(let inUse):
+            let names = inUse.map(VoiceDirectory.shared.name)
+            notice = Notice(text: localized("twoVoices", names[0], names[1]))
         }
     }
 

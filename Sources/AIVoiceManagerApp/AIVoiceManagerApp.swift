@@ -20,6 +20,7 @@ struct AIVoiceManagerApp: App {
                 .environment(agent)
                 .task { net.start() }
                 .task { await ollama.probe() }
+                .task { await VoiceDirectory.shared.refreshIfStale(key: KeychainStore.load()) }   // weekly, free
                 .frame(minWidth: 1440, minHeight: 760)   // both tool windows open (2 × 384) + the editor
                 .sheet(item: $modelSheet) { ModelPickerSheet(mode: $0).environment(vm).environment(net) }
                 .onChange(of: vm.currentID) { playback.stop(); QuickPreview.shared.stop() }

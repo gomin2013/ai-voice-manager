@@ -271,6 +271,11 @@
 "male" = "Male";
 "all" = "All";
 "fav" = "Favorite";
+"neutral" = "Neutral";
+"pitch.low" = "Low";
+"pitch.medium" = "Medium";
+"pitch.high" = "High";
+"vRefresh" = "Refresh the voice list from Google";
 "favAdd" = "Add to Favorites";
 "favRemove" = "Remove from Favorites";
 "favEmpty" = "No favorites yet — press ♡ on a voice to keep it here.";
@@ -321,7 +326,7 @@
 "h.gen.t" = "Generate";
 "h.gen.d" = "Right side. Preview of the whole project (every scene that isn’t muted), model, Generate with Gemini (⌘↵), then play, download or delete each result.";
 "h.voices.t" = "Voice Library";
-"h.voices.d" = "The 30 Gemini TTS voices. Search, drag a voice onto the scene or press Apply.";
+"h.voices.d" = "Google's whole Gemini TTS library — 2,000+ voices, the same as AI Studio; the 30 with portraits come first. Search, filter ♂ ♀, ♥ favourites or ✓ voices in this project, then drag a voice onto the scene or press Apply.";
 "h.ai.t" = "AI Agent";
 "h.ai.d" = "Ask the AI Agent about the project: a better opening line, where to pause, a translation. Choose who answers — Apple, Ollama, OpenAI, Gemini or Claude — with ⚙ or in AI Providers › AI Agent. It answers; you change the scenes yourself.";
 

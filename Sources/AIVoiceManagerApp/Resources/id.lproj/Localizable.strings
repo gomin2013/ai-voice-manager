@@ -271,6 +271,11 @@
 "male" = "Laki-laki";
 "all" = "Semua";
 "fav" = "Favorit";
+"neutral" = "Netral";
+"pitch.low" = "Rendah";
+"pitch.medium" = "Sedang";
+"pitch.high" = "Tinggi";
+"vRefresh" = "Muat ulang daftar suara dari Google";
 "favAdd" = "Tambahkan ke Favorit";
 "favRemove" = "Hapus dari Favorit";
 "favEmpty" = "Belum ada favorit — tekan ♡ pada suara untuk menyimpannya di sini.";
@@ -321,7 +326,7 @@
 "h.gen.t" = "Buat Audio";
 "h.gen.d" = "Sisi kanan. Pratinjau seluruh proyek (setiap adegan yang tidak dibisukan), model, Buat Audio dengan Gemini (⌘↵), lalu putar, unduh, atau hapus setiap hasil.";
 "h.voices.t" = "Pustaka Suara";
-"h.voices.d" = "30 suara Gemini TTS. Cari, seret suara ke adegan, atau tekan Terapkan.";
+"h.voices.d" = "Seluruh pustaka Gemini TTS dari Google — lebih dari 2.000 suara, sama seperti di AI Studio; 30 suara bergambar tampil lebih dulu. Cari, saring ♂ ♀, ♥ favorit, atau ✓ suara di proyek ini, lalu seret suara ke adegan atau tekan Terapkan.";
 "h.ai.t" = "Agen AI";
 "h.ai.d" = "Tanyakan Agen AI tentang proyek: kalimat pembuka yang lebih baik, di mana perlu jeda, terjemahan. Pilih AI yang menjawab — Apple, Ollama, OpenAI, Gemini, atau Claude — lewat ⚙ atau di Penyedia AI › Agen AI. AI menjawab; Anda sendiri yang mengubah adegan.";
 

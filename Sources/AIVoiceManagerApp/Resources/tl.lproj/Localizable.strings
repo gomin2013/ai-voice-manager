@@ -271,6 +271,11 @@
 "male" = "Lalaki";
 "all" = "Lahat";
 "fav" = "Paborito";
+"neutral" = "Neutral";
+"pitch.low" = "Mababa";
+"pitch.medium" = "Katamtaman";
+"pitch.high" = "Mataas";
+"vRefresh" = "I-refresh ang listahan ng boses mula sa Google";
 "favAdd" = "Idagdag sa Mga Paborito";
 "favRemove" = "Alisin sa Mga Paborito";
 "favEmpty" = "Wala pang paborito — pindutin ang ♡ sa isang boses para itago ito rito.";
@@ -321,7 +326,7 @@
 "h.gen.t" = "I-generate";
 "h.gen.d" = "Kanang bahagi. Preview ng buong project (bawat eksenang hindi naka-mute), model, I-generate gamit ang Gemini (⌘↵), saka i-play, i-download o burahin ang bawat resulta.";
 "h.voices.t" = "Koleksyon ng Boses";
-"h.voices.d" = "Ang 30 boses ng Gemini TTS. Maghanap, i-drag ang isang boses sa eksena o pindutin ang Gamitin.";
+"h.voices.d" = "Ang buong Gemini TTS library ng Google — mahigit 2,000 boses, pareho sa AI Studio; nauuna ang 30 na may larawan. Maghanap, mag-filter ng ♂ ♀, ♥ paborito o ✓ mga boses sa project na ito, saka i-drag ang isang boses sa eksena o pindutin ang Gamitin.";
 "h.ai.t" = "AI Agent";
 "h.ai.d" = "Magtanong sa AI Agent tungkol sa project: mas magandang opening line, saan magpa-pause, isang salin. Piliin kung sino ang sasagot — Apple, Ollama, OpenAI, Gemini o Claude — sa ⚙ o sa Mga Serbisyo ng AI › AI Agent. Sasagot ito; ikaw mismo ang magbabago ng mga eksena.";
 

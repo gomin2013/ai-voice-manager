@@ -271,6 +271,11 @@
 "male" = "Lelaki";
 "all" = "Semua";
 "fav" = "Kegemaran";
+"neutral" = "Neutral";
+"pitch.low" = "Rendah";
+"pitch.medium" = "Sederhana";
+"pitch.high" = "Tinggi";
+"vRefresh" = "Muat semula senarai suara daripada Google";
 "favAdd" = "Tambah ke Kegemaran";
 "favRemove" = "Alih Keluar daripada Kegemaran";
 "favEmpty" = "Belum ada kegemaran — tekan ♡ pada suara untuk menyimpannya di sini.";
@@ -321,7 +326,7 @@
 "h.gen.t" = "Jana";
 "h.gen.d" = "Sebelah kanan. Pratonton seluruh projek (setiap babak yang tidak disenyapkan), model, Jana dengan Gemini (⌘↵), kemudian main, muat turun atau padam setiap hasil.";
 "h.voices.t" = "Pustaka Suara";
-"h.voices.d" = "30 suara Gemini TTS. Cari, seret suara ke babak atau tekan Guna.";
+"h.voices.d" = "Seluruh pustaka Gemini TTS Google — lebih 2,000 suara, sama seperti dalam AI Studio; 30 suara bergambar dipaparkan dahulu. Cari, tapis ♂ ♀, ♥ kegemaran atau ✓ suara dalam projek ini, kemudian seret suara ke babak atau tekan Guna.";
 "h.ai.t" = "Ejen AI";
 "h.ai.d" = "Tanya Ejen AI tentang projek: ayat pembuka yang lebih baik, di mana perlu berjeda, terjemahan. Pilih AI yang menjawab — Apple, Ollama, OpenAI, Gemini atau Claude — melalui ⚙ atau dalam Penyedia AI › Ejen AI. Ia menjawab; anda sendiri yang menukar babak.";
 

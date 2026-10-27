@@ -92,7 +92,8 @@ private struct TimelineRow: View {
             let voice = vm.draft.speaker(scene.speaker).voice
             VoiceWithStyle(voice: voice, style: scene.style, size: 28)
             let text = scene.text.split(whereSeparator: \.isWhitespace).joined(separator: " ")
-            (Text(voice).bold() + Text(" — " + (text.isEmpty ? localized("empty") : String(text.prefix(80)))))
+            let line = text.isEmpty ? localized("empty") : String(text.prefix(80))
+            (Text(VoiceDirectory.shared.name(voice)).bold() + Text(" — " + line))
                 .lineLimit(1)
         case .expr(let scene):
             ExpressionIcon(tag: scene.tag, size: 22)
