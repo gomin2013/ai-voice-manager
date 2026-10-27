@@ -271,6 +271,8 @@
 "male" = "男聲";
 "all" = "全部";
 "fav" = "喜好項目";
+"language" = "語言";
+"pitch" = "音調";
 "neutral" = "中性";
 "pitch.low" = "低沉";
 "pitch.medium" = "中等";

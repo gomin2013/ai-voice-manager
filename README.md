@@ -25,8 +25,8 @@ Same window layout as [Hosts Manager](https://github.com/gomin2013/hosts-manager
 - **Script Timeline** — every line and every pause is a scene: drag to reorder, mute to leave it out of the take,
   a voice and a style per line, and two voices per take for a conversation.
 - **Voice Library** — Google's whole Gemini TTS library, 2,000+ voices (the same as AI Studio), the 30 with portraits
-  first; search, filter ♂ ♀, ♥ favourites and ✓ the voices in this project, plus 12 style presets. Drag onto a scene
-  or press Apply.
+  first; search, filter ♂ ♀, ♥ favourites, ✓ the voices in this project, language and pitch, plus 12 style
+  presets. Drag onto a scene or press Apply.
 - **Expressions** — breath, short / long pause, laugh, sigh, gasp, cough between lines, each repeatable up to ×10.
 - **Listen before you pay** — **Quick preview** (the Mac's own voices, free, offline), **Generate preview** (one
   scene with Gemini), then **Generate** for the whole take, saved as a WAV next to the timeline that made it.

@@ -6,6 +6,8 @@ struct VoiceLibraryPanel: View {
     @AppStorage("ui.voiceTab") private var tab = "voices"
     @State private var query = ""
     @State private var filter = VoiceFilter.all
+    @State private var language = ""
+    @State private var pitch = ""
     // ponytail: names joined by ","; voice names never contain one. App-wide, not per project, not in History.
     @AppStorage("voice.favorites") private var favoritesRaw = ""
 
@@ -47,7 +49,8 @@ struct VoiceLibraryPanel: View {
             }
             let fields = [voice.name, voice.description, voice.persona, voice.accent, voice.language,
                           Self.languageName(voice.language, in: ui)]
-            return kept && (query.isEmpty || fields.contains { $0.localizedCaseInsensitiveContains(query) })
+            return kept && (language.isEmpty || voice.language == language) && (pitch.isEmpty || voice.pitch == pitch)
+                && (query.isEmpty || fields.contains { $0.localizedCaseInsensitiveContains(query) })
         }
         return VStack(alignment: .leading, spacing: 8) {
             Group {
@@ -67,6 +70,19 @@ struct VoiceLibraryPanel: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+                HStack(spacing: 6) {   // Language | Pitch
+                    Picker(localized("language"), selection: $language) {
+                        Text(localized("language") + ": " + localized("all")).tag("")
+                        ForEach(Self.languages(directory.voices, in: ui), id: \.code) { Text($0.name).tag($0.code) }
+                    }
+                    .labelsHidden()
+                    Picker(localized("pitch"), selection: $pitch) {
+                        Text(localized("pitch") + ": " + localized("all")).tag("")
+                        ForEach(["low", "medium", "high"], id: \.self) { Text(localized("pitch." + $0)).tag($0) }
+                    }
+                    .labelsHidden()
+                    .fixedSize()
+                }
                 HStack(spacing: 6) {
                     Text(localized("gVoices") + " · \(matches.count)").font(.app(11.5)).foregroundStyle(.secondary)
                     Pill(text: localized("bTier"))
@@ -98,6 +114,12 @@ struct VoiceLibraryPanel: View {
         }
     }
 
+    private static func languages(_ voices: [Voice], in ui: String) -> [(code: String, name: String)] {
+        Set(voices.map(\.language)).filter { !$0.isEmpty }
+            .map { (code: $0, name: languageName($0, in: ui)) }
+            .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+    }
+
     /// "Japanese (Japan)" for ja-JP in an English UI, "ญี่ปุ่น (ญี่ปุ่น)" in Thai.
     static func languageName(_ code: String, in ui: String) -> String {
         code.isEmpty ? "" : Locale(identifier: ui).localizedString(forIdentifier: code) ?? code
@@ -112,7 +134,7 @@ struct VoiceLibraryPanel: View {
             List(StylePreset.all) { preset in
                 LibraryRow(payload: .style(preset.name), hint: localized("dragStyle"),
                            icon: StyleIcon(style: preset.name, size: 40),
-                           title: HStack { Text(preset.name).bold(); if preset.name == current { InUse() } },
+                           title: Text(preset.name).bold(), inUse: preset.name == current,
                            subtitle: localized("style." + preset.slug),
                            applyTitle: localized("apply"), applyHint: localized("applyScene"),
                            apply: { vm.useStyle(preset.name) })
@@ -141,7 +163,7 @@ private struct VoiceRow: View {
         let details = [voice.isBuiltin ? voice.description : "", language, voice.accent, pitch].filter { !$0.isEmpty }
         LibraryRow(payload: .voice(voice.value), hint: localized("dragVoice"),
                    icon: VoicePortrait(voice: voice.value, size: 36),
-                   title: HStack { Text(voice.name).bold(); GenderPill(gender: voice.gender); if here { InUse() } },
+                   title: HStack { Text(voice.name).bold(); GenderPill(gender: voice.gender) }, inUse: here,
                    subtitle: details.joined(separator: " · ")
                        + (inProject && !here ? " · " + localized("inProject") : ""),
                    applyTitle: localized("apply"), applyHint: localized("applyScene"),
@@ -162,7 +184,7 @@ struct ExpressionLibraryPanel: View {
             List(ExpressionTag.allCases, id: \.self) { tag in
                 LibraryRow(payload: .expression(tag), hint: localized("dragExpr") + " · " + tag.rawValue,
                            icon: ExpressionIcon(tag: tag, size: 40),
-                           title: HStack { Text("<\(vm.label(tag))>").bold(); if tag == selected { InUse() } },
+                           title: Text("<\(vm.label(tag))>").bold(), inUse: tag == selected,
                            subtitle: localized("exd." + tag.key),
                            applyTitle: localized(selected == nil ? "insert" : "apply"),
                            applyHint: localized(selected == nil ? "insertExprTip" : "applyExprTip"),
@@ -174,12 +196,13 @@ struct ExpressionLibraryPanel: View {
     }
 }
 
-/// Icon · title / subtitle · Apply — draggable as `payload`.
+/// Icon · title / subtitle · Apply (or "✓ in use" in its place once applied) — draggable as `payload`.
 private struct LibraryRow<Icon: View, Title: View>: View {
     let payload: DragPayload
     let hint: String
     let icon: Icon
     let title: Title
+    var inUse = false
     let subtitle: String
     let applyTitle: String
     let applyHint: String
@@ -203,7 +226,7 @@ private struct LibraryRow<Icon: View, Title: View>: View {
                 .buttonStyle(.borderless).help(hint).accessibilityLabel(hint)
                 .accessibilityAddTraits(favorite.isOn ? .isSelected : [])
             }
-            Button(applyTitle, action: apply).controlSize(.small).help(applyHint)
+            if inUse { InUse() } else { Button(applyTitle, action: apply).controlSize(.small).help(applyHint) }
         }
         .padding(.vertical, 3)
         .contentShape(Rectangle())
@@ -213,5 +236,7 @@ private struct LibraryRow<Icon: View, Title: View>: View {
 }
 
 private struct InUse: View {
-    var body: some View { Text("✓ " + localized("inUse")).font(.app(11, .semibold)).foregroundStyle(.tint) }
+    var body: some View {
+        Text("✓ " + localized("inUse")).font(.app(11, .semibold)).foregroundStyle(.tint).fixedSize()
+    }
 }

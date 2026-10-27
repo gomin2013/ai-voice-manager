@@ -6,10 +6,15 @@ import Foundation
 struct ProjectStore: Sendable {
     let root: URL
 
-    /// `~/Library/Application Support/AI Voice Manager/Projects`
-    static var standard: ProjectStore {
-        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return ProjectStore(root: support.appending(path: "AI Voice Manager/Projects", directoryHint: .isDirectory))
+    /// `~/Library/Application Support/AI Voice Manager/Projects`; `open AIVoiceManager.app --args -demo` uses a folder in
+    /// the temp directory instead, so screenshots and recordings never touch real projects (empty → the sample projects).
+    static var standard: ProjectStore { ProjectStore(root: root(demo: CommandLine.arguments.contains("-demo"))) }
+
+    static func root(demo: Bool) -> URL {
+        let base = demo ? FileManager.default.temporaryDirectory.appending(path: "AI Voice Manager Demo")
+            : FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+                .appending(path: "AI Voice Manager")
+        return base.appending(path: "Projects", directoryHint: .isDirectory)
     }
 
     func folder(of id: String) -> URL { root.appending(path: id, directoryHint: .isDirectory) }

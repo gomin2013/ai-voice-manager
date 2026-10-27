@@ -111,7 +111,7 @@ kbd { font: 11px var(--mono); opacity: .8; }
 .avbadge .xi { padding: 1px; }
 .av { border-radius: 50%; object-fit: cover; flex: none; background: var(--bg3); }
 .vitem .grow b { font-weight: 600; }
-.vitem .sel { color: var(--accent); font-weight: 700; }
+.vitem .sel { color: var(--accent); font-weight: 700; white-space: nowrap; }
 .vitem[draggable=true] { cursor: grab; }
 </style>
 </head>
@@ -205,7 +205,8 @@ const avatar = (v, size = 32) => VOICES.some(([n]) => n === v)
   ? `<img class="av" src="img/voices/${v.toLowerCase()}.png" alt="" width="${size}" height="${size}">`
   : `<span class="av initials g-${genderOf(v)}" style="width:${size}px;height:${size}px;line-height:${size}px;text-align:center;font-size:${Math.round(size * 0.42)}px" aria-hidden="true">${esc(voiceName(v).slice(0, 1))}</span>`;
 const genderPill = v => { const g = genderOf(v);
-  return `<span class="pill b-${g}">${g === 'f' ? '♀' : g === 'm' ? '♂' : '○'} ${esc(t(g === 'f' ? 'female' : g === 'm' ? 'male' : 'neutral'))}</span>`; };
+  const word = esc(t(g === 'f' ? 'female' : g === 'm' ? 'male' : 'neutral'));
+  return `<span class="pill b-${g}" title="${word}" aria-label="${word}">${g === 'f' ? '♀' : g === 'm' ? '♂' : '○'}</span>`; };
 // Voice styles: the `style` annotation Gemini reads before a line. English on purpose (that's what the model gets);
 // the description is what the user reads. Any other text still works: the scene's Style box accepts free text.
 const STYLE_DESC = {
@@ -330,7 +331,7 @@ const STRINGS = {
     favEmpty: 'No favorites yet — press ♡ on a voice to keep it here.',
     vSearch: 'Search voices…', gVoices: 'Gemini TTS · voices', apply: 'Apply', dragVoice: 'Drag onto Current Scene, or press Apply', inUse: 'in use',
     'panel.providers': 'AI Providers', 'panel.projects': 'Recent Projects', 'panel.generate': 'Generate', 'panel.voices': 'Voice Library', 'panel.expressions': 'Expression Library',
-    'pitch.low': 'Low', 'pitch.medium': 'Medium', 'pitch.high': 'High', neutral: 'Neutral',
+    pitch: 'Pitch', language: 'Language', 'pitch.low': 'Low', 'pitch.medium': 'Medium', 'pitch.high': 'High', neutral: 'Neutral',
     vMore: '{0} more — search or filter to narrow the list',
     'hist.tabScene': 'Scene', 'hist.sceneBefore': 'Scene {0} before editing',
     'hist.sceneEmpty': 'Edit a scene’s text and its versions appear here.',
@@ -416,7 +417,7 @@ const STRINGS = {
     favEmpty: 'ยังไม่มีรายการโปรด — กด ♡ ที่เสียงที่ชอบเพื่อเก็บไว้ที่นี่',
     vSearch: 'ค้นหาเสียง…', gVoices: 'Gemini TTS · เสียง', apply: 'Apply', dragVoice: 'ลากไปวางที่ฉากปัจจุบัน หรือกด Apply', inUse: 'ใช้อยู่',
     'panel.providers': 'ผู้ให้บริการ AI', 'panel.projects': 'โปรเจกต์ล่าสุด', 'panel.generate': 'สร้างเสียง', 'panel.voices': 'คลังเสียง', 'panel.expressions': 'คลัง Expression',
-    'pitch.low': 'ต่ำ', 'pitch.medium': 'กลาง', 'pitch.high': 'สูง', neutral: 'เป็นกลาง',
+    pitch: 'ระดับเสียง', language: 'ภาษา', 'pitch.low': 'ต่ำ', 'pitch.medium': 'กลาง', 'pitch.high': 'สูง', neutral: 'เป็นกลาง',
     vMore: 'อีก {0} เสียง — ค้นหาหรือกรองให้แคบลง',
     'hist.tabScene': 'ฉาก', 'hist.sceneBefore': 'ฉาก {0} ก่อนแก้',
     'hist.sceneEmpty': 'แก้ข้อความในฉาก แล้วเวอร์ชันของข้อความจะมาอยู่ตรงนี้',
@@ -479,7 +480,7 @@ const $ = id => document.getElementById(id);
 const S = {
   apiKey: load('key', ''), tier: load('tier', 'free'),
   projects: load('projects', null) || seedProjects(),
-  current: load('current', null), generating: false, pvBusy: null, drag: null, vg: 'all', vtab: 'voices', ltab: 'lang', ptab: 'voices',
+  current: load('current', null), generating: false, pvBusy: null, drag: null, vg: 'all', vlang: '', vpitch: '', vtab: 'voices', ltab: 'lang', ptab: 'voices',
   agent: load('agent', 'ollama'), agentModels: load('agentModels', {}), agentKeys: load('agentKeys', {}),
   waveSeed: 7, pq: '', vq: '', favs: load('favVoices', []),   // favorites: app-wide, not per project, not in History
   hists: {},   // project id → its History (30 states + pinned + Scene History), kept while the app runs
@@ -960,16 +961,19 @@ function deleteTake(id) {
 }
 
 // ── Right panel: Voice Library — every voice / model, by provider, searchable; Gemini voices drag onto the scene ──
-function voiceRow(name, sub, actions, inUse, drag = '', tag = '') {
-  return `<div class="prow vitem" ${drag}>${avatar(name, 36)}<div class="grow"><b>${esc(name)}</b> ${tag}${inUse ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}
+/** A library row's action: the Apply button, or "✓ in use" in its place once it's applied. */
+const applyOr = (inUse, button) => inUse ? `<span class="sel">✓ ${esc(t('inUse'))}</span>` : button;
+function voiceRow(name, sub, actions, drag = '', tag = '') {
+  return `<div class="prow vitem" ${drag}>${avatar(name, 36)}<div class="grow"><b>${esc(name)}</b> ${tag}
     <div class="sub">${esc(sub)}</div></div>${actions}</div>`;
 }
-/** Voice Library: search + All · Male · Female · ♥ favourites · ✓ in this project. Drag a voice onto the Current Scene or press Apply.
+/** Voice Library: search + All · ♂ · ♀ · ♥ favourites · ✓ in this project, then Language | Pitch. Drag a voice onto the Current Scene or press Apply.
  *  Up to 120 rows at once: past that the list says how many more and asks for a narrower search (2,089 voices). */
 const usedVoices = () => new Set(items().filter(x => x.type === 'script').map(x => S.draft.speakers[x.speaker].voice));
 const voiceMatches = () => {
   const q = S.vq.trim().toLowerCase(), used = usedVoices();
   return LIB.filter(v => (S.vg === 'all' || (S.vg === 'fav' ? S.favs.includes(v.value) : S.vg === 'use' ? used.has(v.value) : v.g === S.vg))
+    && (!S.vlang || v.lang === S.vlang) && (!S.vpitch || v.pitch === S.vpitch)
     && (!q || `${v.name} ${v.desc} ${v.persona} ${v.accent} ${v.lang} ${langName(v.lang)}`.toLowerCase().includes(q)));
 };
 function voiceList() {
@@ -978,7 +982,7 @@ function voiceList() {
     const inProject = items().some(x => x.type === 'script' && S.draft.speakers[x.speaker].voice === v);
     const sub = [vi.builtin ? vi.desc : '', vi.lang && langName(vi.lang), vi.accent, vi.pitch && t('pitch.' + vi.pitch)].filter(Boolean).join(' · ');
     return `<div title="${esc(vi.builtin ? '' : vi.desc)}">` + voiceRow(vi.name, sub + (inProject && !here ? ' · ' + t('inProject') : ''),
-      favBtn(v) + `<button class="btn small" title="${esc(t('applyScene'))}" onclick="useVoice('${v}')">${esc(t('apply'))}</button>`, here,
+      favBtn(v) + applyOr(here, `<button class="btn small" title="${esc(t('applyScene'))}" onclick="useVoice('${v}')">${esc(t('apply'))}</button>`),
       `draggable="true" title="${esc(t('dragVoice'))}" ondragstart="event.dataTransfer.setData('text/x-gemini-voice','${v}')"`, genderPill(v)) + '</div>';
   });
   return rows.length ? `<p class="muted">${esc(t('gVoices'))} · ${all.length} <span class="pill b-tier">${esc(t('bTier'))}</span></p>${rows.join('')}`
@@ -998,9 +1002,9 @@ function expressionsPanel() {
   const sel = selItem(), onExpr = sel?.type === 'expr';
   return `<p class="muted">${esc(t('exprLibHint'))}</p>` + EXPRS.map(tag => `<div class="prow vitem" draggable="true" title="${esc(t('dragExpr'))} · ${esc(tag)}"
       ondragstart="event.dataTransfer.setData('text/x-expr','${tag}')"><span class="grip muted" aria-hidden="true">⋮⋮</span>${exIcon(tag, 40)}
-    <div class="grow"><b>&lt;${esc(exLabel(tag))}&gt;</b>${onExpr && sel.tag === tag ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}
+    <div class="grow"><b>&lt;${esc(exLabel(tag))}&gt;</b>
       <div class="sub">${esc(t('exd.' + exKey(tag)))}</div></div>
-    <button class="btn small" title="${esc(t(onExpr ? 'applyExprTip' : 'insertExprTip'))}" onclick="applyExpr('${tag}')">${esc(t(onExpr ? 'apply' : 'insert'))}</button></div>`).join('');
+    ${applyOr(onExpr && sel.tag === tag, `<button class="btn small" title="${esc(t(onExpr ? 'applyExprTip' : 'insertExprTip'))}" onclick="applyExpr('${tag}')">${esc(t(onExpr ? 'apply' : 'insert'))}</button>`)}</div>`).join('');
 }
 /** Apply: changes the selected Expression scene; with a Script selected, inserts the expression right after it. */
 function applyExpr(tag) {
@@ -1014,8 +1018,8 @@ function stylesList() {
   const cur = selItem()?.type === 'script' ? selItem().style : null, d = STYLE_DESC[Shell.lang] || STYLE_DESC.en;
   return `<p class="muted">${esc(t('styleLibHint'))}</p>` + STYLES.map(([name], i) => `<div class="prow vitem" draggable="true" title="${esc(t('dragStyle'))}"
       ondragstart="event.dataTransfer.setData('text/x-style','${i}')">${styleIcon(name, 40)}
-    <div class="grow"><b>${esc(name)}</b>${name === cur ? ` <span class="sel">✓ ${esc(t('inUse'))}</span>` : ''}<div class="sub">${esc(d[i])}</div></div>
-    <button class="btn small" title="${esc(t('applyScene'))}" onclick="useStyle(${i})">${esc(t('apply'))}</button></div>`).join('');
+    <div class="grow"><b>${esc(name)}</b><div class="sub">${esc(d[i])}</div></div>
+    ${applyOr(name === cur, `<button class="btn small" title="${esc(t('applyScene'))}" onclick="useStyle(${i})">${esc(t('apply'))}</button>`)}</div>`).join('');
 }
 const voicesPanel = () => `<div class="seg" role="tablist" style="margin-bottom:8px">${[['voices', t('tabVoices')], ['styles', t('tabStyles')]].map(([k, label]) =>
     `<button type="button" role="tab" class="${S.vtab === k ? 'on' : ''}" aria-selected="${S.vtab === k}" onclick="S.vtab='${k}';Shell.renderPanel()">${esc(label)}</button>`).join('')}</div>
@@ -1026,6 +1030,12 @@ const voicesPanel = () => `<div class="seg" role="tablist" style="margin-bottom:
     .map(([g, label, tip]) =>   // icons, not words (♂ ♀ like the gender pill): five worded tabs wrap in the narrow panel; counts are in the header
     `<button type="button" class="${S.vg === g ? 'on' : ''}" aria-pressed="${S.vg === g}" onclick="S.vg='${g}';Shell.renderPanel()"${tip
       ? ` title="${esc(tip)}" aria-label="${esc(tip)}"` : ''}>${label}</button>`).join('')}</div>
+  <div class="prow-ctl" style="margin-bottom:6px">
+    <select aria-label="${esc(t('language'))}" style="flex:1;min-width:0" onchange="S.vlang=this.value;$('vlist').innerHTML=voiceList()">${[['', t('language') + ': ' + t('all')],
+      ...[...new Set(LIB.map(v => v.lang).filter(Boolean))].map(c => [c, langName(c)]).sort((a, b) => a[1].localeCompare(b[1]))]
+      .map(([v, l]) => `<option value="${v}" ${S.vlang === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
+    <select aria-label="${esc(t('pitch'))}" onchange="S.vpitch=this.value;$('vlist').innerHTML=voiceList()">${[['', t('pitch') + ': ' + t('all')], ...['low', 'medium', 'high'].map(p => [p, t('pitch.' + p)])]
+      .map(([v, l]) => `<option value="${v}" ${S.vpitch === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></div>
   <div id="vlist">${voiceList()}</div>`}`;
 function setModel(id) { S.draft.model = id; persistDraft(); Shell.record(t('hist.model', model().name.replace('Gemini ', ''))); renderScene(); Shell.renderPanel(); }
 // Mirrors the Interactions API request the Swift GeminiTTS service will build.

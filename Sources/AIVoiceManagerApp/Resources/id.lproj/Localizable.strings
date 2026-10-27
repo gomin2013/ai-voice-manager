@@ -271,6 +271,8 @@
 "male" = "Laki-laki";
 "all" = "Semua";
 "fav" = "Favorit";
+"language" = "Bahasa";
+"pitch" = "Nada";
 "neutral" = "Netral";
 "pitch.low" = "Rendah";
 "pitch.medium" = "Sedang";
