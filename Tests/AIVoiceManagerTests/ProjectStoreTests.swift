@@ -15,6 +15,13 @@ final class ProjectStoreTests: XCTestCase {
         try? FileManager.default.removeItem(at: store.root)
     }
 
+    func testDemoKeepsProjectsOutOfApplicationSupport() {
+        let demo = ProjectStore.root(demo: true).path, real = ProjectStore.root(demo: false).path
+        XCTAssertTrue(demo.hasPrefix(FileManager.default.temporaryDirectory.path))
+        XCTAssertTrue(real.hasSuffix("Application Support/AI Voice Manager/Projects"))
+        XCTAssertNotEqual(demo, real)
+    }
+
     private func project(_ id: String, opened: Date = .now, draft: ProjectDraft = Fixtures.two) -> Project {
         Project(id: id, opened: opened, draft: draft, takes: [], selection: nil)
     }
