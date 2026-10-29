@@ -21,6 +21,7 @@ struct AIVoiceManagerApp: App {
                 .task { net.start() }
                 .task { await ollama.probe() }
                 .task { await VoiceDirectory.shared.refreshIfStale(key: KeychainStore.load()) }   // weekly, free
+                .task { await UpdateChecker.checkIfDue() }   // off unless turned on in About
                 .frame(minWidth: 1440, minHeight: 760)   // both tool windows open (2 × 384) + the editor
                 .sheet(item: $modelSheet) { ModelPickerSheet(mode: $0).environment(vm).environment(net) }
                 .onChange(of: vm.currentID) { playback.stop(); QuickPreview.shared.stop() }
@@ -31,6 +32,9 @@ struct AIVoiceManagerApp: App {
         }
         .windowResizability(.contentMinSize)
         .commands {
+            CommandGroup(after: .appInfo) {
+                Button(localized("update.check")) { Task { await UpdateChecker.check(manual: true) } }
+            }
             // One main window: File › New Window becomes New Project (every project starts by choosing its model).
             CommandGroup(replacing: .newItem) {
                 Button(localized("newProject")) { modelSheet = .new }.keyboardShortcut("n")
