@@ -365,3 +365,18 @@
 "agentPrivacy" = "你的问题会附带此项目的脚本，并发送给该提供方。";
 "agentGeminiKey" = "使用“声音”标签页中的 Google 密钥。";
 "chat.step.attached" = "已附加项目 · %ld 个场景";
+
+/* Check for Updates (UpdateChecker) */
+"update.check" = "检查更新…";
+"update.upToDate.title" = "已是最新版本！";
+"update.upToDate.body" = "%@ %@ 是目前可用的最新版本。";
+"update.available.title" = "%@ 有新版本可用";
+"update.available.body" = "%@ 已发布 — 你当前使用的是 %@。";
+"update.download" = "下载";
+"update.later" = "稍后";
+"update.skip" = "跳过此版本";
+"update.ok" = "好";
+"update.failed.title" = "无法检查更新";
+"update.openReleases" = "打开发布页面";
+"update.auto" = "自动检查更新";
+"update.auto.help" = "启动时每天一次。只向 GitHub 查询最新版本，不会发送任何关于你的信息。";

@@ -46,6 +46,8 @@ Same window layout as [Hosts Manager](https://github.com/gomin2013/hosts-manager
   AI Agent · Help, plus Appearance · Language & Currency · About on the right; ⌥⌘1…0, one panel per side.
 - **Your look** — Liquid Glass on macOS 26, Sukhumvit Set type, light / dark / system, 16 accent colours and
   8 gradient themes.
+- **Check for Updates** — from the app menu or About: asks GitHub for the latest release and shows what's new;
+  **Download** opens the DMG. A daily automatic check is optional and off by default.
 - **Keyboard** — ⌘N new project, ⌘↵ generate, Return / Esc save or cancel a rename, ⌘W / ⌘Q close and quit.
 
 ## Install
@@ -110,12 +112,12 @@ Takes are plain files Finder can read. Nothing goes to Google until you press Ge
 
 ```
 Sources/AIVoiceManagerApp/Models/      timeline, request body, import cleaning, catalogs, WAV — pure, tested
-Sources/AIVoiceManagerApp/Services/    Gemini TTS, Keychain, project files + zip, Ollama, connection monitor
+Sources/AIVoiceManagerApp/Services/    Gemini TTS, Keychain, project files + zip, Ollama, connection monitor, update check
 Sources/AIVoiceManagerApp/ViewModels/  the editor, History, playback
 Sources/AIVoiceManagerApp/Views/       SwiftUI views and the Gomin shell (tool windows, settings)
 Sources/AIVoiceManagerApp/Art/         paper-collage voice portraits, expression and style icons
 Sources/AIVoiceManagerApp/Resources/   strings in 12 languages
-Tests/AIVoiceManagerTests/             XCTest (75+)
+Tests/AIVoiceManagerTests/             XCTest (120+)
 scripts/build-app.sh                   assembles + ad-hoc signs build/AIVoiceManager.app
 scripts/make-dmg.sh                    build/AIVoiceManager-<version>.dmg for Releases
 scripts/make-icon.swift                Packaging/ icons and mascot from the renders in Packaging/source/
@@ -137,13 +139,13 @@ docs/                                  the website (GitHub Pages, 12 languages)
 
 ## Privacy
 
-No account with us, no telemetry, no server of ours. **Generate** sends the project's unmuted scenes (text,
-expression tags, styles, speaker names, voices, model) from your Mac to Google's Gemini API with your own key;
-**Generate preview** sends one scene. On the free tier Google may use that text and audio to improve its products.
-The AI Agent sends your question and the project's script to the provider you pick — OpenAI, Google (Gemini) or
-Anthropic (Claude), with your key — or keeps it on your Mac with Apple or Ollama. Quick preview stays on your Mac.
-Details:
-[Privacy Policy](https://gomin2013.github.io/ai-voice-manager/privacy-policy/).
+No account with us, no telemetry, no server of ours. **Generate** sends the project's unmuted scenes (text, expression
+tags, styles, speaker names, voices, model) from your Mac to Google's Gemini API with your own key; **Generate
+preview** sends one scene. On the free tier Google may use that text and audio to improve its products. The AI Agent
+sends your question and the project's script to the provider you pick — OpenAI, Google (Gemini) or Anthropic (Claude),
+with your key — or keeps it on your Mac with Apple or Ollama. Quick preview stays on your Mac. **Check for Updates**
+asks GitHub for the latest release only when you click it (or once a day if you turn that on in About); nothing about
+you is sent. Details: [Privacy Policy](https://gomin2013.github.io/ai-voice-manager/privacy-policy/).
 
 ## Troubleshooting
 

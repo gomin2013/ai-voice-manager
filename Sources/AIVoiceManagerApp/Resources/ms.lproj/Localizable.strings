@@ -365,3 +365,18 @@
 "agentPrivacy" = "Soalan anda termasuk skrip projek ini, yang dihantar kepada penyedia ini.";
 "agentGeminiKey" = "Menggunakan kunci Google anda daripada tab Suara.";
 "chat.step.attached" = "Projek dilampirkan · %ld babak";
+
+/* Check for Updates (UpdateChecker) */
+"update.check" = "Semak Kemas Kini…";
+"update.upToDate.title" = "Anda menggunakan versi terkini!";
+"update.upToDate.body" = "%@ %@ ialah versi terkini yang tersedia.";
+"update.available.title" = "Versi baharu %@ tersedia";
+"update.available.body" = "%@ tersedia — anda menggunakan %@.";
+"update.download" = "Muat Turun";
+"update.later" = "Kemudian";
+"update.skip" = "Langkau Versi Ini";
+"update.ok" = "OK";
+"update.failed.title" = "Tidak dapat menyemak kemas kini";
+"update.openReleases" = "Buka Halaman Keluaran";
+"update.auto" = "Semak kemas kini secara automatik";
+"update.auto.help" = "Sekali sehari semasa dibuka. Aplikasi hanya bertanya GitHub tentang keluaran terkini; tiada maklumat tentang anda dihantar.";

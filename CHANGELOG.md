@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.1.4 — 2026-10-29
+
+### Added
+
+- **Check for Updates** — in the app menu (under About) and in the About panel: AI Voice Manager asks GitHub for the
+  latest release and either says you're up to date or shows what's new, with a **Download** button that opens the DMG.
+  A daily automatic check can be turned on in About; it is **off** by default.
+
+### Changed
+
+- **Privacy Policy** — instead of "no update checks" it now says what Check for Updates sends (nothing about you;
+  GitHub sees your IP address, as with any web request) and when — in all 12 languages.
+- **README** — Check for Updates in Features and Privacy.
+- **Website screenshots** retaken from v1.1.3 — Voice Library with 2,000+ voices and its filters, AI Agent
+  providers, History › Script / Scene — plus a new social preview image.
+
+### Installation
+
+Download `AIVoiceManager-1.1.4.dmg` (and `SHA256SUMS.txt`), drag **AI Voice Manager** to **Applications** (replace
+the old copy) and allow the first launch in **System Settings → Privacy & Security → Open Anyway** (or
+`xattr -dr com.apple.quarantine "/Applications/AIVoiceManager.app"`). Then paste a Gemini API key from
+[Google AI Studio](https://aistudio.google.com/apikey) in **AI Providers**. Requires an Apple silicon Mac with
+macOS 14 or later and an internet connection; an AI Agent provider is optional.
+
 ## v1.1.3 — 2026-10-27
 
 ### Fixed

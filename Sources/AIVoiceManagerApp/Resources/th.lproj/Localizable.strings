@@ -365,3 +365,18 @@
 "agentPrivacy" = "คำถามของคุณจะแนบบทของโปรเจกต์นี้ส่งไปยังผู้ให้บริการนี้ด้วย";
 "agentGeminiKey" = "ใช้ Google key เดียวกับแท็บเสียง";
 "chat.step.attached" = "แนบโปรเจกต์ · %ld ฉาก";
+
+/* Check for Updates (UpdateChecker) */
+"update.check" = "ตรวจหาอัปเดต…";
+"update.upToDate.title" = "คุณใช้เวอร์ชันล่าสุดแล้ว!";
+"update.upToDate.body" = "%@ %@ เป็นเวอร์ชันล่าสุดในขณะนี้";
+"update.available.title" = "%@ มีเวอร์ชันใหม่แล้ว";
+"update.available.body" = "มีเวอร์ชัน %@ แล้ว — ตอนนี้คุณใช้ %@";
+"update.download" = "ดาวน์โหลด";
+"update.later" = "ไว้ทีหลัง";
+"update.skip" = "ข้ามเวอร์ชันนี้";
+"update.ok" = "ตกลง";
+"update.failed.title" = "ตรวจหาอัปเดตไม่สำเร็จ";
+"update.openReleases" = "เปิดหน้า Releases";
+"update.auto" = "ตรวจหาอัปเดตอัตโนมัติ";
+"update.auto.help" = "วันละครั้งตอนเปิดแอป แอปถาม GitHub แค่ว่า release ล่าสุดคืออะไร ไม่มีข้อมูลของคุณถูกส่งไป";

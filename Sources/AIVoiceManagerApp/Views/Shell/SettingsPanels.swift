@@ -215,6 +215,8 @@ private struct CurrencyList: View {
 
 /// About panel.
 struct AboutPanel: View {
+    @AppStorage(UpdateChecker.autoKey) private var autoUpdate = false
+
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
@@ -226,6 +228,10 @@ struct AboutPanel: View {
                 Text(localized("about.version", version))
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                Button(localized("update.check")) { Task { await UpdateChecker.check(manual: true) } }
+                Toggle(localized("update.auto"), isOn: $autoUpdate)
+                    .font(.caption)
+                    .help(localized("update.auto.help"))
                 Text(localized("about.desc"))
                     .multilineTextAlignment(.center)
                 VStack(alignment: .leading, spacing: 4) {
